@@ -29,11 +29,11 @@ const ExerciseView: React.FC = () => {
   };
 
   return (
-    <div className="p-10 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold text-slate-800 mb-8">Banco de Questões</h2>
+    <div className="p-4 lg:p-10 max-w-4xl mx-auto pb-20">
+      <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-6 lg:mb-8">Banco de Questões</h2>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-white p-4 lg:p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Disciplina</label>
           <select 
@@ -80,7 +80,7 @@ const ExerciseView: React.FC = () => {
             const isCorrect = isChecked && answers[exercise.id] === exercise.correctOptionIndex;
 
             return (
-              <div key={exercise.id} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+              <div key={exercise.id} className="bg-white p-6 lg:p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex items-start justify-between mb-4">
                   <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase tracking-wide">
                     Questão {index + 1}
@@ -131,7 +131,7 @@ const ExerciseView: React.FC = () => {
                     <button
                       onClick={() => handleCheckAnswer(exercise.id)}
                       disabled={!isAnswered}
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="w-full lg:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Verificar Resposta
                     </button>

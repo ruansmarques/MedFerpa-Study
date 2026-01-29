@@ -37,14 +37,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       if (user) {
         onLogin(user);
       } else {
-        setError('RA não encontrado. Tente 24151433-0');
+        setError('Esse RA não possui autorização');
       }
     }
   }, [ra, onLogin]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="bg-white p-6 lg:p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
         <div className="mb-8">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">MEDFERPA</h1>
           <p className="text-gray-500">Acesse sua plataforma de ensino.</p>

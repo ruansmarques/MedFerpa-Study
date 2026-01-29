@@ -4,7 +4,7 @@ import { User, Subject, Lesson, Exercise } from './types';
 export const MOCK_USERS: User[] = [
   {
     ra: '24151433-0',
-    name: 'Ana Silva',
+    name: 'Editar nome',
     completedLessons: ['subj-1', 'imuno-1', 'semio-1'],
     avatarColor: 'bg-emerald-500'
   },

@@ -10,7 +10,7 @@ interface ClassListProps {
 
 const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(4); // Default to 4th period
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(5); // Default to 5th period
   
   // State for sub-modules (e.g. for Processos Patológicos)
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
@@ -31,14 +31,14 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
     const filteredSubjects = SUBJECTS.filter(s => s.period === selectedPeriod);
 
     return (
-      <div className="p-10 max-w-6xl mx-auto">
+      <div className="p-4 lg:p-10 max-w-6xl mx-auto">
         {/* Period Selector Header */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          {periods.slice(0, 6).map((p) => (
+        <div className="flex items-center justify-center gap-2 lg:gap-4 mb-8 lg:mb-12 flex-wrap">
+          {periods.slice(0, 8).map((p) => (
             <button
               key={p}
               onClick={() => setSelectedPeriod(p)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
+              className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-sm lg:text-lg font-bold transition-all ${
                 selectedPeriod === p
                   ? 'bg-slate-800 text-white shadow-lg scale-110'
                   : 'bg-white text-gray-400 border-2 border-gray-200 hover:border-slate-800 hover:text-slate-800'
@@ -47,10 +47,9 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
               {p}º
             </button>
           ))}
-          <span className="text-gray-300 font-bold">...</span>
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-800 mb-8">
+        <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-6 lg:mb-8 text-center lg:text-left">
           Disciplinas do {selectedPeriod}º Período
         </h2>
         
@@ -88,15 +87,15 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
   }
 
   return (
-    <div className="p-10 max-w-5xl mx-auto">
-      <div className="mb-8 flex items-center gap-4">
+    <div className="p-4 lg:p-10 max-w-5xl mx-auto">
+      <div className="mb-6 lg:mb-8 flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
         <button 
           onClick={() => setSelectedSubject(null)}
-          className="text-sm font-semibold text-gray-400 hover:text-blue-600 transition-colors"
+          className="text-sm font-semibold text-gray-400 hover:text-blue-600 transition-colors self-start"
         >
-          ← Voltar para {selectedPeriod}º Período
+          ← Voltar
         </button>
-        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
           <span>{selectedSubject.icon}</span>
           {selectedSubject.title}
         </h2>
@@ -104,12 +103,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
 
       {/* Sub-module Selector for Processos Patológicos */}
       {selectedSubject.id === specialSubjectId && (
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex flex-wrap items-center justify-center gap-2 lg:gap-3 mb-8 lg:mb-10 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
           {categories.map((cat) => (
              <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-bold transition-all ${
+              className={`px-4 py-2 rounded-full text-xs lg:text-sm font-bold transition-all ${
                 selectedCategory === cat
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'bg-gray-50 text-gray-500 hover:bg-blue-50 hover:text-blue-600'
@@ -121,7 +120,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 pb-10">
         {subjectLessons.length > 0 ? (
           subjectLessons.map((lesson) => (
             <LessonRow 
@@ -153,24 +152,15 @@ const LessonRow: React.FC<{
 
   const openPdf = (type: 'slide' | 'resumo') => {
     // Logic matches the "Drive" structure requested
-    // Root: /materials
-    // Subject: [folderName from constants] (e.g., 'semiologia', 'processos-patologicos')
-    // Category (optional): [category normalized] (e.g., 'Patologia Geral' -> 'patologia-geral')
-    // Type Folder: 'Slides' or 'Resumos'
-    // Filename: [Lesson Title].pdf (e.g., 'AULA 01 - Nome da Aula.pdf')
-    
     const basePath = '/materials';
     const subjectPath = subjectFolderName || 'default';
     
-    // Normalize category: 'Patologia Geral' -> 'patologia-geral'
+    // Normalize category
     const categoryPath = lesson.category 
       ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
       : '';
     
-    // Type folders are Capitalized to match screenshots
     const typeFolder = type === 'slide' ? 'Slides' : 'Resumos';
-    
-    // Filename matches the exact title in the app
     const fileName = `${lesson.title}.pdf`;
 
     // Construct URL parts
@@ -188,22 +178,22 @@ const LessonRow: React.FC<{
     <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white border-blue-200 shadow-md' : 'bg-slate-100 border-transparent hover:bg-white hover:shadow-sm'}`}>
       
       {/* Header Row */}
-      <div className="flex items-center justify-between p-4 px-6">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 px-4 lg:px-6 gap-3 lg:gap-0">
         <div 
-          className="flex items-center gap-4 flex-1 cursor-pointer select-none"
+          className="flex items-center gap-3 lg:gap-4 flex-1 cursor-pointer select-none w-full"
           onClick={() => setIsOpen(!isOpen)}
         >
           <div className={`transition-transform duration-300 text-slate-400 ${isOpen ? 'rotate-180 text-blue-600' : ''}`}>
-            <IconChevronDown className="w-6 h-6" />
+            <IconChevronDown className="w-5 h-5 lg:w-6 lg:h-6" />
           </div>
-          <div className="flex flex-col">
-            <span className={`font-semibold text-lg ${isOpen ? 'text-blue-700' : 'text-slate-700'}`}>
+          <div className="flex flex-col pr-2">
+            <span className={`font-semibold text-sm lg:text-lg leading-tight ${isOpen ? 'text-blue-700' : 'text-slate-700'}`}>
               {lesson.title}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 self-end lg:self-auto w-full lg:w-auto justify-end lg:justify-start pl-8 lg:pl-0">
           {/* 1st Icon: Play - Toggles Video */}
           <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
           
@@ -213,7 +203,7 @@ const LessonRow: React.FC<{
           {/* 3rd Icon: Book - Opens Summary PDF */}
           <ActionButton icon={IconBook} onClick={() => openPdf('resumo')} tooltip="Baixar Resumo" />
           
-          <div className="h-6 w-px bg-gray-300 mx-1"></div>
+          <div className="h-6 w-px bg-gray-300 mx-1 hidden lg:block"></div>
           
           <button 
             onClick={(e) => {
@@ -227,14 +217,14 @@ const LessonRow: React.FC<{
             }`}
             title={isCompleted ? "Concluída" : "Marcar como concluída"}
           >
-            {isCompleted ? <IconCheckFilled className="w-7 h-7" /> : <IconCheck className="w-7 h-7" />}
+            {isCompleted ? <IconCheckFilled className="w-6 h-6 lg:w-7 lg:h-7" /> : <IconCheck className="w-6 h-6 lg:w-7 lg:h-7" />}
           </button>
         </div>
       </div>
 
       {/* Accordion Content */}
       {isOpen && (
-        <div className="p-6 pt-0 border-t border-blue-50 bg-blue-50/30">
+        <div className="p-4 lg:p-6 pt-0 border-t border-blue-50 bg-blue-50/30">
           <div className="mt-4 aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-black">
             <iframe 
               width="100%" 
@@ -246,7 +236,7 @@ const LessonRow: React.FC<{
               allowFullScreen
             ></iframe>
           </div>
-          <div className="mt-4 flex justify-between text-sm text-gray-500">
+          <div className="mt-4 flex flex-col lg:flex-row justify-between text-xs lg:text-sm text-gray-500 gap-2">
              <span>Duração: {lesson.duration}</span>
              <span>ID: {lesson.id}</span>
           </div>
@@ -262,10 +252,10 @@ const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string }
       e.stopPropagation();
       onClick();
     }}
-    className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+    className="p-1.5 lg:p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
     title={tooltip}
   >
-    <Icon className="w-7 h-7" />
+    <Icon className="w-6 h-6 lg:w-7 lg:h-7" />
   </button>
 );
 

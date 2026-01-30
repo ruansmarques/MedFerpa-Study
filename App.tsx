@@ -7,10 +7,9 @@ import RankView from './components/RankView';
 import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
 import { User, ViewState } from './types';
-import { MOCK_USERS } from './constants'; // Import kept only for seeding
 import { IconMenu } from './components/Icons';
 import { db } from './firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -28,24 +27,6 @@ const App: React.FC = () => {
     setCurrentUser(null);
     setCurrentView('login');
     setIsMobileMenuOpen(false);
-  };
-
-  // --- DATABASE SEEDING (USE ONCE THEN DELETE) ---
-  const seedDatabase = async () => {
-    if(!confirm("Isso vai sobrescrever os dados no banco com os dados de teste. Continuar?")) return;
-    try {
-      for (const user of MOCK_USERS) {
-        // We use RA as the document ID for simplicity and guaranteed uniqueness logic here
-        // First find the doc ID if it exists, or create a new one. 
-        // Ideally, we can just use the RA as the key if we wanted, but let's query to be safe or just setDoc with a custom ID.
-        // Let's use setDoc with the RA as the ID to make updates easier.
-        await setDoc(doc(db, "users", user.ra), user);
-      }
-      alert("Banco de dados populado com sucesso!");
-    } catch (e) {
-      console.error("Erro ao popular banco:", e);
-      alert("Erro ao popular banco (veja console)");
-    }
   };
 
   // Handle Lesson Completion Logic (Firestore)
@@ -66,9 +47,6 @@ const App: React.FC = () => {
 
     // 2. Firestore Update
     try {
-      // Since we are using RA as document ID (from the seeding logic suggestion), we can reference it directly.
-      // However, Login.tsx fetched by query. To be perfectly safe, let's find the doc reference again or assume ID=RA.
-      // Let's Assume ID = RA for simplicity in this implementation.
       const userRef = doc(db, "users", currentUser.ra);
       
       if (isCompleted) {
@@ -82,7 +60,6 @@ const App: React.FC = () => {
       }
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
-      // Optionally revert state here if it fails
     }
   };
 
@@ -158,14 +135,6 @@ const App: React.FC = () => {
       
       {/* Main Content Area */}
       <main className="flex-1 min-h-screen transition-all duration-300 pt-16 lg:pt-0 lg:ml-64 w-full lg:w-auto overflow-x-hidden relative">
-        {/* Temporary Seed Button - Remove in production */}
-        {/* <button 
-           onClick={seedDatabase}
-           className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-50 opacity-50 hover:opacity-100"
-        >
-          Migrar Dados Mock para DB
-        </button> */}
-        
         {renderContent()}
       </main>
     </div>

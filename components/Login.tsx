@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { User } from '../types';
+import { MOCK_USERS } from '../constants';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -11,6 +12,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [ra, setRa] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   const formatRA = (value: string) => {
     const digits = value.replace(/\D/g, '');
@@ -25,6 +27,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const newVal = formatRA(e.target.value);
     setRa(newVal);
     setError('');
+  };
+
+  const handleSeed = async () => {
+    if(!confirm("Isso irá criar/resetar os usuários de teste no banco de dados. Confirmar?")) return;
+    setSeeding(true);
+    try {
+      for (const user of MOCK_USERS) {
+        // Create user document using RA as the ID
+        await setDoc(doc(db, "users", user.ra), user);
+      }
+      alert("Sucesso! Usuários criados. Tente logar com 24151433-0");
+      setError('');
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao criar usuários. Verifique se o firebase.ts está configurado corretamente.");
+    } finally {
+      setSeeding(false);
+    }
   };
 
   useEffect(() => {
@@ -48,7 +68,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           }
         } catch (err) {
           console.error(err);
-          setError('Erro ao conectar ao servidor.');
+          setError('Erro ao conectar ao servidor. Verifique o arquivo firebase.ts');
           setLoading(false);
         }
       }
@@ -92,9 +112,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           )}
         </div>
 
-        <div className="mt-8 text-xs text-gray-400">
-          <p>Digite apenas os números.</p>
-          <p>Formato automático: 8 dígitos + digito verificador.</p>
+        <div className="mt-8 text-xs text-gray-400 border-t border-gray-100 pt-6">
+          <p className="mb-4">Primeiro acesso ou banco vazio?</p>
+          <button 
+            onClick={handleSeed}
+            disabled={seeding || loading}
+            className="text-blue-600 hover:text-blue-800 font-semibold underline disabled:opacity-50"
+          >
+            {seeding ? "Criando..." : "Clique aqui para criar os usuários de teste"}
+          </button>
         </div>
       </div>
     </div>

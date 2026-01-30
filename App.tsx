@@ -5,6 +5,7 @@ import ClassList from './components/ClassList';
 import ExerciseView from './components/ExerciseView';
 import RankView from './components/RankView';
 import ProfileView from './components/ProfileView';
+import LibraryView from './components/LibraryView';
 import { User, ViewState } from './types';
 import { MOCK_USERS } from './constants';
 import { IconMenu } from './components/Icons';
@@ -76,6 +77,8 @@ const App: React.FC = () => {
         ) : null;
       case 'exercises':
         return <ExerciseView />;
+      case 'library':
+        return <LibraryView />;
       case 'rank':
         return <RankView />;
       case 'profile':

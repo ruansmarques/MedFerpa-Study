@@ -32,4 +32,14 @@ export interface Exercise {
   correctOptionIndex: number;
 }
 
-export type ViewState = 'login' | 'classes' | 'exercises' | 'rank' | 'profile';
+export interface Book {
+  id: string;
+  title: string;
+  author: string;
+  edition: string;
+  category: string;
+  fileName: string;
+  color: string;
+}
+
+export type ViewState = 'login' | 'classes' | 'exercises' | 'library' | 'rank' | 'profile';

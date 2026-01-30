@@ -57,6 +57,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <input
             id="ra"
             type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={ra}
             onChange={handleChange}
             placeholder="00000000-0"

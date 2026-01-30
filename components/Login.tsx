@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MOCK_USERS } from '../constants';
+import { db } from '../firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { User } from '../types';
 
 interface LoginProps {
@@ -9,15 +10,11 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [ra, setRa] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const formatRA = (value: string) => {
-    // Remove non-digits
     const digits = value.replace(/\D/g, '');
-    
-    // Limit to 9 digits (8 base + 1 verifier)
     const truncated = digits.slice(0, 9);
-    
-    // Insert hyphen before last digit if length > 8
     if (truncated.length > 8) {
       return `${truncated.slice(0, 8)}-${truncated.slice(8)}`;
     }
@@ -31,15 +28,33 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   useEffect(() => {
-    // Auto-login check when format is complete (8 digits + hyphen + 1 digit = 10 chars)
-    if (ra.length === 10) {
-      const user = MOCK_USERS.find(u => u.ra === ra);
-      if (user) {
-        onLogin(user);
-      } else {
-        setError('Esse RA não possui autorização');
+    const checkLogin = async () => {
+      // Auto-login check when format is complete
+      if (ra.length === 10) {
+        setLoading(true);
+        try {
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("ra", "==", ra));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            // User found
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data() as User;
+            onLogin(userData);
+          } else {
+            setError('RA não encontrado no sistema.');
+            setLoading(false);
+          }
+        } catch (err) {
+          console.error(err);
+          setError('Erro ao conectar ao servidor.');
+          setLoading(false);
+        }
       }
-    }
+    };
+
+    checkLogin();
   }, [ra, onLogin]);
 
   return (
@@ -61,13 +76,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             pattern="[0-9]*"
             value={ra}
             onChange={handleChange}
+            disabled={loading}
             placeholder="00000000-0"
             className={`w-full text-lg px-4 py-3 border rounded-xl focus:ring-4 focus:outline-none transition-all placeholder-gray-300 font-mono tracking-wider ${
               error 
                 ? 'border-red-300 focus:ring-red-100 text-red-600' 
                 : 'border-gray-200 focus:border-blue-500 focus:ring-blue-100 text-slate-800'
-            }`}
+            } ${loading ? 'opacity-50 cursor-wait' : ''}`}
           />
+          {loading && <p className="mt-2 text-sm text-blue-500 font-medium">Verificando...</p>}
           {error && (
             <p className="mt-2 text-sm text-red-500 font-medium animate-pulse">
               {error}

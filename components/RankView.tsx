@@ -1,15 +1,52 @@
-import React from 'react';
-import { MOCK_USERS, LESSONS } from '../constants';
+import React, { useEffect, useState } from 'react';
+import { LESSONS } from '../constants';
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import { User } from '../types';
+
+interface RankedUser extends User {
+  percentage: number;
+}
 
 const RankView: React.FC = () => {
+  const [rankedUsers, setRankedUsers] = useState<RankedUser[]>([]);
+  const [loading, setLoading] = useState(true);
   const totalLessons = LESSONS.length;
 
-  const rankedUsers = [...MOCK_USERS]
-    .map(user => ({
-      ...user,
-      percentage: Math.round((user.completedLessons.length / totalLessons) * 100)
-    }))
-    .sort((a, b) => b.percentage - a.percentage);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const usersList: User[] = [];
+        querySnapshot.forEach((doc) => {
+          usersList.push(doc.data() as User);
+        });
+
+        const ranked = usersList
+          .map(user => ({
+            ...user,
+            percentage: Math.round((user.completedLessons.length / totalLessons) * 100)
+          }))
+          .sort((a, b) => b.percentage - a.percentage);
+
+        setRankedUsers(ranked);
+      } catch (error) {
+        console.error("Erro ao buscar ranking:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [totalLessons]);
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-gray-400">
+        <p>Carregando ranking...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 lg:p-10 max-w-3xl mx-auto">
@@ -26,7 +63,7 @@ const RankView: React.FC = () => {
         </div>
 
         <div className="divide-y divide-gray-100">
-          {rankedUsers.map((user, index) => {
+          {rankedUsers.length > 0 ? rankedUsers.map((user, index) => {
             let rankBadge = null;
             if (index === 0) rankBadge = "🥇";
             else if (index === 1) rankBadge = "🥈";
@@ -54,7 +91,11 @@ const RankView: React.FC = () => {
                 </div>
               </div>
             );
-          })}
+          }) : (
+            <div className="p-8 text-center text-gray-400">
+              Nenhum aluno encontrado no banco de dados.
+            </div>
+          )}
         </div>
       </div>
     </div>

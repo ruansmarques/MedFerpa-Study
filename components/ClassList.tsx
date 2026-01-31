@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff } from './Icons';
@@ -17,7 +17,14 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
   // State for sub-modules (e.g. for Processos Patológicos)
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
 
-  const periods = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  // Touch handling state
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const allPeriods = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  // Limit to 8 for the loop logic as per request context "5 of 8"
+  const mobilePeriods = [1, 2, 3, 4, 5, 6, 7, 8];
+  
   const specialSubjectId = 'proc-patol'; // ID for Processos Patológicos
   const categories = ['Patologia Geral', 'Parasitologia', 'Imunologia', 'Microbiologia'];
 
@@ -28,19 +35,117 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
     }
   }, [selectedSubject]);
 
+  // --- Mobile Carousel Logic ---
+  // Calculates the 5 visible items based on the selected one to create an infinite loop
+  const getVisiblePeriods = (current: number) => {
+    const count = mobilePeriods.length;
+    const currentIndex = mobilePeriods.indexOf(current);
+    
+    // We need: current-2, current-1, current, current+1, current+2
+    const offsets = [-2, -1, 0, 1, 2];
+    
+    return offsets.map(offset => {
+      // Modulo logic to handle wrapping (e.g., index -1 becomes 7)
+      let idx = (currentIndex + offset) % count;
+      if (idx < 0) idx += count;
+      return mobilePeriods[idx];
+    });
+  };
+
+  const visiblePeriods = getVisiblePeriods(selectedPeriod);
+
+  // Swipe Handlers
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Next period
+      const currentIndex = mobilePeriods.indexOf(selectedPeriod);
+      const nextIndex = (currentIndex + 1) % mobilePeriods.length;
+      setSelectedPeriod(mobilePeriods[nextIndex]);
+    }
+    
+    if (isRightSwipe) {
+      // Prev period
+      const currentIndex = mobilePeriods.indexOf(selectedPeriod);
+      let prevIndex = (currentIndex - 1) % mobilePeriods.length;
+      if (prevIndex < 0) prevIndex += mobilePeriods.length;
+      setSelectedPeriod(mobilePeriods[prevIndex]);
+    }
+  };
+
   // If no subject selected, show cards
   if (!selectedSubject) {
     const filteredSubjects = SUBJECTS.filter(s => s.period === selectedPeriod);
 
     return (
       <div className="p-4 lg:p-10 max-w-6xl mx-auto">
-        {/* Period Selector Header */}
-        <div className="flex items-center justify-center gap-2 lg:gap-4 mb-8 lg:mb-12 flex-wrap">
-          {periods.slice(0, 8).map((p) => (
+        
+        {/* --- MOBILE PERIOD SELECTOR (Looping Carousel) --- */}
+        <div className="lg:hidden mb-8 relative">
+          <div 
+            className="flex items-center justify-between px-2 py-4 select-none touch-pan-y"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Left fade hint */}
+            <div className="text-gray-300 font-bold text-xs select-none">...</div>
+
+            {visiblePeriods.map((p, index) => {
+              // Index 2 is always the center (selected) one in our array of 5
+              const isCenter = index === 2;
+              const isFarEdge = index === 0 || index === 4;
+              
+              return (
+                <button
+                  key={`mobile-period-${p}`}
+                  onClick={() => setSelectedPeriod(p)}
+                  className={`
+                    rounded-full flex items-center justify-center font-bold transition-all duration-300
+                    ${isCenter 
+                      ? 'w-14 h-14 bg-slate-800 text-white shadow-xl scale-110 z-10 text-xl' 
+                      : 'w-10 h-10 bg-white text-gray-400 border border-gray-100'
+                    }
+                    ${!isCenter && !isFarEdge ? 'scale-90 opacity-80' : ''}
+                    ${isFarEdge ? 'scale-75 opacity-40' : ''}
+                  `}
+                >
+                  {p}º
+                </button>
+              );
+            })}
+
+            {/* Right fade hint */}
+            <div className="text-gray-300 font-bold text-xs select-none">...</div>
+          </div>
+          
+          <p className="text-center text-xs text-gray-400 mt-[-5px] font-medium">
+            Deslize para ver mais
+          </p>
+        </div>
+
+        {/* --- DESKTOP PERIOD SELECTOR (Standard Grid/Flex) --- */}
+        <div className="hidden lg:flex items-center justify-center gap-4 mb-12 flex-wrap">
+          {allPeriods.slice(0, 8).map((p) => (
             <button
               key={p}
               onClick={() => setSelectedPeriod(p)}
-              className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-sm lg:text-lg font-bold transition-all ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
                 selectedPeriod === p
                   ? 'bg-slate-800 text-white shadow-lg scale-110'
                   : 'bg-white text-gray-400 border-2 border-gray-200 hover:border-slate-800 hover:text-slate-800'

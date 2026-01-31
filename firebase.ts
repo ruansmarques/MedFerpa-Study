@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Configuração do Firebase do projeto "ub-medcenter"
 const firebaseConfig = {
@@ -18,4 +19,7 @@ const app = initializeApp(firebaseConfig);
 // Inicializa e exporta o Banco de Dados (Firestore)
 const db = getFirestore(app);
 
-export { db };
+// Inicializa e exporta o Storage (Arquivos)
+const storage = getStorage(app);
+
+export { db, storage };

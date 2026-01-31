@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { LIBRARY_BOOKS } from '../constants';
 import { IconBook } from './Icons';
+import { storage } from '../firebase';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 const LibraryView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [loadingBookId, setLoadingBookId] = useState<string | null>(null);
 
   // Sort books: Author (A-Z) -> Title (A-Z)
   const sortedBooks = [...LIBRARY_BOOKS].sort((a, b) => {
@@ -25,10 +28,22 @@ const LibraryView: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDownload = (fileName: string) => {
-    // Construct the path to the PDF
-    const url = `/materials/books/${fileName}`;
-    window.open(url, '_blank');
+  const handleDownload = async (bookId: string, fileName: string) => {
+    setLoadingBookId(bookId);
+    
+    // Structure: materials/books/FileName.pdf
+    const storagePath = `materials/books/${fileName}`;
+
+    try {
+      const fileRef = ref(storage, storagePath);
+      const url = await getDownloadURL(fileRef);
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error("Erro ao buscar livro:", error);
+      alert(`Livro não encontrado no servidor.\nCaminho procurado: ${storagePath}\n\nVerifique se o arquivo foi enviado para o Storage.`);
+    } finally {
+      setLoadingBookId(null);
+    }
   };
 
   return (
@@ -94,15 +109,29 @@ const LibraryView: React.FC = () => {
 
               <div className="mt-auto">
                 <button 
-                  onClick={() => handleDownload(book.fileName)}
-                  className="w-full py-3 bg-slate-50 text-slate-700 font-bold rounded-xl hover:bg-slate-800 hover:text-white transition-all flex items-center justify-center gap-2 group-hover:bg-blue-600 group-hover:text-white"
+                  onClick={() => handleDownload(book.id, book.fileName)}
+                  disabled={loadingBookId === book.id}
+                  className={`w-full py-3 font-bold rounded-xl transition-all flex items-center justify-center gap-2 
+                    ${loadingBookId === book.id 
+                      ? 'bg-gray-100 text-gray-400 cursor-wait' 
+                      : 'bg-slate-50 text-slate-700 hover:bg-slate-800 hover:text-white group-hover:bg-blue-600 group-hover:text-white'
+                    }`}
                 >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 12L12 16L16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M20 20H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Baixar PDF
+                  {loadingBookId === book.id ? (
+                    <span className="flex items-center gap-2">
+                       <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                       Carregando...
+                    </span>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M8 12L12 16L16 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M20 20H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Baixar PDF
+                    </>
+                  )}
                 </button>
               </div>
             </div>

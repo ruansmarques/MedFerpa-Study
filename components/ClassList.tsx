@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled } from './Icons';
+import { storage } from '../firebase';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 interface ClassListProps {
   currentUser: User;
@@ -149,10 +151,14 @@ const LessonRow: React.FC<{
   onToggleComplete: () => void;
 }> = ({ lesson, subjectFolderName, isCompleted, onToggleComplete }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
 
-  const openPdf = (type: 'slide' | 'resumo') => {
-    // Logic matches the "Drive" structure requested
-    const basePath = '/materials';
+  const openPdf = async (type: 'slide' | 'resumo') => {
+    setIsLoadingFile(true);
+    // Logic matches the "Drive" structure, now on Firebase Storage
+    // Structure: materials/subjectFolder/[category]/[slides|resumos]/Title.pdf
+    
+    const basePath = 'materials';
     const subjectPath = subjectFolderName || 'default';
     
     // Normalize category
@@ -160,18 +166,31 @@ const LessonRow: React.FC<{
       ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
       : '';
     
-    const typeFolder = type === 'slide' ? 'Slides' : 'Resumos';
+    // ATENÇÃO: Mudança para minúsculo para bater com o Firebase Storage
+    const typeFolder = type === 'slide' ? 'slides' : 'resumos';
     const fileName = `${lesson.title}.pdf`;
 
-    // Construct URL parts
+    // Construct Path
     const parts = [basePath, subjectPath];
     if (categoryPath) parts.push(categoryPath);
     parts.push(typeFolder);
     parts.push(fileName);
     
-    const url = parts.join('/');
+    const storagePath = parts.join('/');
     
-    window.open(url, '_blank');
+    try {
+      // Create a reference to the file
+      const fileRef = ref(storage, storagePath);
+      // Get the download URL
+      const url = await getDownloadURL(fileRef);
+      // Open in new tab
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error("Erro ao buscar arquivo:", error);
+      alert(`Arquivo não encontrado no servidor.\nCaminho procurado: ${storagePath}\n\nVerifique se o arquivo foi enviado para o Storage e se a pasta é 'slides' ou 'resumos' (minúsculo).`);
+    } finally {
+      setIsLoadingFile(false);
+    }
   };
 
   return (
@@ -198,10 +217,20 @@ const LessonRow: React.FC<{
           <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
           
           {/* 2nd Icon: Presentation - Opens Slide PDF */}
-          <ActionButton icon={IconPresentation} onClick={() => openPdf('slide')} tooltip="Baixar Slides" />
+          <ActionButton 
+            icon={IconPresentation} 
+            onClick={() => openPdf('slide')} 
+            tooltip={isLoadingFile ? "Buscando..." : "Baixar Slides"} 
+            disabled={isLoadingFile}
+          />
           
           {/* 3rd Icon: Book - Opens Summary PDF */}
-          <ActionButton icon={IconBook} onClick={() => openPdf('resumo')} tooltip="Baixar Resumo" />
+          <ActionButton 
+            icon={IconBook} 
+            onClick={() => openPdf('resumo')} 
+            tooltip={isLoadingFile ? "Buscando..." : "Baixar Resumo"} 
+            disabled={isLoadingFile}
+          />
           
           <div className="h-6 w-px bg-gray-300 mx-1 hidden lg:block"></div>
           
@@ -246,13 +275,18 @@ const LessonRow: React.FC<{
   );
 };
 
-const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string }> = ({ icon: Icon, onClick, tooltip }) => (
+const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string; disabled?: boolean }> = ({ icon: Icon, onClick, tooltip, disabled }) => (
   <button 
     onClick={(e) => {
       e.stopPropagation();
-      onClick();
+      if (!disabled) onClick();
     }}
-    className="p-1.5 lg:p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+    disabled={disabled}
+    className={`p-1.5 lg:p-2 rounded-lg transition-colors ${
+      disabled 
+      ? 'text-gray-300 cursor-wait' 
+      : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50'
+    }`}
     title={tooltip}
   >
     <Icon className="w-6 h-6 lg:w-7 lg:h-7" />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
-import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled } from './Icons';
+import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff } from './Icons';
 import { storage } from '../firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 
@@ -144,6 +144,59 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
   );
 };
 
+// --- Custom Player Component for Better UX & avoiding Error 153 ---
+const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }> = ({ videoId, title, index }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  if (isPlaying) {
+    return (
+      <div className="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-black relative">
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+          title={`${title} - Part ${index + 1}`}
+          frameBorder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+          className="absolute inset-0 w-full h-full"
+        ></iframe>
+      </div>
+    );
+  }
+
+  return (
+    <div 
+      className="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-slate-900 relative group cursor-pointer"
+      onClick={() => setIsPlaying(true)}
+    >
+      {/* Thumbnail Layer */}
+      <img 
+        src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} 
+        alt={`Thumbnail ${title}`}
+        className="w-full h-full object-cover opacity-90 group-hover:opacity-75 transition-all duration-300"
+        onError={(e) => {
+          // Fallback to hqdefault if maxres doesn't exist
+          (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        }}
+      />
+      
+      {/* Play Button Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-16 h-16 lg:w-20 lg:h-20 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300 ring-4 ring-blue-600/30">
+          <IconPlay className="w-8 h-8 lg:w-10 lg:h-10 ml-1" />
+        </div>
+      </div>
+
+      {/* Label Overlay */}
+      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-medium border border-white/10">
+        Clique para assistir
+      </div>
+    </div>
+  );
+};
+
 const LessonRow: React.FC<{ 
   lesson: Lesson; 
   subjectFolderName?: string;
@@ -152,11 +205,12 @@ const LessonRow: React.FC<{
 }> = ({ lesson, subjectFolderName, isCompleted, onToggleComplete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
+  
+  // Check if lesson has valid video IDs
+  const hasVideos = lesson.youtubeIds && lesson.youtubeIds.length > 0 && lesson.youtubeIds[0] !== '';
 
   const openPdf = async (type: 'slide' | 'resumo') => {
     setIsLoadingFile(true);
-    // Logic matches the "Drive" structure, now on Firebase Storage
-    // Structure: materials/subjectFolder/[category]/[slides|resumos]/Title.pdf
     
     const basePath = 'materials';
     const subjectPath = subjectFolderName || 'default';
@@ -166,7 +220,6 @@ const LessonRow: React.FC<{
       ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
       : '';
     
-    // ATENÇÃO: Mudança para minúsculo para bater com o Firebase Storage
     const typeFolder = type === 'slide' ? 'slides' : 'resumos';
     const fileName = `${lesson.title}.pdf`;
 
@@ -179,11 +232,8 @@ const LessonRow: React.FC<{
     const storagePath = parts.join('/');
     
     try {
-      // Create a reference to the file
       const fileRef = ref(storage, storagePath);
-      // Get the download URL
       const url = await getDownloadURL(fileRef);
-      // Open in new tab
       window.open(url, '_blank');
     } catch (error) {
       console.error("Erro ao buscar arquivo:", error);
@@ -196,23 +246,23 @@ const LessonRow: React.FC<{
   return (
     <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white border-blue-200 shadow-md' : 'bg-slate-100 border-transparent hover:bg-white hover:shadow-sm'}`}>
       
-      {/* Header Row */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 px-4 lg:px-6 gap-3 lg:gap-0">
+      {/* Header Row - Updated to be Flex Row on ALL screens (centralized) */}
+      <div className="flex flex-row items-center justify-between p-3 lg:p-4 px-4 lg:px-6 gap-2 lg:gap-4">
         <div 
-          className="flex items-center gap-3 lg:gap-4 flex-1 cursor-pointer select-none w-full"
+          className="flex items-center gap-2 lg:gap-4 flex-1 cursor-pointer select-none min-w-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <div className={`transition-transform duration-300 text-slate-400 ${isOpen ? 'rotate-180 text-blue-600' : ''}`}>
+          <div className={`transition-transform duration-300 text-slate-400 flex-shrink-0 ${isOpen ? 'rotate-180 text-blue-600' : ''}`}>
             <IconChevronDown className="w-5 h-5 lg:w-6 lg:h-6" />
           </div>
-          <div className="flex flex-col pr-2">
+          <div className="flex flex-col pr-2 min-w-0">
             <span className={`font-semibold text-sm lg:text-lg leading-tight ${isOpen ? 'text-blue-700' : 'text-slate-700'}`}>
               {lesson.title}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end lg:self-auto w-full lg:w-auto justify-end lg:justify-start pl-8 lg:pl-0">
+        <div className="flex items-center gap-1 lg:gap-2 flex-shrink-0">
           {/* 1st Icon: Play - Toggles Video */}
           <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
           
@@ -239,7 +289,7 @@ const LessonRow: React.FC<{
               e.stopPropagation();
               onToggleComplete();
             }}
-            className={`p-2 rounded-lg transition-all ${
+            className={`p-1.5 lg:p-2 rounded-lg transition-all ${
               isCompleted 
                 ? 'text-emerald-500 bg-emerald-50 hover:bg-emerald-100' 
                 : 'text-gray-400 hover:text-emerald-500 hover:bg-gray-200'
@@ -251,22 +301,41 @@ const LessonRow: React.FC<{
         </div>
       </div>
 
-      {/* Accordion Content */}
+      {/* Accordion Content (Videos) */}
       {isOpen && (
         <div className="p-4 lg:p-6 pt-0 border-t border-blue-50 bg-blue-50/30">
-          <div className="mt-4 aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-black">
-            <iframe 
-              width="100%" 
-              height="100%" 
-              src={`https://www.youtube.com/embed/${lesson.youtubeId}?autoplay=1`} 
-              title={lesson.title} 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-            ></iframe>
+          <div className="flex flex-col gap-6 mt-4">
+            {hasVideos ? (
+              lesson.youtubeIds.map((videoId, index) => (
+                <div key={videoId} className="w-full">
+                  {/* Show Part Label if more than 1 video */}
+                  {lesson.youtubeIds.length > 1 && (
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        PARTE {index + 1}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <YouTubePlayer videoId={videoId} title={lesson.title} index={index} />
+                </div>
+              ))
+            ) : (
+              // Clean Placeholder Design
+              <div className="w-full aspect-video rounded-xl border-2 border-dashed border-blue-300 bg-white flex flex-col items-center justify-center p-8 text-center select-none opacity-80 hover:opacity-100 transition-opacity">
+                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                    <IconVideoOff className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-600 mb-1">Vídeo não disponível</h3>
+                  <p className="text-slate-400 text-sm max-w-md">
+                    Esta aula não possui gravação. Por favor, utilize os slides e resumos disponíveis acima para seus estudos.
+                  </p>
+              </div>
+            )}
           </div>
-          <div className="mt-4 flex flex-col lg:flex-row justify-between text-xs lg:text-sm text-gray-500 gap-2">
-             <span>Duração: {lesson.duration}</span>
+
+          <div className="mt-4 flex flex-col lg:flex-row justify-between text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
+             <span>Duração total: {lesson.duration}</span>
              <span>ID: {lesson.id}</span>
           </div>
         </div>

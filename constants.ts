@@ -300,10 +300,10 @@ export const LESSONS: Lesson[] = [
   { id: 'subj-1', subjectId: 'subj-saude', title: 'AULA 01 - A Subjetividade e o Processo Saúde Doença', youtubeId: 'g_80a3_N3bM', duration: '45 min' },
   { id: 'subj-2', subjectId: 'subj-saude', title: 'AULA 02 - Modo Hegemônico de Produção de Cuidado', youtubeId: 'L-G7L6qE3b8', duration: '50 min' },
   { id: 'subj-3', subjectId: 'subj-saude', title: 'AULA 03 - Introdução a Práticas Integrativas e Complementares - PICs', youtubeId: 'abc123xyz', duration: '55 min' },
-  { id: 'subj-4', subjectId: 'subj-saude', title: 'AULA 04 - Direitos e deveres do usuário', youtubeId: 'def456uvw', duration: '40 min' },
+  { id: 'subj-4', subjectId: 'subj-saude', title: 'AULA 04 - Direitos e Deveres do usuário da Saúde', youtubeId: 'def456uvw', duration: '40 min' },
   { id: 'subj-5', subjectId: 'subj-saude', title: 'AULA 05 - Tecnologias dura dura leve e leve', youtubeId: 'ghi789rst', duration: '60 min' },
   { id: 'subj-6', subjectId: 'subj-saude', title: 'AULA 06 - Etnografia', youtubeId: 'jkl012nop', duration: '50 min' },
-  { id: 'subj-7', subjectId: 'subj-saude', title: 'AULA 07 - Politica Nacional de Humanização - PNH', youtubeId: 'mno345qrs', duration: '55 min' },
+  { id: 'subj-7', subjectId: 'subj-saude', title: 'AULA 07 - Política Nacional de Humanização - PNH', youtubeId: 'mno345qrs', duration: '55 min' },
 
   // --- PROCESSOS PATOLÓGICOS (Categorized) ---
   
@@ -318,13 +318,13 @@ export const LESSONS: Lesson[] = [
   { id: 'imuno-8', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 08 - Mecanismos Efetores da Imunidade Humoral', youtubeId: 'imuno_v8', duration: '50 min' },
   { id: 'imuno-9', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 09 - Imunidade Especializada e Tecidos Imunologicamente Privilegiados', youtubeId: 'imuno_v9', duration: '60 min' },
   { id: 'imuno-10', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 10 - Tolerância Imunológica e Autoimunidade', youtubeId: 'imuno_v10', duration: '55 min' },
-  { id: 'imuno-11', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 11 - Resposta Imune Cotra Micro-organismos e Vacinas', youtubeId: 'imuno_v11', duration: '65 min' },
+  { id: 'imuno-11', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 11 - Resposta Imune Contra Micro-organismos e Vacinas', youtubeId: 'imuno_v11', duration: '65 min' },
   { id: 'imuno-12', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 12 - Reações de Hipersensibilidade e Alergia', youtubeId: 'imuno_v12', duration: '50 min' },
   { id: 'imuno-13', subjectId: 'proc-patol', category: 'Imunologia', title: 'AULA 13 - Imunologia do Transplante', youtubeId: 'imuno_v13', duration: '45 min' },
 
   // Microbiologia
   { id: 'micro-1', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 01 - Introdução a microbiologia', youtubeId: 'micro_v1', duration: '40 min' },
-  { id: 'micro-2', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 02 - bacteriologia', youtubeId: 'micro_v2', duration: '55 min' },
+  { id: 'micro-2', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 02 - Bacteriologia', youtubeId: 'micro_v2', duration: '55 min' },
   { id: 'micro-3', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 03 - Controle do Crescimento Microbiano 1', youtubeId: 'micro_v3', duration: '50 min' },
   { id: 'micro-4', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 04 - Controle do Crescimento Microbiano 2', youtubeId: 'micro_v4', duration: '45 min' },
   { id: 'micro-5', subjectId: 'proc-patol', category: 'Microbiologia', title: 'AULA 05 - Genética bacteriana', youtubeId: 'micro_v5', duration: '60 min' },
@@ -373,7 +373,7 @@ export const LESSONS: Lesson[] = [
   { id: 'semio-10', subjectId: 'semio-basica', title: 'AULA 10 - Ginecologia e Obstetrícia', youtubeId: 'semio_v10', duration: '60 min' },
 
   // Bases da Farmacologia
-  { id: 'bf-1', subjectId: 'base-farma', title: 'AULA 01 - Historia da Farmacologia', youtubeId: 'bf_v1', duration: '40 min' },
+  { id: 'bf-1', subjectId: 'base-farma', title: 'AULA 01 - História da Farmacologia', youtubeId: 'bf_v1', duration: '40 min' },
   { id: 'bf-2', subjectId: 'base-farma', title: 'AULA 02 - Fundamentos em Bases Farmacológicas', youtubeId: 'bf_v2', duration: '55 min' },
   { id: 'bf-3', subjectId: 'base-farma', title: 'AULA 03 - Antagonistas Muscarínicos', youtubeId: 'bf_v3', duration: '50 min' },
   { id: 'bf-4', subjectId: 'base-farma', title: 'AULA 04 - Antagonistas Muscarínicos', youtubeId: 'bf_v4', duration: '45 min' },
@@ -385,10 +385,10 @@ export const LESSONS: Lesson[] = [
   // Atendimento Pré-Hospitalar
   { id: 'aph-1', subjectId: 'aph', title: 'AULA 01 - Atendimento pré-hospitalar e hospitalar', youtubeId: 'aph_v1', duration: '45 min' },
   { id: 'aph-2', subjectId: 'aph', title: 'AULA 02 - Suporte Básico de Vida ao Adulto', youtubeId: 'aph_v2', duration: '50 min' },
-  { id: 'aph-3', subjectId: 'aph', title: 'AULA 03 - OVACE adulto (Obstrução de Via Aérea)', youtubeId: 'aph_v3', duration: '40 min' },
-  { id: 'aph-4', subjectId: 'aph', title: 'AULA 04 - SBV à Criança + OVACE pediátrico', youtubeId: 'aph_v4', duration: '55 min' },
+  { id: 'aph-3', subjectId: 'aph', title: 'AULA 03 - OVACE adulto (Obstrução de Via Aérea por Corpo Estranho)', youtubeId: 'aph_v3', duration: '40 min' },
+  { id: 'aph-4', subjectId: 'aph', title: 'AULA 04 - Suporte Básico de Vida à Criança + OVACE pediátrico', youtubeId: 'aph_v4', duration: '55 min' },
   { id: 'aph-5', subjectId: 'aph', title: 'AULA 05 - Atendimento Inicial ao Trauma', youtubeId: 'aph_v5', duration: '60 min' },
-  { id: 'aph-6', subjectId: 'aph', title: 'AULA 06 - Síncope e Convulsão no pré-hospitalar', youtubeId: 'aph_v6', duration: '50 min' },
+  { id: 'aph-6', subjectId: 'aph', title: 'AULA 06 - Síncope e Convulsão no atendimento pré-hospitalar', youtubeId: 'aph_v6', duration: '50 min' },
 
   // --- 5º PERÍODO ---
 

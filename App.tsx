@@ -8,8 +8,9 @@ import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
 import { User, ViewState } from './types';
 import { IconMenu } from './components/Icons';
-import { db } from './firebase';
+import { db, storage } from './firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 const App: React.FC = () => {
   // Inicializa o estado buscando do LocalStorage para persistir sessão no F5
@@ -25,6 +26,31 @@ const App: React.FC = () => {
 
   const [currentView, setCurrentView] = useState<ViewState>('classes');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Efeito para carregar o Favicon do Firebase Storage
+  useEffect(() => {
+    const setFavicon = async () => {
+      try {
+        // Busca a URL da imagem 'fav-icon.png' na pasta 'assets' do Storage
+        const url = await getDownloadURL(ref(storage, 'assets/fav-icon.png'));
+        
+        // Busca a tag link existente ou cria uma nova
+        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        
+        // Atualiza o href com a URL do Storage
+        link.href = url;
+      } catch (error) {
+        console.error("Erro ao carregar favicon do Storage:", error);
+      }
+    };
+
+    setFavicon();
+  }, []);
 
   // Efeito para manter o LocalStorage sincronizado com o estado atual (ex: atualizações de progresso)
   useEffect(() => {

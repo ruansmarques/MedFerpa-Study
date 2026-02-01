@@ -18,7 +18,7 @@ export interface Lesson {
   id: string;
   subjectId: string;
   title: string;
-  youtubeId: string;
+  youtubeIds: string[]; // Array of YouTube IDs. Empty array means no video available.
   duration: string;
   category?: string; // For subjects with sub-modules (e.g. Processos Patológicos)
 }

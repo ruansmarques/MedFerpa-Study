@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff } from './Icons';
@@ -249,22 +249,46 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
   );
 };
 
-// --- Custom Player Component for Better UX & avoiding Error 153 ---
+// --- Custom Player Component with SrcDoc to fix Error 153 ---
 const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }> = ({ videoId, title, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   if (isPlaying) {
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    
+    // Create a sandboxed HTML document for the iframe
+    // This removes the referrer by loading the player inside a "blank" document
+    const srcDocHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          * { padding: 0; margin: 0; overflow: hidden; }
+          body, html { width: 100%; height: 100%; background: #000; }
+          iframe { width: 100%; height: 100%; border: 0; }
+        </style>
+      </head>
+      <body>
+        <iframe 
+          src="${embedUrl}" 
+          width="100%" 
+          height="100%" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen
+        ></iframe>
+      </body>
+      </html>
+    `;
+
     return (
       <div className="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-black relative">
         <iframe 
           width="100%" 
           height="100%" 
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
           title={`${title} - Part ${index + 1}`}
+          srcDoc={srcDocHtml}
           frameBorder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
           className="absolute inset-0 w-full h-full"
         ></iframe>
       </div>

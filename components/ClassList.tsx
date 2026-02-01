@@ -249,7 +249,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
   );
 };
 
-// --- Custom Player Component for Better UX & avoiding Error 153 ---
+// --- Custom Player Component with Nocookie + No-Referrer to fix Error 153 & Bot Detection ---
 const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }> = ({ videoId, title, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -259,11 +259,11 @@ const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }>
         <iframe 
           width="100%" 
           height="100%" 
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
           title={`${title} - Part ${index + 1}`}
           frameBorder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          referrerPolicy="strict-origin-when-cross-origin"
+          referrerPolicy="no-referrer"
           allowFullScreen
           className="absolute inset-0 w-full h-full"
         ></iframe>

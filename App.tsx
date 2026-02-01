@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import ClassList from './components/ClassList';
@@ -12,18 +12,39 @@ import { db } from './firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 const App: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // Inicializa o estado buscando do LocalStorage para persistir sessão no F5
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    try {
+      const savedUser = localStorage.getItem('medferpa_user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error("Erro ao recuperar sessão:", error);
+      return null;
+    }
+  });
+
   const [currentView, setCurrentView] = useState<ViewState>('classes');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Efeito para manter o LocalStorage sincronizado com o estado atual (ex: atualizações de progresso)
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('medferpa_user', JSON.stringify(currentUser));
+    }
+  }, [currentUser]);
+
   // Handle Login
   const handleLogin = (user: User) => {
+    // Salva no storage imediatamente ao logar
+    localStorage.setItem('medferpa_user', JSON.stringify(user));
     setCurrentUser(user);
     setCurrentView('classes');
   };
 
   // Handle Logout
   const handleLogout = () => {
+    // Remove do storage para efetivar o logout
+    localStorage.removeItem('medferpa_user');
     setCurrentUser(null);
     setCurrentView('login');
     setIsMobileMenuOpen(false);
@@ -42,6 +63,8 @@ const App: React.FC = () => {
     } else {
       newCompletedList = [...currentUser.completedLessons, lessonId];
     }
+    
+    // A atualização do estado disparará o useEffect acima, atualizando também o LocalStorage
     const updatedUser = { ...currentUser, completedLessons: newCompletedList };
     setCurrentUser(updatedUser);
 

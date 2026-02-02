@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { SUBJECTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX } from './Icons';
-
-// Hash SHA-256 exato para "batdoc"
-const ACCESS_HASH = "6f0c436329471168132943486183063853120668045610813735071854580236";
 
 interface AdminDashboardProps {
   onExit: () => void;
@@ -31,35 +28,33 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   // UI State
   const [loading, setLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Função auxiliar para gerar o Hash
-  const digestMessage = async (message: string) => {
-    const msgBuffer = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-  };
-
+  // Lógica de Login via Firestore (Igual ao App Principal)
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthLoading(true);
     setError('');
 
     try {
-      // Aguarda a geração do hash antes de comparar
-      const hashHex = await digestMessage(password);
+      // Busca na coleção 'admins' se existe algum documento com a chave 'accessKey' igual à senha digitada
+      const adminsRef = collection(db, "admins");
+      const q = query(adminsRef, where("accessKey", "==", password.trim()));
+      const querySnapshot = await getDocs(q);
 
-      if (hashHex === ACCESS_HASH) {
+      if (!querySnapshot.empty) {
         setIsAuthenticated(true);
         setError('');
       } else {
-        setError('Acesso negado.');
-        setPassword(''); // Limpa o campo se errar
+        setError('Credencial administrativa inválida.');
+        setPassword('');
       }
     } catch (err) {
-      console.error("Erro na validação de segurança:", err);
-      setError('Erro ao processar senha.');
+      console.error("Erro na autenticação:", err);
+      setError('Erro de conexão com o servidor.');
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -147,20 +142,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
           <div className="mb-6">
             <h1 className="text-xl font-bold text-gray-800">Área Administrativa</h1>
-            <p className="text-xs text-gray-400 mt-1">Acesso Restrito</p>
+            <p className="text-xs text-gray-400 mt-1">Validação via Servidor</p>
           </div>
           <form onSubmit={handleLogin}>
              <input 
                type="password" 
-               placeholder="PIN de Acesso"
-               className="w-full text-center text-2xl tracking-widest px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-slate-800 outline-none"
+               placeholder="Chave de Acesso"
+               className={`w-full text-center text-2xl tracking-widest px-4 py-3 border rounded-lg mb-4 focus:ring-2 outline-none transition-colors
+                 ${error ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-slate-800'}
+                 ${authLoading ? 'opacity-50 cursor-wait' : ''}
+               `}
                value={password}
                onChange={(e) => setPassword(e.target.value)}
+               disabled={authLoading}
              />
-             <button type="submit" className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition">
-               Entrar
+             <button 
+               type="submit" 
+               disabled={authLoading}
+               className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition flex items-center justify-center gap-2"
+             >
+               {authLoading ? 'Verificando...' : 'Entrar'}
              </button>
-             {error && <p className="text-red-500 text-sm mt-4 font-medium">{error}</p>}
+             {error && <p className="text-red-500 text-sm mt-4 font-medium animate-pulse">{error}</p>}
           </form>
           <button onClick={onExit} className="mt-6 text-gray-400 text-sm hover:text-gray-600 underline">Voltar ao site</button>
         </div>

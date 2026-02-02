@@ -7,6 +7,7 @@ import RankView from './components/RankView';
 import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
 import ScheduleView from './components/ScheduleView';
+import AdminDashboard from './components/AdminDashboard';
 import { User, ViewState } from './types';
 import { IconMenu } from './components/Icons';
 import { db, storage } from './firebase';
@@ -35,111 +36,87 @@ const App: React.FC = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Check URL for admin access on load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('view') === 'admin') {
+      setCurrentView('admin');
+    }
+  }, []);
+
   // Efeito para carregar o Favicon do Firebase Storage
   useEffect(() => {
     const setFavicon = async () => {
       try {
-        // Busca a URL da imagem 'fav-icon.png' na pasta 'assets' do Storage
         const url = await getDownloadURL(ref(storage, 'assets/fav-icon.png'));
-        
-        // Busca a tag link existente ou cria uma nova
         let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
         if (!link) {
           link = document.createElement('link');
           link.rel = 'icon';
           document.getElementsByTagName('head')[0].appendChild(link);
         }
-        
-        // Atualiza o href com a URL do Storage
         link.href = url;
       } catch (error) {
         console.error("Erro ao carregar favicon do Storage:", error);
       }
     };
-
     setFavicon();
   }, []);
 
-  // Efeito para manter o LocalStorage sincronizado com o estado atual (ex: atualizações de progresso)
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('medferpa_user', JSON.stringify(currentUser));
     }
   }, [currentUser]);
 
-  // Handle Login
   const handleLogin = (user: User) => {
-    // Salva no storage imediatamente ao logar
     localStorage.setItem('medferpa_user', JSON.stringify(user));
     setCurrentUser(user);
     setCurrentView('classes');
   };
 
-  // Handle Logout
   const handleLogout = () => {
-    // Remove do storage para efetivar o logout
     localStorage.removeItem('medferpa_user');
     setCurrentUser(null);
     setCurrentView('login');
     setIsMobileMenuOpen(false);
   };
 
-  // Handle Lesson Completion Logic (Firestore)
   const handleUpdateProgress = async (lessonId: string) => {
     if (!currentUser) return;
-
     const isCompleted = currentUser.completedLessons.includes(lessonId);
-    
-    // 1. Optimistic UI Update (Update local state immediately)
     let newCompletedList: string[];
     if (isCompleted) {
       newCompletedList = currentUser.completedLessons.filter(id => id !== lessonId);
     } else {
       newCompletedList = [...currentUser.completedLessons, lessonId];
     }
-    
-    // A atualização do estado disparará o useEffect acima, atualizando também o LocalStorage
     const updatedUser = { ...currentUser, completedLessons: newCompletedList };
     setCurrentUser(updatedUser);
-
-    // 2. Firestore Update
     try {
       const userRef = doc(db, "users", currentUser.ra);
-      
       if (isCompleted) {
-        await updateDoc(userRef, {
-          completedLessons: arrayRemove(lessonId)
-        });
+        await updateDoc(userRef, { completedLessons: arrayRemove(lessonId) });
       } else {
-        await updateDoc(userRef, {
-          completedLessons: arrayUnion(lessonId)
-        });
+        await updateDoc(userRef, { completedLessons: arrayUnion(lessonId) });
       }
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
     }
   };
 
-  // Handle Name Update (Firestore)
   const handleUpdateName = async (newName: string) => {
     if (!currentUser) return;
-
-    // 1. Optimistic UI
     const updatedUser = { ...currentUser, name: newName };
     setCurrentUser(updatedUser);
-
-    // 2. Firestore Update
     try {
       const userRef = doc(db, "users", currentUser.ra);
-      await updateDoc(userRef, {
-        name: newName
-      });
+      await updateDoc(userRef, { name: newName });
     } catch (error) {
        console.error("Erro ao salvar nome:", error);
     }
   };
 
-  // Navigation Logic
   const navigateToClasses = (subjectId?: string) => {
       setViewParams({ targetSubjectId: subjectId });
       setCurrentView('classes');
@@ -150,18 +127,27 @@ const App: React.FC = () => {
       setCurrentView('schedule');
   };
 
-  // View Router
   const renderContent = () => {
+    // Admin bypasses login check
+    if (currentView === 'admin') {
+      return <AdminDashboard onExit={() => {
+        window.history.pushState({}, '', window.location.pathname); // Clear URL param
+        setCurrentView(currentUser ? 'classes' : 'login');
+      }} />;
+    }
+
+    if (!currentUser) return <Login onLogin={handleLogin} />;
+
     switch (currentView) {
       case 'classes':
-        return currentUser ? (
+        return (
           <ClassList 
             currentUser={currentUser} 
             onUpdateProgress={handleUpdateProgress} 
             initialSubjectId={viewParams.targetSubjectId}
             onNavigateToSchedule={navigateToSchedule}
           />
-        ) : null;
+        );
       case 'schedule':
         return (
           <ScheduleView 
@@ -176,45 +162,39 @@ const App: React.FC = () => {
       case 'rank':
         return <RankView />;
       case 'profile':
-        return currentUser ? <ProfileView user={currentUser} onUpdateName={handleUpdateName} /> : null;
+        return <ProfileView user={currentUser} onUpdateName={handleUpdateName} />;
       default:
         return <div>Página não encontrada</div>;
     }
   };
 
-  if (!currentUser) {
-    return <Login onLogin={handleLogin} />;
-  }
-
   return (
     <div className="flex min-h-screen bg-gray-50">
+      {/* Conditionally render header/sidebar only if not in standalone admin view or if user is logged in */}
+      {currentView !== 'admin' && (
+        <>
+          <div className="lg:hidden fixed top-0 left-0 w-full bg-white z-30 shadow-sm px-4 py-3 flex items-center justify-between">
+             <div className="flex items-center gap-3">
+                <button onClick={() => setIsMobileMenuOpen(true)} className="text-slate-800 p-1">
+                  <IconMenu className="w-7 h-7" />
+                </button>
+                <h1 className="text-xl font-black text-slate-900 tracking-tight">MEDFERPA</h1>
+             </div>
+          </div>
+          <Sidebar 
+            currentView={currentView} 
+            onChangeView={(view) => {
+                setCurrentView(view);
+                setViewParams({}); 
+            }}
+            onLogout={handleLogout}
+            isOpen={isMobileMenuOpen}
+            onClose={() => setIsMobileMenuOpen(false)}
+          />
+        </>
+      )}
       
-      {/* Mobile/Tablet Header */}
-      <div className="lg:hidden fixed top-0 left-0 w-full bg-white z-30 shadow-sm px-4 py-3 flex items-center justify-between">
-         <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="text-slate-800 p-1"
-            >
-              <IconMenu className="w-7 h-7" />
-            </button>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">MEDFERPA</h1>
-         </div>
-      </div>
-
-      <Sidebar 
-        currentView={currentView} 
-        onChangeView={(view) => {
-            setCurrentView(view);
-            setViewParams({}); // Reset params on manual navigation
-        }}
-        onLogout={handleLogout}
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-      />
-      
-      {/* Main Content Area */}
-      <main className="flex-1 min-h-screen transition-all duration-300 pt-16 lg:pt-0 lg:ml-64 w-full lg:w-auto overflow-x-hidden relative">
+      <main className={`flex-1 min-h-screen transition-all duration-300 w-full ${currentView !== 'admin' ? 'pt-16 lg:pt-0 lg:ml-64 lg:w-auto' : ''} overflow-x-hidden relative`}>
         {renderContent()}
       </main>
     </div>

@@ -22,6 +22,10 @@ export interface Lesson {
   youtubeIds: string[]; // Array of YouTube IDs. Empty array means no video available.
   duration: string;
   category?: string; // For subjects with sub-modules (e.g. Processos Patológicos)
+  // New fields for dynamic content
+  slideUrl?: string;
+  summaryUrl?: string;
+  date?: string; // ISO Date string
 }
 
 export interface Exercise {
@@ -43,4 +47,4 @@ export interface Book {
   color: string;
 }
 
-export type ViewState = 'login' | 'classes' | 'schedule' | 'exercises' | 'library' | 'rank' | 'profile';
+export type ViewState = 'login' | 'classes' | 'schedule' | 'exercises' | 'library' | 'rank' | 'profile' | 'admin';

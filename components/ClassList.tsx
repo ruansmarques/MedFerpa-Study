@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
-import { storage } from '../firebase';
+import { db, storage } from '../firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
+import { collection, query, getDocs } from 'firebase/firestore';
 
 interface ClassListProps {
   currentUser: User;
@@ -18,6 +19,47 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   
   // State for sub-modules (e.g. for Processos Patológicos)
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
+
+  // Dynamic Lessons State (Merged Constants + Firestore)
+  const [allLessons, setAllLessons] = useState<Lesson[]>(LESSONS);
+  const [isLoadingLessons, setIsLoadingLessons] = useState(false);
+
+  // Fetch Lessons from Firestore
+  useEffect(() => {
+    const fetchLessons = async () => {
+      setIsLoadingLessons(true);
+      try {
+        const q = query(collection(db, "lessons"));
+        const querySnapshot = await getDocs(q);
+        const dbLessons: Lesson[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          dbLessons.push({
+            id: doc.id,
+            subjectId: data.subjectId,
+            title: data.title,
+            youtubeIds: data.youtubeIds || [],
+            duration: data.duration || '',
+            category: data.category,
+            slideUrl: data.slideUrl,
+            summaryUrl: data.summaryUrl,
+            date: data.date
+          });
+        });
+
+        // Merge: DB lessons first (newest), then Constants
+        // Note: Real production apps would likely replace constants entirely, but we merge here for hybrid support
+        setAllLessons([...dbLessons, ...LESSONS]);
+      } catch (error) {
+        console.error("Erro ao buscar aulas do banco:", error);
+      } finally {
+        setIsLoadingLessons(false);
+      }
+    };
+
+    fetchLessons();
+  }, []);
 
   // Handle deep linking from Schedule
   useEffect(() => {
@@ -53,16 +95,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   }, [selectedSubject]);
 
   // --- Mobile Carousel Logic ---
-  // Calculates the 5 visible items based on the selected one to create an infinite loop
   const getVisiblePeriods = (current: number) => {
     const count = mobilePeriods.length;
     const currentIndex = mobilePeriods.indexOf(current);
-    
-    // We need: current-2, current-1, current, current+1, current+2
     const offsets = [-2, -1, 0, 1, 2];
     
     return offsets.map(offset => {
-      // Modulo logic to handle wrapping (e.g., index -1 becomes 7)
       let idx = (currentIndex + offset) % count;
       if (idx < 0) idx += count;
       return mobilePeriods[idx];
@@ -70,8 +108,6 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   };
 
   const visiblePeriods = getVisiblePeriods(selectedPeriod);
-
-  // Swipe Handlers
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -90,14 +126,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      // Next period
       const currentIndex = mobilePeriods.indexOf(selectedPeriod);
       const nextIndex = (currentIndex + 1) % mobilePeriods.length;
       setSelectedPeriod(mobilePeriods[nextIndex]);
     }
     
     if (isRightSwipe) {
-      // Prev period
       const currentIndex = mobilePeriods.indexOf(selectedPeriod);
       let prevIndex = (currentIndex - 1) % mobilePeriods.length;
       if (prevIndex < 0) prevIndex += mobilePeriods.length;
@@ -120,14 +154,10 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            {/* Left fade hint */}
             <div className="text-gray-300 font-bold text-xs select-none">...</div>
-
             {visiblePeriods.map((p, index) => {
-              // Index 2 is always the center (selected) one in our array of 5
               const isCenter = index === 2;
               const isFarEdge = index === 0 || index === 4;
-              
               return (
                 <button
                   key={`mobile-period-${p}`}
@@ -146,17 +176,14 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                 </button>
               );
             })}
-
-            {/* Right fade hint */}
             <div className="text-gray-300 font-bold text-xs select-none">...</div>
           </div>
-          
           <p className="text-center text-xs text-gray-400 mt-[-5px] font-medium">
             Deslize para ver mais
           </p>
         </div>
 
-        {/* --- DESKTOP PERIOD SELECTOR (Standard Grid/Flex) --- */}
+        {/* --- DESKTOP PERIOD SELECTOR --- */}
         <div className="hidden lg:flex items-center justify-center gap-4 mb-12 flex-wrap">
           {allPeriods.slice(0, 8).map((p) => (
             <button
@@ -202,13 +229,16 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     );
   }
 
-  // Filter lessons for selected subject
-  let subjectLessons = LESSONS.filter(l => l.subjectId === selectedSubject.id);
+  // Filter lessons for selected subject using the combined list
+  let subjectLessons = allLessons.filter(l => l.subjectId === selectedSubject.id);
 
-  // If it's the special subject (Processos Patológicos), filter by category
+  // Filter by Category
   if (selectedSubject.id === specialSubjectId) {
     subjectLessons = subjectLessons.filter(l => l.category === selectedCategory);
   }
+
+  // Optional: Sort by date if available, or just rely on array order
+  // subjectLessons.sort((a, b) => (a.date && b.date) ? new Date(a.date).getTime() - new Date(b.date).getTime() : 0);
 
   return (
     <div className="p-4 lg:p-10 max-w-5xl mx-auto">
@@ -245,7 +275,9 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
       )}
 
       <div className="space-y-4 pb-10">
-        {subjectLessons.length > 0 ? (
+        {isLoadingLessons ? (
+           <div className="p-12 text-center text-gray-400">Carregando aulas...</div>
+        ) : subjectLessons.length > 0 ? (
           subjectLessons.map((lesson) => (
             <LessonRow 
               key={lesson.id} 
@@ -267,7 +299,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   );
 };
 
-// --- Custom Player Component with Nocookie + No-Referrer to fix Error 153 & Bot Detection ---
+// --- Custom Player Component ---
 const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }> = ({ videoId, title, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -294,27 +326,18 @@ const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }>
       className="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-slate-900 relative group cursor-pointer"
       onClick={() => setIsPlaying(true)}
     >
-      {/* Thumbnail Layer */}
       <img 
         src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`} 
         alt={`Thumbnail ${title}`}
         className="w-full h-full object-cover opacity-90 group-hover:opacity-75 transition-all duration-300"
         onError={(e) => {
-          // Fallback to hqdefault if maxres doesn't exist
           (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
         }}
       />
-      
-      {/* Play Button Overlay */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-16 h-16 lg:w-20 lg:h-20 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-300 ring-4 ring-blue-600/30">
           <IconPlay className="w-8 h-8 lg:w-10 lg:h-10 ml-1" />
         </div>
-      </div>
-
-      {/* Label Overlay */}
-      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-medium border border-white/10">
-        Clique para assistir
       </div>
     </div>
   );
@@ -330,24 +353,32 @@ const LessonRow: React.FC<{
   const [isOpen, setIsOpen] = useState(false);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
   
-  // Check if lesson has valid video IDs
   const hasVideos = lesson.youtubeIds && lesson.youtubeIds.length > 0 && lesson.youtubeIds[0] !== '';
 
   const openPdf = async (type: 'slide' | 'resumo') => {
     setIsLoadingFile(true);
     
+    // 1. Check if we have a direct URL (uploaded via Admin)
+    if (type === 'slide' && lesson.slideUrl) {
+       window.open(lesson.slideUrl, '_blank');
+       setIsLoadingFile(false);
+       return;
+    }
+    if (type === 'resumo' && lesson.summaryUrl) {
+       window.open(lesson.summaryUrl, '_blank');
+       setIsLoadingFile(false);
+       return;
+    }
+
+    // 2. Fallback to old path construction based on naming convention
     const basePath = 'materials';
     const subjectPath = subjectFolderName || 'default';
-    
-    // Normalize category
     const categoryPath = lesson.category 
       ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
       : '';
-    
     const typeFolder = type === 'slide' ? 'slides' : 'resumos';
     const fileName = `${lesson.title}.pdf`;
 
-    // Construct Path
     const parts = [basePath, subjectPath];
     if (categoryPath) parts.push(categoryPath);
     parts.push(typeFolder);
@@ -361,7 +392,7 @@ const LessonRow: React.FC<{
       window.open(url, '_blank');
     } catch (error) {
       console.error("Erro ao buscar arquivo:", error);
-      alert(`Arquivo não encontrado no servidor.\nCaminho procurado: ${storagePath}\n\nVerifique se o arquivo foi enviado para o Storage e se a pasta é 'slides' ou 'resumos' (minúsculo).`);
+      alert(`Arquivo não encontrado.\nTentamos abrir a URL direta ou o caminho: ${storagePath}`);
     } finally {
       setIsLoadingFile(false);
     }
@@ -369,8 +400,6 @@ const LessonRow: React.FC<{
 
   return (
     <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white border-blue-200 shadow-md' : 'bg-slate-100 border-transparent hover:bg-white hover:shadow-sm'}`}>
-      
-      {/* Header Row - Updated to be Flex Row on ALL screens (centralized) */}
       <div className="flex flex-row items-center justify-between p-3 lg:p-4 px-4 lg:px-6 gap-2 lg:gap-4">
         <div 
           className="flex items-center gap-2 lg:gap-4 flex-1 cursor-pointer select-none min-w-0"
@@ -387,27 +416,10 @@ const LessonRow: React.FC<{
         </div>
 
         <div className="flex items-center gap-1 lg:gap-2 flex-shrink-0">
-          {/* 1st Icon: Play - Toggles Video */}
           <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
-          
-          {/* 2nd Icon: Presentation - Opens Slide PDF */}
-          <ActionButton 
-            icon={IconPresentation} 
-            onClick={() => openPdf('slide')} 
-            tooltip={isLoadingFile ? "Buscando..." : "Baixar Slides"} 
-            disabled={isLoadingFile}
-          />
-          
-          {/* 3rd Icon: Book - Opens Summary PDF */}
-          <ActionButton 
-            icon={IconBook} 
-            onClick={() => openPdf('resumo')} 
-            tooltip={isLoadingFile ? "Buscando..." : "Baixar Resumo"} 
-            disabled={isLoadingFile}
-          />
-          
+          <ActionButton icon={IconPresentation} onClick={() => openPdf('slide')} tooltip="Baixar Slides" disabled={isLoadingFile} />
+          <ActionButton icon={IconBook} onClick={() => openPdf('resumo')} tooltip="Baixar Resumo" disabled={isLoadingFile} />
           <div className="h-6 w-px bg-gray-300 mx-1 hidden lg:block"></div>
-          
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -418,21 +430,18 @@ const LessonRow: React.FC<{
                 ? 'text-emerald-500 bg-emerald-50 hover:bg-emerald-100' 
                 : 'text-gray-400 hover:text-emerald-500 hover:bg-gray-200'
             }`}
-            title={isCompleted ? "Concluída" : "Marcar como concluída"}
           >
             {isCompleted ? <IconCheckFilled className="w-6 h-6 lg:w-7 lg:h-7" /> : <IconCheck className="w-6 h-6 lg:w-7 lg:h-7" />}
           </button>
         </div>
       </div>
 
-      {/* Accordion Content (Videos) */}
       {isOpen && (
         <div className="p-4 lg:p-6 pt-0 border-t border-blue-50 bg-blue-50/30">
           <div className="flex flex-col gap-6 mt-4">
             {hasVideos ? (
               lesson.youtubeIds.map((videoId, index) => (
                 <div key={videoId} className="w-full">
-                  {/* Show Part Label if more than 1 video */}
                   {lesson.youtubeIds.length > 1 && (
                     <div className="mb-2 flex items-center gap-2">
                       <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
@@ -440,12 +449,10 @@ const LessonRow: React.FC<{
                       </span>
                     </div>
                   )}
-                  
                   <YouTubePlayer videoId={videoId} title={lesson.title} index={index} />
                 </div>
               ))
             ) : (
-              // Clean Placeholder Design
               <div className="w-full aspect-video rounded-xl border-2 border-dashed border-blue-300 bg-white flex flex-col items-center justify-center p-8 text-center select-none opacity-80 hover:opacity-100 transition-opacity">
                   <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                     <IconVideoOff className="w-8 h-8 text-blue-400" />
@@ -457,14 +464,11 @@ const LessonRow: React.FC<{
               </div>
             )}
           </div>
-
+          
           <div className="mt-4 flex flex-col lg:flex-row justify-between items-center text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
              <div className="flex gap-4">
-                <span>Duração total: {lesson.duration}</span>
-                <span>ID: {lesson.id}</span>
+                {lesson.date && <span>Data: {new Date(lesson.date).toLocaleDateString('pt-BR')}</span>}
              </div>
-             
-             {/* Link to Schedule */}
              {onNavigateToSchedule && (
                 <button 
                   onClick={() => onNavigateToSchedule()} 

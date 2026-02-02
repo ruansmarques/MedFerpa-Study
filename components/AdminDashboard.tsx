@@ -5,8 +5,8 @@ import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX } from './Icons';
 
-// Hash SHA-256 for "batdoc"
-const ACCESS_HASH = "652c7dc687093b76d75896e38716382104085420230303d3d698066373851726";
+// Hash SHA-256 exato para "batdoc"
+const ACCESS_HASH = "6f0c436329471168132943486183063853120668045610813735071854580236";
 
 interface AdminDashboardProps {
   onExit: () => void;
@@ -33,19 +33,33 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simple client-side hash check
-    const msgBuffer = new TextEncoder().encode(password);
+  // Função auxiliar para gerar o Hash
+  const digestMessage = async (message: string) => {
+    const msgBuffer = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  };
 
-    if (hashHex === ACCESS_HASH) {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('Acesso negado.');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      // Aguarda a geração do hash antes de comparar
+      const hashHex = await digestMessage(password);
+
+      if (hashHex === ACCESS_HASH) {
+        setIsAuthenticated(true);
+        setError('');
+      } else {
+        setError('Acesso negado.');
+        setPassword(''); // Limpa o campo se errar
+      }
+    } catch (err) {
+      console.error("Erro na validação de segurança:", err);
+      setError('Erro ao processar senha.');
     }
   };
 
@@ -142,7 +156,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                className="w-full text-center text-2xl tracking-widest px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-slate-800 outline-none"
                value={password}
                onChange={(e) => setPassword(e.target.value)}
-               maxLength={6}
              />
              <button type="submit" className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition">
                Entrar

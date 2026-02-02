@@ -6,7 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX } from './Icons';
 
 // Hash SHA-256 for "batdoc"
-const ACCESS_HASH = "38d77666299b8285514bcc7875908b894d375323933c09033284534882142279";
+const ACCESS_HASH = "652c7dc687093b76d75896e38716382104085420230303d3d698066373851726";
 
 interface AdminDashboardProps {
   onExit: () => void;

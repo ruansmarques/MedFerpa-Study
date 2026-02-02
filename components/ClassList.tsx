@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS, LESSONS } from '../constants';
-import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff } from './Icons';
+import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
 import { storage } from '../firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 interface ClassListProps {
   currentUser: User;
   onUpdateProgress: (lessonId: string) => void;
+  initialSubjectId?: string;
+  onNavigateToSchedule?: (date?: Date) => void;
 }
 
-const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) => {
+const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, onNavigateToSchedule }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(5); // Default to 5th period
   
   // State for sub-modules (e.g. for Processos Patológicos)
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
+
+  // Handle deep linking from Schedule
+  useEffect(() => {
+    if (initialSubjectId) {
+      const subject = SUBJECTS.find(s => s.id === initialSubjectId);
+      if (subject) {
+        setSelectedSubject(subject);
+        setSelectedPeriod(subject.period);
+        // Reset category if special subject
+        if (subject.id === 'proc-patol') {
+            setSelectedCategory('Patologia Geral');
+        }
+      }
+    }
+  }, [initialSubjectId]);
 
   // Touch handling state
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -236,6 +253,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress }) 
               subjectFolderName={selectedSubject.folderName}
               isCompleted={currentUser.completedLessons.includes(lesson.id)}
               onToggleComplete={() => onUpdateProgress(lesson.id)}
+              onNavigateToSchedule={onNavigateToSchedule}
             />
           ))
         ) : (
@@ -307,7 +325,8 @@ const LessonRow: React.FC<{
   subjectFolderName?: string;
   isCompleted: boolean;
   onToggleComplete: () => void;
-}> = ({ lesson, subjectFolderName, isCompleted, onToggleComplete }) => {
+  onNavigateToSchedule?: (date?: Date) => void;
+}> = ({ lesson, subjectFolderName, isCompleted, onToggleComplete, onNavigateToSchedule }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
   
@@ -439,9 +458,22 @@ const LessonRow: React.FC<{
             )}
           </div>
 
-          <div className="mt-4 flex flex-col lg:flex-row justify-between text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
-             <span>Duração total: {lesson.duration}</span>
-             <span>ID: {lesson.id}</span>
+          <div className="mt-4 flex flex-col lg:flex-row justify-between items-center text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
+             <div className="flex gap-4">
+                <span>Duração total: {lesson.duration}</span>
+                <span>ID: {lesson.id}</span>
+             </div>
+             
+             {/* Link to Schedule */}
+             {onNavigateToSchedule && (
+                <button 
+                  onClick={() => onNavigateToSchedule()} 
+                  className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                    <IconCalendar className="w-4 h-4" />
+                    Ver no Cronograma
+                </button>
+             )}
           </div>
         </div>
       )}

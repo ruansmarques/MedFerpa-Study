@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconHome, IconExercise, IconRank, IconUser, IconLogout, IconX, IconLibrary } from './Icons';
+import { IconHome, IconExercise, IconRank, IconUser, IconLogout, IconX, IconLibrary, IconCalendar } from './Icons';
 import { ViewState } from '../types';
 
 interface SidebarProps {
@@ -57,6 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
 
         <nav className="flex-1 mt-6 space-y-1">
           <NavItem view="classes" icon={IconHome} label="Aulas" />
+          <NavItem view="schedule" icon={IconCalendar} label="Cronograma" />
           <NavItem view="exercises" icon={IconExercise} label="Exercícios" />
           <NavItem view="library" icon={IconLibrary} label="Biblioteca" />
           <NavItem view="rank" icon={IconRank} label="Rank" />

@@ -6,6 +6,7 @@ import ExerciseView from './components/ExerciseView';
 import RankView from './components/RankView';
 import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
+import ScheduleView from './components/ScheduleView';
 import { User, ViewState } from './types';
 import { IconMenu } from './components/Icons';
 import { db, storage } from './firebase';
@@ -25,6 +26,13 @@ const App: React.FC = () => {
   });
 
   const [currentView, setCurrentView] = useState<ViewState>('classes');
+  
+  // State for Deep Linking (Passing data between views)
+  const [viewParams, setViewParams] = useState<{
+    targetSubjectId?: string;
+    targetDate?: Date;
+  }>({});
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Efeito para carregar o Favicon do Firebase Storage
@@ -131,6 +139,17 @@ const App: React.FC = () => {
     }
   };
 
+  // Navigation Logic
+  const navigateToClasses = (subjectId?: string) => {
+      setViewParams({ targetSubjectId: subjectId });
+      setCurrentView('classes');
+  };
+
+  const navigateToSchedule = (date?: Date) => {
+      setViewParams({ targetDate: date });
+      setCurrentView('schedule');
+  };
+
   // View Router
   const renderContent = () => {
     switch (currentView) {
@@ -139,8 +158,17 @@ const App: React.FC = () => {
           <ClassList 
             currentUser={currentUser} 
             onUpdateProgress={handleUpdateProgress} 
+            initialSubjectId={viewParams.targetSubjectId}
+            onNavigateToSchedule={navigateToSchedule}
           />
         ) : null;
+      case 'schedule':
+        return (
+          <ScheduleView 
+            onNavigateToClass={navigateToClasses}
+            initialDate={viewParams.targetDate}
+          />
+        );
       case 'exercises':
         return <ExerciseView />;
       case 'library':
@@ -176,7 +204,10 @@ const App: React.FC = () => {
 
       <Sidebar 
         currentView={currentView} 
-        onChangeView={setCurrentView} 
+        onChangeView={(view) => {
+            setCurrentView(view);
+            setViewParams({}); // Reset params on manual navigation
+        }}
         onLogout={handleLogout}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}

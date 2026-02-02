@@ -1,3 +1,4 @@
+
 export interface User {
   ra: string;
   name: string;
@@ -42,4 +43,4 @@ export interface Book {
   color: string;
 }
 
-export type ViewState = 'login' | 'classes' | 'exercises' | 'library' | 'rank' | 'profile';
+export type ViewState = 'login' | 'classes' | 'schedule' | 'exercises' | 'library' | 'rank' | 'profile';

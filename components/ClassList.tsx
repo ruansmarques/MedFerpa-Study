@@ -222,6 +222,10 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     subjectLessons = subjectLessons.filter(l => l.category === selectedCategory);
   }
 
+  // --- ORDENAÇÃO ALFABÉTICA ---
+  // Garante que as aulas apareçam em ordem alfabética pelo Título
+  subjectLessons.sort((a, b) => a.title.localeCompare(b.title));
+
   return (
     <div className="p-4 lg:p-10 max-w-5xl mx-auto">
       <div className="mb-6 lg:mb-8 flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
@@ -377,6 +381,14 @@ const LessonRow: React.FC<{
     }
   };
 
+  // Função helper para exibir a data corretamente sem conversão de fuso horário
+  const formatDisplayDate = (dateString: string) => {
+    if (!dateString) return '';
+    // Recebe "YYYY-MM-DD" e retorna "DD/MM/YYYY" tratando apenas como string
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div className={`rounded-xl border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white border-blue-200 shadow-md' : 'bg-slate-100 border-transparent hover:bg-white hover:shadow-sm'}`}>
       <div className="flex flex-row items-center justify-between p-3 lg:p-4 px-4 lg:px-6 gap-2 lg:gap-4">
@@ -446,7 +458,8 @@ const LessonRow: React.FC<{
           
           <div className="mt-4 flex flex-col lg:flex-row justify-between items-center text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
              <div className="flex gap-4">
-                {lesson.date && <span>Data: {new Date(lesson.date).toLocaleDateString('pt-BR')}</span>}
+                {/* Correção aqui: usando formatação direta da string */}
+                {lesson.date && <span>Data: {formatDisplayDate(lesson.date)}</span>}
              </div>
              {onNavigateToSchedule && (
                 <button 

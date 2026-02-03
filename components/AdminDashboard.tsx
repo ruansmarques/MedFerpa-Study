@@ -444,7 +444,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                    disabled={loading}
                    className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-600 font-bold rounded-lg hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm whitespace-nowrap"
                  >
-                   Importar (Local -> Banco)
+                   Importar (Local -&gt; Banco)
                  </button>
               </div>
             </div>

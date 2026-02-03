@@ -167,9 +167,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       setSummaryFile(null);
       // Não resetamos período/disciplina/data pois o usuário pode querer cadastrar várias seguidas
       
-      // Reset input de arquivo visualmente
+      // Reset input de arquivo visualmente com tipagem correta
       const fileInputs = document.querySelectorAll('input[type="file"]');
-      fileInputs.forEach((input: any) => input.value = '');
+      fileInputs.forEach((input) => {
+        (input as HTMLInputElement).value = '';
+      });
 
     } catch (err: any) {
       console.error("Erro no cadastro:", err);

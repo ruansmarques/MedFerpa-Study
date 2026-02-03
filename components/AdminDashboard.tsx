@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { SUBJECTS } from '../constants';
+import { SUBJECTS, LESSONS } from '../constants';
 import { db, storage } from '../firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { IconCheck, IconX } from './Icons';
+import { IconCheck, IconX, IconSave } from './Icons';
 
 interface AdminDashboardProps {
   onExit: () => void;
@@ -175,6 +175,51 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       console.error("Erro no cadastro:", err);
       setError(err.message || 'Erro ao salvar aula. Verifique o console.');
       alert("Erro ao salvar: " + (err.message || "Erro desconhecido"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- FERRAMENTA DE MIGRAÇÃO (USO ÚNICO) ---
+  const handleMigrate4thPeriod = async () => {
+    if (!window.confirm("ATENÇÃO: Isso irá ler todas as aulas do 4º Período do arquivo 'constants.ts' e salvá-las no Banco de Dados (Firestore).\n\nRecomenda-se fazer isso apenas UMA VEZ para evitar duplicidade.\n\nDeseja continuar?")) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Identificar disciplinas do 4º período
+      const p4SubjectIds = SUBJECTS.filter(s => s.period === 4).map(s => s.id);
+      
+      // 2. Filtrar aulas dessas disciplinas
+      const lessonsToMigrate = LESSONS.filter(l => p4SubjectIds.includes(l.subjectId));
+
+      console.log(`Encontradas ${lessonsToMigrate.length} aulas para migrar.`);
+
+      let count = 0;
+      // 3. Loop e upload
+      for (const lesson of lessonsToMigrate) {
+         await addDoc(collection(db, "lessons"), {
+           subjectId: lesson.subjectId,
+           title: lesson.title,
+           youtubeIds: lesson.youtubeIds || [],
+           duration: lesson.duration || 'N/A',
+           category: lesson.category || null,
+           // Como estamos migrando dados antigos, não temos URLs do Storage novas, 
+           // nem data específica definida, enviamos null
+           slideUrl: null, 
+           summaryUrl: null,
+           date: null,
+           createdAt: new Date().toISOString(),
+           isMigrated: true // Flag opcional para controle
+         });
+         count++;
+      }
+
+      alert(`Sucesso! ${count} aulas foram migradas para o banco de dados.`);
+    } catch (err: any) {
+      console.error(err);
+      alert("Erro durante a migração: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -378,6 +423,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             </div>
 
           </form>
+
+          {/* --- FERRAMENTAS AVANÇADAS --- */}
+          <div className="mt-16 pt-10 border-t-2 border-dashed border-gray-200">
+            <h3 className="text-lg font-bold text-gray-500 mb-4 uppercase tracking-wider text-xs">Ferramentas de Banco de Dados</h3>
+            
+            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                 <div className="text-left">
+                   <h4 className="font-bold text-slate-800">Importar Aulas do 4º Período</h4>
+                   <p className="text-sm text-gray-500 mt-1">
+                     Transfere as aulas do arquivo local (constants.ts) para o Firebase.
+                     <br/><span className="text-orange-600 font-bold">Use apenas uma vez para não duplicar!</span>
+                   </p>
+                 </div>
+                 <button 
+                   onClick={handleMigrate4thPeriod}
+                   disabled={loading}
+                   className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-600 font-bold rounded-lg hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm whitespace-nowrap"
+                 >
+                   Importar (Local -> Banco)
+                 </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>

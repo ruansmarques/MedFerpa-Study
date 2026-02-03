@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from '../types';
-import { LESSONS } from '../constants';
+import { db } from '../firebase';
+import { collection, getCountFromServer } from 'firebase/firestore';
 import { IconEdit, IconSave } from './Icons';
 
 interface ProfileProps {
@@ -11,16 +12,33 @@ interface ProfileProps {
 const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [nameInput, setNameInput] = useState(user.name);
+  const [totalLessons, setTotalLessons] = useState(0);
+  const [loadingStats, setLoadingStats] = useState(true);
 
-  const totalLessons = LESSONS.length;
+  useEffect(() => {
+     const fetchStats = async () => {
+         try {
+             const coll = collection(db, "lessons");
+             const snapshot = await getCountFromServer(coll);
+             setTotalLessons(snapshot.data().count);
+         } catch (e) {
+             console.error(e);
+         } finally {
+             setLoadingStats(false);
+         }
+     }
+     fetchStats();
+  }, []);
+
   const completedCount = user.completedLessons.length;
-  const percentage = Math.round((completedCount / totalLessons) * 100);
+  // Se totalLessons for 0 (erro ou banco vazio), evita NaN
+  const percentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const handleSave = () => {
     if (nameInput.trim() !== '') {
       onUpdateName(nameInput.trim());
     } else {
-      setNameInput(user.name); // Revert if empty
+      setNameInput(user.name); 
     }
     setIsEditing(false);
   };
@@ -68,7 +86,9 @@ const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
         <div className="bg-slate-50 rounded-2xl p-4 lg:p-6 text-left">
           <div className="flex justify-between items-end mb-2">
             <span className="text-xs lg:text-sm font-semibold text-gray-600">Progresso Geral</span>
-            <span className="text-xl lg:text-2xl font-bold text-blue-600">{percentage}%</span>
+            <span className="text-xl lg:text-2xl font-bold text-blue-600">
+               {loadingStats ? '...' : `${percentage}%`}
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div 
@@ -78,7 +98,7 @@ const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
           </div>
           <div className="mt-4 flex justify-between text-xs text-gray-500">
              <span>{completedCount} aulas concluídas</span>
-             <span>Total: {totalLessons} aulas</span>
+             <span>Total: {loadingStats ? '...' : totalLessons} aulas</span>
           </div>
         </div>
       </div>

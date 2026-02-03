@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { LESSONS } from '../constants';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
 import { User } from '../types';
 
 interface RankedUser extends User {
@@ -11,17 +10,23 @@ interface RankedUser extends User {
 const RankView: React.FC = () => {
   const [rankedUsers, setRankedUsers] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const totalLessons = LESSONS.length;
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
+        // 1. Busca total de aulas reais no banco para o cálculo de porcentagem
+        const coll = collection(db, "lessons");
+        const snapshot = await getCountFromServer(coll);
+        const totalLessons = snapshot.data().count || 1; // Evita divisão por zero
+
+        // 2. Busca usuários
         const querySnapshot = await getDocs(collection(db, "users"));
         const usersList: User[] = [];
         querySnapshot.forEach((doc) => {
           usersList.push(doc.data() as User);
         });
 
+        // 3. Calcula ranking
         const ranked = usersList
           .map(user => ({
             ...user,
@@ -37,13 +42,13 @@ const RankView: React.FC = () => {
       }
     };
 
-    fetchUsers();
-  }, [totalLessons]);
+    fetchData();
+  }, []);
 
   if (loading) {
     return (
       <div className="p-10 text-center text-gray-400">
-        <p>Carregando ranking...</p>
+        <p>Carregando ranking em tempo real...</p>
       </div>
     );
   }

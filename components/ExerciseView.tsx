@@ -1,19 +1,48 @@
-import React, { useState } from 'react';
-import { SUBJECTS, LESSONS, EXERCISES } from '../constants';
-import { Subject, Lesson } from '../types';
+import React, { useState, useEffect } from 'react';
+import { SUBJECTS, EXERCISES } from '../constants';
+import { db } from '../firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { Lesson } from '../types';
 
 const ExerciseView: React.FC = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [selectedLessonId, setSelectedLessonId] = useState<string>('');
+  const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   
   // Quiz State: map of exerciseId -> selected option index
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState<Record<string, boolean>>({});
 
-  const filteredLessons = LESSONS.filter(l => l.subjectId === selectedSubjectId);
+  // Fetch Lessons from DB to populate dropdown
+  useEffect(() => {
+    const fetch = async () => {
+        try {
+            const q = query(collection(db, "lessons"));
+            const sn = await getDocs(q);
+            const l: Lesson[] = [];
+            sn.forEach(d => {
+                const data = d.data();
+                l.push({ 
+                    id: d.id, 
+                    title: data.title, 
+                    subjectId: data.subjectId 
+                } as Lesson);
+            });
+            setDbLessons(l);
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    fetch();
+  }, []);
+
+  const filteredLessons = dbLessons.filter(l => l.subjectId === selectedSubjectId);
   
   const filteredExercises = EXERCISES.filter(ex => {
     if (selectedSubjectId && ex.subjectId !== selectedSubjectId) return false;
+    // Nota: Como os IDs das aulas mudaram para o formato do Firebase, 
+    // os exercícios antigos (com IDs estáticos) podem não aparecer se filtrados por ID exato da aula nova.
+    // Por enquanto, mantemos a lógica, mas o admin precisará atualizar os exercícios futuramente.
     if (selectedLessonId && ex.lessonId !== selectedLessonId) return false;
     return true;
   });

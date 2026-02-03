@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { SUBJECTS, LESSONS } from '../constants';
+import React, { useState, useEffect } from 'react';
+import { SUBJECTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { IconCheck, IconX, IconSave } from './Icons';
+import { IconCheck, IconX, IconEdit } from './Icons';
+import { Lesson } from '../types';
 
 interface AdminDashboardProps {
   onExit: () => void;
@@ -12,9 +13,10 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [authError, setAuthError] = useState('');
   
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [period, setPeriod] = useState<number>(5);
   const [subjectId, setSubjectId] = useState('');
@@ -22,48 +24,75 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [youtubeLink, setYoutubeLink] = useState('');
   const [date, setDate] = useState('');
   
-  // Files
+  // Files State
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
+  
+  // URLs existentes (para manter o arquivo se não for feito novo upload na edição)
+  const [existingSlideUrl, setExistingSlideUrl] = useState<string | null>(null);
+  const [existingSummaryUrl, setExistingSummaryUrl] = useState<string | null>(null);
+
+  // Data Lists
+  const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
 
   // UI State
   const [loading, setLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  // Lógica de Login via Firestore
+  // --- BUSCA DADOS INICIAIS ---
+  const fetchLessons = async () => {
+    try {
+      const q = query(collection(db, "lessons"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const lessons: Lesson[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        lessons.push({
+          id: doc.id,
+          subjectId: data.subjectId,
+          title: data.title,
+          youtubeIds: data.youtubeIds || [],
+          duration: data.duration,
+          category: data.category,
+          slideUrl: data.slideUrl,
+          summaryUrl: data.summaryUrl,
+          date: data.date
+        });
+      });
+      setDbLessons(lessons);
+    } catch (err) {
+      console.error("Erro ao buscar aulas:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchLessons();
+    }
+  }, [isAuthenticated]);
+
+  // --- AUTH ---
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
-    setError('');
+    setAuthError('');
 
     try {
-      console.log("Tentando autenticar com senha:", password);
-      
       const adminsRef = collection(db, "admins");
-      // Busca exata pelo campo accessKey
       const q = query(adminsRef, where("accessKey", "==", password.trim()));
-      
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        console.log("Usuário autenticado!");
         setIsAuthenticated(true);
-        setError('');
+        setAuthError('');
       } else {
-        console.warn("Senha incorreta / Nenhum documento encontrado.");
-        setError('Senha incorreta.');
+        setAuthError('Senha incorreta.');
         setPassword('');
       }
     } catch (err: any) {
-      console.error("Erro detalhado do Firebase:", err);
-      
-      // Tratamento específico para erro de permissão (Regras do Firestore)
-      if (err.code === 'permission-denied') {
-        setError('Erro de Permissão: Libere a leitura da coleção "admins" nas Regras do Firestore.');
-      } else {
-        setError('Erro de conexão: ' + (err.message || 'Verifique o console.'));
-      }
+      setAuthError('Erro de conexão: ' + err.message);
     } finally {
       setAuthLoading(false);
     }
@@ -71,7 +100,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   const filteredSubjects = SUBJECTS.filter(s => s.period === period);
   
-  // Helper to extract ID
   const extractYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -84,144 +112,151 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     return await getDownloadURL(storageRef);
   };
 
+  // --- PREPARAR EDIÇÃO ---
+  const handleEdit = (lesson: Lesson) => {
+    setEditingId(lesson.id);
+    setTitle(lesson.title);
+    setSubjectId(lesson.subjectId);
+    setCategory(lesson.category || '');
+    
+    // Tenta encontrar o período baseado na disciplina
+    const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
+    if (subj) setPeriod(subj.period);
+
+    // Youtube (Pega o primeiro ID e transforma em link para edição)
+    if (lesson.youtubeIds && lesson.youtubeIds.length > 0) {
+      setYoutubeLink(`https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}`);
+    } else {
+      setYoutubeLink('');
+    }
+
+    setDate(lesson.date || '');
+    setExistingSlideUrl(lesson.slideUrl || null);
+    setExistingSummaryUrl(lesson.summaryUrl || null);
+    
+    // Limpa arquivos selecionados novos
+    setSlideFile(null);
+    setSummaryFile(null);
+
+    // Rola para o topo
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSuccessMsg('');
+    setErrorMsg('');
+  };
+
+  // --- CANCELAR EDIÇÃO ---
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setTitle('');
+    setYoutubeLink('');
+    setCategory('');
+    setDate('');
+    setSlideFile(null);
+    setSummaryFile(null);
+    setExistingSlideUrl(null);
+    setExistingSummaryUrl(null);
+    
+    // Reset file inputs visualmente
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach((input) => { (input as HTMLInputElement).value = ''; });
+  };
+
+  // --- EXCLUIR ---
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Tem certeza que deseja excluir esta aula permanentemente?")) return;
+    
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, "lessons", id));
+      await fetchLessons(); // Recarrega lista
+      setSuccessMsg("Aula excluída com sucesso.");
+    } catch (err: any) {
+      setErrorMsg("Erro ao excluir: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- SUBMIT (CRIAR ou EDITAR) ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess(false);
+    setErrorMsg('');
+    setSuccessMsg('');
 
-    // --- 1. VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS ---
-    if (!title || title.trim() === "") {
-        alert("Por favor, preencha o Título da Aula.");
-        return;
-    }
-    if (!period) {
-        alert("Por favor, selecione o Período.");
-        return;
-    }
-    if (!subjectId || subjectId.trim() === "") {
-        alert("Por favor, selecione uma Disciplina válida.");
-        return;
-    }
-    if (!date) {
-        alert("Por favor, informe a Data da Aula.");
-        return;
-    }
+    if (!title || title.trim() === "") { alert("Título obrigatório."); return; }
+    if (!subjectId) { alert("Disciplina obrigatória."); return; }
+    if (!date && !editingId) { alert("Data obrigatória."); return; } // Data obrigatória apenas na criação, na edição é opcional se quiser manter
 
-    // Validação específica para categoria se for a matéria que exige
-    if (subjectId === 'proc-patol' && (!category || category.trim() === "")) {
-        alert("Para 'Processos Patológicos', é obrigatório selecionar o Módulo/Categoria.");
+    if (subjectId === 'proc-patol' && !category) {
+        alert("Para 'Processos Patológicos', selecione a Categoria.");
         return;
     }
 
     setLoading(true);
 
     try {
-      let slideUrl = '';
-      let summaryUrl = '';
       const subject = SUBJECTS.find(s => s.id === subjectId);
       
-      // Upload Slide
+      // Upload ou Manter URL existente
+      let finalSlideUrl = existingSlideUrl;
+      let finalSummaryUrl = existingSummaryUrl;
+
       if (slideFile && subject) {
         const path = `materials/${subject.folderName || 'default'}/${category ? category + '/' : ''}slides/${slideFile.name}`;
-        slideUrl = await handleUpload(slideFile, path);
+        finalSlideUrl = await handleUpload(slideFile, path);
       }
 
-      // Upload Summary
       if (summaryFile && subject) {
         const path = `materials/${subject.folderName || 'default'}/${category ? category + '/' : ''}resumos/${summaryFile.name}`;
-        summaryUrl = await handleUpload(summaryFile, path);
+        finalSummaryUrl = await handleUpload(summaryFile, path);
       }
 
-      // Process Video
+      // Process Youtube
       const videoIds: string[] = [];
       if (youtubeLink && youtubeLink.trim() !== "") {
         const id = extractYoutubeId(youtubeLink);
         if (id) videoIds.push(id);
       }
 
-      // --- 2. CONSTRUÇÃO DO OBJETO (Evitando undefined) ---
-      // O Firestore rejeita 'undefined'. Usamos 'null' para campos opcionais vazios.
-      const lessonData = {
+      const lessonPayload = {
         subjectId,
         title: title.trim(),
         youtubeIds: videoIds,
         duration: 'N/A', 
-        // Se category for string vazia, envia null
-        category: category && category.trim() !== "" ? category : null,
-        // Se não tiver URL, envia null
-        slideUrl: slideUrl || null,
-        summaryUrl: summaryUrl || null,
+        category: category || null,
+        slideUrl: finalSlideUrl || null,
+        summaryUrl: finalSummaryUrl || null,
         date: date || null,
-        createdAt: new Date().toISOString()
+        updatedAt: new Date().toISOString()
       };
 
-      console.log("Enviando dados para o Firestore:", lessonData);
-
-      await addDoc(collection(db, "lessons"), lessonData);
-
-      setSuccess(true);
-      // Reset Form
-      setTitle('');
-      setYoutubeLink('');
-      setSlideFile(null);
-      setSummaryFile(null);
-      // Não resetamos período/disciplina/data pois o usuário pode querer cadastrar várias seguidas
-      
-      // Reset input de arquivo visualmente com tipagem correta
-      const fileInputs = document.querySelectorAll('input[type="file"]');
-      fileInputs.forEach((input) => {
-        (input as HTMLInputElement).value = '';
-      });
-
-    } catch (err: any) {
-      console.error("Erro no cadastro:", err);
-      setError(err.message || 'Erro ao salvar aula. Verifique o console.');
-      alert("Erro ao salvar: " + (err.message || "Erro desconhecido"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- FERRAMENTA DE MIGRAÇÃO (USO ÚNICO) ---
-  const handleMigrate4thPeriod = async () => {
-    if (!window.confirm("ATENÇÃO: Isso irá ler todas as aulas do 4º Período do arquivo 'constants.ts' e salvá-las no Banco de Dados (Firestore).\n\nRecomenda-se fazer isso apenas UMA VEZ para evitar duplicidade.\n\nDeseja continuar?")) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // 1. Identificar disciplinas do 4º período
-      const p4SubjectIds = SUBJECTS.filter(s => s.period === 4).map(s => s.id);
-      
-      // 2. Filtrar aulas dessas disciplinas
-      const lessonsToMigrate = LESSONS.filter(l => p4SubjectIds.includes(l.subjectId));
-
-      console.log(`Encontradas ${lessonsToMigrate.length} aulas para migrar.`);
-
-      let count = 0;
-      // 3. Loop e upload
-      for (const lesson of lessonsToMigrate) {
-         await addDoc(collection(db, "lessons"), {
-           subjectId: lesson.subjectId,
-           title: lesson.title,
-           youtubeIds: lesson.youtubeIds || [],
-           duration: lesson.duration || 'N/A',
-           category: lesson.category || null,
-           // Como estamos migrando dados antigos, não temos URLs do Storage novas, 
-           // nem data específica definida, enviamos null
-           slideUrl: null, 
-           summaryUrl: null,
-           date: null,
-           createdAt: new Date().toISOString(),
-           isMigrated: true // Flag opcional para controle
-         });
-         count++;
+      if (editingId) {
+        // UPDATE
+        const docRef = doc(db, "lessons", editingId);
+        await updateDoc(docRef, lessonPayload);
+        setSuccessMsg("Aula atualizada com sucesso!");
+        handleCancelEdit(); // Sai do modo edição e limpa form
+      } else {
+        // CREATE
+        await addDoc(collection(db, "lessons"), {
+          ...lessonPayload,
+          createdAt: new Date().toISOString()
+        });
+        setSuccessMsg("Aula cadastrada com sucesso!");
+        // Reset parcial para facilitar cadastros seguidos
+        setTitle('');
+        setYoutubeLink('');
+        setSlideFile(null);
+        setSummaryFile(null);
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach((input) => { (input as HTMLInputElement).value = ''; });
       }
 
-      alert(`Sucesso! ${count} aulas foram migradas para o banco de dados.`);
+      await fetchLessons(); // Atualiza a lista lá embaixo
+
     } catch (err: any) {
       console.error(err);
-      alert("Erro durante a migração: " + err.message);
+      setErrorMsg(err.message || 'Erro ao salvar.');
     } finally {
       setLoading(false);
     }
@@ -240,8 +275,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                type="password" 
                placeholder="Chave de Acesso"
                className={`w-full text-center text-2xl tracking-widest px-4 py-3 border rounded-lg mb-4 focus:ring-2 outline-none transition-colors
-                 ${error ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-slate-800'}
-                 ${authLoading ? 'opacity-50 cursor-wait' : ''}
+                 ${authError ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-slate-800'}
                `}
                value={password}
                onChange={(e) => setPassword(e.target.value)}
@@ -250,11 +284,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
              <button 
                type="submit" 
                disabled={authLoading}
-               className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition flex items-center justify-center gap-2"
+               className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition"
              >
                {authLoading ? 'Verificando...' : 'Entrar'}
              </button>
-             {error && <p className="text-red-500 text-sm mt-4 font-medium animate-pulse">{error}</p>}
+             {authError && <p className="text-red-500 text-sm mt-4 font-medium">{authError}</p>}
           </form>
           <button onClick={onExit} className="mt-6 text-gray-400 text-sm hover:text-gray-600 underline">Voltar ao site</button>
         </div>
@@ -267,186 +301,202 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       <header className="bg-slate-900 text-white px-6 py-4 shadow-lg flex justify-between items-center sticky top-0 z-50">
          <div className="flex items-center gap-3">
             <div className="bg-blue-600 text-xs font-bold px-2 py-1 rounded">ADMIN</div>
-            <h1 className="text-lg font-bold tracking-tight">Painel de Cadastro</h1>
+            <h1 className="text-lg font-bold tracking-tight">Painel de Gestão</h1>
          </div>
          <button onClick={onExit} className="text-gray-400 hover:text-white transition text-sm font-medium">Sair</button>
       </header>
 
-      <main className="max-w-3xl mx-auto mt-8 px-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-10">
-          <div className="mb-8 border-b border-gray-100 pb-4">
-            <h2 className="text-2xl font-bold text-slate-800">Nova Aula</h2>
-            <p className="text-gray-500 text-sm mt-1">Preencha os dados para adicionar conteúdo à plataforma.</p>
-          </div>
-
-          {success && (
-            <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700 animate-fadeIn">
-              <IconCheck className="w-6 h-6" />
-              <span className="font-bold">Aula cadastrada com sucesso!</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
-              <IconX className="w-6 h-6" />
-              <span className="font-medium">{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Título */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Título da Aula <span className="text-red-500">*</span></label>
-              <input 
-                type="text" 
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                placeholder="Ex: AULA 01 - Introdução ao Sistema..."
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Período */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Período <span className="text-red-500">*</span></label>
-                <select 
-                  value={period} 
-                  onChange={e => setPeriod(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                >
-                  {[1,2,3,4,5,6,7,8,9,10,11,12].map(p => <option key={p} value={p}>{p}º Período</option>)}
-                </select>
+      <main className="max-w-5xl mx-auto mt-8 px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* --- COLUNA DA ESQUERDA: FORMULÁRIO --- */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-24">
+              <div className="mb-6 border-b border-gray-100 pb-4">
+                <h2 className="text-xl font-bold text-slate-800">
+                  {editingId ? 'Editar Aula' : 'Nova Aula'}
+                </h2>
+                <p className="text-gray-500 text-xs mt-1">
+                  {editingId ? 'Atualize os dados abaixo.' : 'Preencha para cadastrar.'}
+                </p>
               </div>
 
-              {/* Disciplina */}
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina <span className="text-red-500">*</span></label>
-                <select 
-                  value={subjectId} 
-                  onChange={e => {
-                     setSubjectId(e.target.value);
-                     // Auto-detect special categories needed
-                     if (e.target.value !== 'proc-patol') setCategory('');
-                  }}
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  {filteredSubjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                </select>
-              </div>
-            </div>
+              {successMsg && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
+                  <IconCheck className="w-4 h-4" /> {successMsg}
+                </div>
+              )}
+              {errorMsg && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
+                  <IconX className="w-4 h-4" /> {errorMsg}
+                </div>
+              )}
 
-            {/* Categoria Opcional (apenas se for Processos Patológicos ou similar) */}
-            {subjectId === 'proc-patol' && (
-               <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Módulo / Categoria <span className="text-red-500">*</span></label>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Título *</label>
+                  <input 
+                    type="text" 
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Período *</label>
+                    <select 
+                      value={period} 
+                      onChange={e => setPeriod(Number(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10,11,12].map(p => <option key={p} value={p}>{p}º</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Data *</label>
+                    <input 
+                      type="date" 
+                      value={date}
+                      onChange={e => setDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Disciplina *</label>
                   <select 
-                    value={category} 
-                    onChange={e => setCategory(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                    value={subjectId} 
+                    onChange={e => {
+                       setSubjectId(e.target.value);
+                       if (e.target.value !== 'proc-patol') setCategory('');
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                     required
                   >
                     <option value="">Selecione...</option>
-                    <option value="Patologia Geral">Patologia Geral</option>
-                    <option value="Imunologia">Imunologia</option>
-                    <option value="Microbiologia">Microbiologia</option>
-                    <option value="Parasitologia">Parasitologia</option>
+                    {filteredSubjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                   </select>
+                </div>
+
+                {subjectId === 'proc-patol' && (
+                   <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">Categoria *</label>
+                      <select 
+                        value={category} 
+                        onChange={e => setCategory(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        required
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Patologia Geral">Patologia Geral</option>
+                        <option value="Imunologia">Imunologia</option>
+                        <option value="Microbiologia">Microbiologia</option>
+                        <option value="Parasitologia">Parasitologia</option>
+                      </select>
+                   </div>
+                )}
+
+                <div>
+                   <label className="block text-xs font-bold text-gray-700 mb-1">Slide (PDF)</label>
+                   <input type="file" accept=".pdf" onChange={e => setSlideFile(e.target.files?.[0] || null)} className="w-full text-xs" />
+                   {existingSlideUrl && <p className="text-[10px] text-green-600 mt-1">✓ Arquivo atual salvo.</p>}
+                </div>
+
+                <div>
+                   <label className="block text-xs font-bold text-gray-700 mb-1">Resumo (PDF)</label>
+                   <input type="file" accept=".pdf" onChange={e => setSummaryFile(e.target.files?.[0] || null)} className="w-full text-xs" />
+                   {existingSummaryUrl && <p className="text-[10px] text-green-600 mt-1">✓ Arquivo atual salvo.</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">YouTube Link</label>
+                  <input 
+                    type="text" 
+                    value={youtubeLink}
+                    onChange={e => setYoutubeLink(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div className="pt-4 flex gap-2">
+                  {editingId && (
+                    <button 
+                      type="button" 
+                      onClick={handleCancelEdit}
+                      className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="flex-1 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 disabled:opacity-50"
+                  >
+                    {loading ? 'Salvando...' : (editingId ? 'Atualizar' : 'Cadastrar')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* --- COLUNA DA DIREITA: LISTA DE AULAS --- */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+               <h3 className="text-lg font-bold text-slate-800 mb-4">Aulas Cadastradas no Banco</h3>
+               
+               <div className="overflow-x-auto">
+                 <table className="w-full text-sm text-left">
+                    <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
+                       <tr>
+                         <th className="px-4 py-3">Título</th>
+                         <th className="px-4 py-3">Disciplina</th>
+                         <th className="px-4 py-3 text-right">Ações</th>
+                       </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {dbLessons.map((lesson) => (
+                        <tr key={lesson.id} className="hover:bg-blue-50 transition-colors">
+                           <td className="px-4 py-3 font-medium text-slate-800">
+                             {lesson.title}
+                             {lesson.category && <span className="block text-[10px] text-gray-400">{lesson.category}</span>}
+                           </td>
+                           <td className="px-4 py-3 text-gray-500">
+                             {SUBJECTS.find(s => s.id === lesson.subjectId)?.title || lesson.subjectId}
+                           </td>
+                           <td className="px-4 py-3 text-right flex justify-end gap-2">
+                             <button 
+                               onClick={() => handleEdit(lesson)}
+                               className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                               title="Editar"
+                             >
+                               <IconEdit className="w-4 h-4" />
+                             </button>
+                             <button 
+                               onClick={() => handleDelete(lesson.id)}
+                               className="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                               title="Excluir"
+                             >
+                               <IconX className="w-4 h-4" />
+                             </button>
+                           </td>
+                        </tr>
+                      ))}
+                      {dbLessons.length === 0 && (
+                        <tr>
+                          <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                            Nenhuma aula encontrada no banco de dados.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                 </table>
                </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               {/* Upload Slide */}
-               <div>
-                 <label className="block text-sm font-bold text-gray-700 mb-2">Arquivo de Slide (PDF)</label>
-                 <div className="relative">
-                   <input 
-                     type="file" 
-                     accept=".pdf"
-                     onChange={e => setSlideFile(e.target.files ? e.target.files[0] : null)}
-                     className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                   />
-                 </div>
-               </div>
-
-               {/* Upload Resumo */}
-               <div>
-                 <label className="block text-sm font-bold text-gray-700 mb-2">Arquivo de Resumo (PDF)</label>
-                 <div className="relative">
-                   <input 
-                     type="file" 
-                     accept=".pdf"
-                     onChange={e => setSummaryFile(e.target.files ? e.target.files[0] : null)}
-                     className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                   />
-                 </div>
-               </div>
-            </div>
-
-            {/* Video Link */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Link da Gravação (YouTube)</label>
-              <input 
-                type="text" 
-                value={youtubeLink}
-                onChange={e => setYoutubeLink(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                placeholder="https://www.youtube.com/watch?v=..."
-              />
-              <p className="text-xs text-gray-400 mt-1">O ID será extraído automaticamente.</p>
-            </div>
-
-            {/* Date */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Data da Aula <span className="text-red-500">*</span></label>
-              <input 
-                type="date" 
-                value={date}
-                onChange={e => setDate(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                required
-              />
-            </div>
-
-            <div className="pt-6">
-              <button 
-                type="submit" 
-                disabled={loading}
-                className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all shadow-lg
-                  ${loading ? 'bg-gray-400 cursor-wait' : 'bg-slate-900 hover:bg-slate-800 hover:scale-[1.01]'}
-                `}
-              >
-                {loading ? 'Cadastrando...' : 'Cadastrar Aula'}
-              </button>
-            </div>
-
-          </form>
-
-          {/* --- FERRAMENTAS AVANÇADAS --- */}
-          <div className="mt-16 pt-10 border-t-2 border-dashed border-gray-200">
-            <h3 className="text-lg font-bold text-gray-500 mb-4 uppercase tracking-wider text-xs">Ferramentas de Banco de Dados</h3>
-            
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                 <div className="text-left">
-                   <h4 className="font-bold text-slate-800">Importar Aulas do 4º Período</h4>
-                   <p className="text-sm text-gray-500 mt-1">
-                     Transfere as aulas do arquivo local (constants.ts) para o Firebase.
-                     <br/><span className="text-orange-600 font-bold">Use apenas uma vez para não duplicar!</span>
-                   </p>
-                 </div>
-                 <button 
-                   onClick={handleMigrate4thPeriod}
-                   disabled={loading}
-                   className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-600 font-bold rounded-lg hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all shadow-sm whitespace-nowrap"
-                 >
-                   Importar (Local -&gt; Banco)
-                 </button>
-              </div>
             </div>
           </div>
 

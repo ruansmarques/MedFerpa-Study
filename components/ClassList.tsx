@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
-import { SUBJECTS, LESSONS } from '../constants';
+import { SUBJECTS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
 import { db, storage } from '../firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
@@ -15,27 +15,25 @@ interface ClassListProps {
 
 const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, onNavigateToSchedule }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(5); // Default to 5th period
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(5); 
   
-  // State for sub-modules (e.g. for Processos Patológicos)
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
 
-  // Dynamic Lessons State (Merged Constants + Firestore)
-  const [allLessons, setAllLessons] = useState<Lesson[]>(LESSONS);
+  // AGORA BUSCAMOS APENAS DO BANCO, SEM MERGE COM ARQUIVO ESTÁTICO
+  const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(false);
 
-  // Fetch Lessons from Firestore
   useEffect(() => {
     const fetchLessons = async () => {
       setIsLoadingLessons(true);
       try {
         const q = query(collection(db, "lessons"));
         const querySnapshot = await getDocs(q);
-        const dbLessons: Lesson[] = [];
+        const fetchedLessons: Lesson[] = [];
         
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          dbLessons.push({
+          fetchedLessons.push({
             id: doc.id,
             subjectId: data.subjectId,
             title: data.title,
@@ -48,9 +46,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
           });
         });
 
-        // Merge: DB lessons first (newest), then Constants
-        // Note: Real production apps would likely replace constants entirely, but we merge here for hybrid support
-        setAllLessons([...dbLessons, ...LESSONS]);
+        setDbLessons(fetchedLessons);
       } catch (error) {
         console.error("Erro ao buscar aulas do banco:", error);
       } finally {
@@ -61,14 +57,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     fetchLessons();
   }, []);
 
-  // Handle deep linking from Schedule
   useEffect(() => {
     if (initialSubjectId) {
       const subject = SUBJECTS.find(s => s.id === initialSubjectId);
       if (subject) {
         setSelectedSubject(subject);
         setSelectedPeriod(subject.period);
-        // Reset category if special subject
         if (subject.id === 'proc-patol') {
             setSelectedCategory('Patologia Geral');
         }
@@ -76,25 +70,21 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     }
   }, [initialSubjectId]);
 
-  // Touch handling state
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const allPeriods = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  // Limit to 8 for the loop logic as per request context "5 of 8"
   const mobilePeriods = [1, 2, 3, 4, 5, 6, 7, 8];
   
-  const specialSubjectId = 'proc-patol'; // ID for Processos Patológicos
+  const specialSubjectId = 'proc-patol'; 
   const categories = ['Patologia Geral', 'Parasitologia', 'Imunologia', 'Microbiologia'];
 
-  // Reset category when subject changes
   useEffect(() => {
     if (selectedSubject?.id === specialSubjectId) {
       setSelectedCategory('Patologia Geral');
     }
   }, [selectedSubject]);
 
-  // --- Mobile Carousel Logic ---
   const getVisiblePeriods = (current: number) => {
     const count = mobilePeriods.length;
     const currentIndex = mobilePeriods.indexOf(current);
@@ -139,14 +129,11 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     }
   };
 
-  // If no subject selected, show cards
   if (!selectedSubject) {
     const filteredSubjects = SUBJECTS.filter(s => s.period === selectedPeriod);
 
     return (
       <div className="p-4 lg:p-10 max-w-6xl mx-auto">
-        
-        {/* --- MOBILE PERIOD SELECTOR (Looping Carousel) --- */}
         <div className="lg:hidden mb-8 relative">
           <div 
             className="flex items-center justify-between px-2 py-4 select-none touch-pan-y"
@@ -183,7 +170,6 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
           </p>
         </div>
 
-        {/* --- DESKTOP PERIOD SELECTOR --- */}
         <div className="hidden lg:flex items-center justify-center gap-4 mb-12 flex-wrap">
           {allPeriods.slice(0, 8).map((p) => (
             <button
@@ -229,16 +215,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     );
   }
 
-  // Filter lessons for selected subject using the combined list
-  let subjectLessons = allLessons.filter(l => l.subjectId === selectedSubject.id);
+  // AQUI FILTRAMOS AS AULAS DO BANCO (DBLESSONS)
+  let subjectLessons = dbLessons.filter(l => l.subjectId === selectedSubject.id);
 
-  // Filter by Category
   if (selectedSubject.id === specialSubjectId) {
     subjectLessons = subjectLessons.filter(l => l.category === selectedCategory);
   }
-
-  // Optional: Sort by date if available, or just rely on array order
-  // subjectLessons.sort((a, b) => (a.date && b.date) ? new Date(a.date).getTime() - new Date(b.date).getTime() : 0);
 
   return (
     <div className="p-4 lg:p-10 max-w-5xl mx-auto">
@@ -255,7 +237,6 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
         </h2>
       </div>
 
-      {/* Sub-module Selector for Processos Patológicos */}
       {selectedSubject.id === specialSubjectId && (
         <div className="flex flex-wrap items-center justify-center gap-2 lg:gap-3 mb-8 lg:mb-10 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
           {categories.map((cat) => (
@@ -276,7 +257,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
 
       <div className="space-y-4 pb-10">
         {isLoadingLessons ? (
-           <div className="p-12 text-center text-gray-400">Carregando aulas...</div>
+           <div className="p-12 text-center text-gray-400">Carregando aulas do servidor...</div>
         ) : subjectLessons.length > 0 ? (
           subjectLessons.map((lesson) => (
             <LessonRow 
@@ -291,7 +272,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
         ) : (
           <div className="p-12 text-center text-gray-400 bg-white rounded-2xl border border-gray-100 border-dashed">
             <p className="text-lg mb-2">📭</p>
-            <p>Nenhuma aula disponível para {selectedSubject.id === specialSubjectId ? selectedCategory : 'esta disciplina'}.</p>
+            <p>Nenhuma aula encontrada no banco de dados para {selectedSubject.id === specialSubjectId ? selectedCategory : 'esta disciplina'}.</p>
           </div>
         )}
       </div>
@@ -299,7 +280,6 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   );
 };
 
-// --- Custom Player Component ---
 const YouTubePlayer: React.FC<{ videoId: string; title: string; index: number }> = ({ videoId, title, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -358,7 +338,6 @@ const LessonRow: React.FC<{
   const openPdf = async (type: 'slide' | 'resumo') => {
     setIsLoadingFile(true);
     
-    // 1. Check if we have a direct URL (uploaded via Admin)
     if (type === 'slide' && lesson.slideUrl) {
        window.open(lesson.slideUrl, '_blank');
        setIsLoadingFile(false);
@@ -370,7 +349,7 @@ const LessonRow: React.FC<{
        return;
     }
 
-    // 2. Fallback to old path construction based on naming convention
+    // Fallback para estrutura antiga de arquivos locais (apenas para compatibilidade se algo não tiver URL)
     const basePath = 'materials';
     const subjectPath = subjectFolderName || 'default';
     const categoryPath = lesson.category 
@@ -392,7 +371,7 @@ const LessonRow: React.FC<{
       window.open(url, '_blank');
     } catch (error) {
       console.error("Erro ao buscar arquivo:", error);
-      alert(`Arquivo não encontrado.\nTentamos abrir a URL direta ou o caminho: ${storagePath}`);
+      alert(`Arquivo não encontrado ou URL inválida.`);
     } finally {
       setIsLoadingFile(false);
     }

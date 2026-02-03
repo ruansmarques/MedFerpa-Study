@@ -31,28 +31,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [authLoading, setAuthLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Lógica de Login via Firestore (Igual ao App Principal)
+  // Lógica de Login via Firestore
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthLoading(true);
     setError('');
 
     try {
-      // Busca na coleção 'admins' se existe algum documento com a chave 'accessKey' igual à senha digitada
+      console.log("Tentando autenticar com senha:", password);
+      
       const adminsRef = collection(db, "admins");
+      // Busca exata pelo campo accessKey
       const q = query(adminsRef, where("accessKey", "==", password.trim()));
+      
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
+        console.log("Usuário autenticado!");
         setIsAuthenticated(true);
         setError('');
       } else {
-        setError('Credencial administrativa inválida.');
+        console.warn("Senha incorreta / Nenhum documento encontrado.");
+        setError('Senha incorreta.');
         setPassword('');
       }
-    } catch (err) {
-      console.error("Erro na autenticação:", err);
-      setError('Erro de conexão com o servidor.');
+    } catch (err: any) {
+      console.error("Erro detalhado do Firebase:", err);
+      
+      // Tratamento específico para erro de permissão (Regras do Firestore)
+      if (err.code === 'permission-denied') {
+        setError('Erro de Permissão: Libere a leitura da coleção "admins" nas Regras do Firestore.');
+      } else {
+        setError('Erro de conexão: ' + (err.message || 'Verifique o console.'));
+      }
     } finally {
       setAuthLoading(false);
     }
@@ -75,13 +86,36 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
     setSuccess(false);
 
-    try {
-      if (!title || !subjectId) throw new Error("Título e Disciplina são obrigatórios.");
+    // --- 1. VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS ---
+    if (!title || title.trim() === "") {
+        alert("Por favor, preencha o Título da Aula.");
+        return;
+    }
+    if (!period) {
+        alert("Por favor, selecione o Período.");
+        return;
+    }
+    if (!subjectId || subjectId.trim() === "") {
+        alert("Por favor, selecione uma Disciplina válida.");
+        return;
+    }
+    if (!date) {
+        alert("Por favor, informe a Data da Aula.");
+        return;
+    }
 
+    // Validação específica para categoria se for a matéria que exige
+    if (subjectId === 'proc-patol' && (!category || category.trim() === "")) {
+        alert("Para 'Processos Patológicos', é obrigatório selecionar o Módulo/Categoria.");
+        return;
+    }
+
+    setLoading(true);
+
+    try {
       let slideUrl = '';
       let summaryUrl = '';
       const subject = SUBJECTS.find(s => s.id === subjectId);
@@ -100,23 +134,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
       // Process Video
       const videoIds: string[] = [];
-      if (youtubeLink) {
+      if (youtubeLink && youtubeLink.trim() !== "") {
         const id = extractYoutubeId(youtubeLink);
         if (id) videoIds.push(id);
       }
 
-      // Save to Firestore
+      // --- 2. CONSTRUÇÃO DO OBJETO (Evitando undefined) ---
+      // O Firestore rejeita 'undefined'. Usamos 'null' para campos opcionais vazios.
       const lessonData = {
         subjectId,
-        title,
+        title: title.trim(),
         youtubeIds: videoIds,
-        duration: 'N/A', // Could be added to form if needed
-        category: category || undefined,
-        slideUrl: slideUrl || undefined,
-        summaryUrl: summaryUrl || undefined,
-        date: date || undefined,
+        duration: 'N/A', 
+        // Se category for string vazia, envia null
+        category: category && category.trim() !== "" ? category : null,
+        // Se não tiver URL, envia null
+        slideUrl: slideUrl || null,
+        summaryUrl: summaryUrl || null,
+        date: date || null,
         createdAt: new Date().toISOString()
       };
+
+      console.log("Enviando dados para o Firestore:", lessonData);
 
       await addDoc(collection(db, "lessons"), lessonData);
 
@@ -126,11 +165,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       setYoutubeLink('');
       setSlideFile(null);
       setSummaryFile(null);
-      setDate('');
+      // Não resetamos período/disciplina/data pois o usuário pode querer cadastrar várias seguidas
       
+      // Reset input de arquivo visualmente
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach((input: any) => input.value = '');
+
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Erro ao salvar aula.');
+      console.error("Erro no cadastro:", err);
+      setError(err.message || 'Erro ao salvar aula. Verifique o console.');
+      alert("Erro ao salvar: " + (err.message || "Erro desconhecido"));
     } finally {
       setLoading(false);
     }
@@ -206,7 +250,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             
             {/* Título */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Título da Aula</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Título da Aula <span className="text-red-500">*</span></label>
               <input 
                 type="text" 
                 value={title}
@@ -220,7 +264,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Período */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Período</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Período <span className="text-red-500">*</span></label>
                 <select 
                   value={period} 
                   onChange={e => setPeriod(Number(e.target.value))}
@@ -232,7 +276,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
               {/* Disciplina */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina <span className="text-red-500">*</span></label>
                 <select 
                   value={subjectId} 
                   onChange={e => {
@@ -252,7 +296,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             {/* Categoria Opcional (apenas se for Processos Patológicos ou similar) */}
             {subjectId === 'proc-patol' && (
                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Módulo / Categoria</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Módulo / Categoria <span className="text-red-500">*</span></label>
                   <select 
                     value={category} 
                     onChange={e => setCategory(e.target.value)}
@@ -311,12 +355,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
             {/* Date */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Data da Aula</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Data da Aula <span className="text-red-500">*</span></label>
               <input 
                 type="date" 
                 value={date}
                 onChange={e => setDate(e.target.value)}
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                required
               />
             </div>
 

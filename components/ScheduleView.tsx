@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SUBJECTS, LESSONS } from '../constants';
-import { Subject } from '../types';
+import { SUBJECTS } from '../constants';
+import { db } from '../firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
+import { Lesson } from '../types';
 
 interface ScheduleEvent {
   dayOfWeek: number; // 1 = Monday, 5 = Friday
@@ -9,7 +11,7 @@ interface ScheduleEvent {
   subjectId: string;
 }
 
-// 5th Period Schedule Template
+// 5th Period Schedule Template (Horários Fixos)
 const SCHEDULE_TEMPLATE: ScheduleEvent[] = [
   // Monday
   { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'pna' },
@@ -52,25 +54,49 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
   const EXAM_END = new Date(2026, 3, 17);   // Apr 17, 2026
 
   const [currentDate, setCurrentDate] = useState<Date>(() => {
-    // If initialDate is passed and valid within range, use it
     if (initialDate && initialDate >= SEMESTER_START && initialDate <= SEMESTER_END) {
         return initialDate;
     }
-    
-    // Default: Check if today is within range, otherwise start at beginning
     const today = new Date();
-    // For demo purposes, if today is way off, we default to the start of the semester
     if (today < SEMESTER_START || today > EXAM_END) {
         return SEMESTER_START;
     }
     return today;
   });
 
+  const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
+
+  // Buscar aulas do banco para popular o cronograma dinamicamente
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const q = query(collection(db, "lessons"));
+        const snapshot = await getDocs(q);
+        const fetched: Lesson[] = [];
+        snapshot.forEach((doc) => {
+          const d = doc.data();
+          fetched.push({
+            id: doc.id,
+            subjectId: d.subjectId,
+            title: d.title,
+            date: d.date, // Formato YYYY-MM-DD vindo do Admin
+            youtubeIds: d.youtubeIds || [],
+            duration: d.duration
+          });
+        });
+        setDbLessons(fetched);
+      } catch (err) {
+        console.error("Erro ao carregar aulas para o cronograma:", err);
+      }
+    };
+    fetchLessons();
+  }, []);
+
   // Helpers
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(d.setDate(diff));
   };
 
@@ -80,12 +106,15 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
     return d;
   };
 
-  const formatDayNumber = (date: Date) => {
-      return date.getDate().toString();
-  };
-  
-  const formatMonthNumber = (date: Date) => {
-      return (date.getMonth() + 1).toString().padStart(2, '0');
+  const formatDayNumber = (date: Date) => date.getDate().toString();
+  const formatMonthNumber = (date: Date) => (date.getMonth() + 1).toString().padStart(2, '0');
+
+  // Formata data JS para YYYY-MM-DD (para comparar com o banco)
+  const formatDateToISO = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const currentWeekStart = getWeekStart(currentDate);
@@ -113,33 +142,32 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
     weekDays.push(d);
   }
 
-  // Get Subject Details
   const getSubject = (id: string) => SUBJECTS.find(s => s.id === id);
 
-  // Helper to find specific lesson content based on week index
-  const getLessonContent = (subjectId: string, weekIndex: number) => {
-    // Filter lessons for this subject
-    const subjectLessons = LESSONS.filter(l => l.subjectId === subjectId);
-    
-    // Simple logic: mapping the week index to the lesson array index
-    // Week 0 -> Lesson 0, Week 1 -> Lesson 1, etc.
-    if (weekIndex >= 0 && weekIndex < subjectLessons.length) {
-        return subjectLessons[weekIndex].title;
-    }
-    
-    return "Conteúdo a definir";
-  };
-
-  // Colors for subjects (hardcoded based on visual reference or assigned)
+  // Colors for subjects
   const getSubjectColor = (id: string) => {
     switch (id) {
         case 'pna': return 'bg-orange-500';
         case 'semio-sist': return 'bg-blue-600';
         case 'anat-patol': return 'bg-rose-600';
-        case 'farma-med': return 'bg-teal-600';
+        case 'farma-med': return 'bg-emerald-700'; // Cor alterada para verde mais escuro
         case 'mbe': return 'bg-yellow-600';
         default: return 'bg-slate-500';
     }
+  };
+
+  // Função para formatar o título (quebra de linha após :)
+  const formatSubjectTitle = (title: string) => {
+    if (title.includes(':')) {
+        const parts = title.split(':');
+        return (
+            <>
+                {parts[0]}:<br/>
+                <span className="font-normal opacity-90">{parts[1].trim()}</span>
+            </>
+        );
+    }
+    return title;
   };
 
   return (
@@ -172,7 +200,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
            <div className="h-6 w-px bg-gray-200 mx-2"></div>
 
            <button 
-             onClick={() => setCurrentDate(new Date())} // Uses real system date
+             onClick={() => setCurrentDate(new Date())} 
              className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-gray-50"
            >
              Hoje
@@ -205,19 +233,11 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
         {/* Schedule Grid */}
         <div className="flex-1 grid grid-cols-5 divide-x divide-gray-200 bg-gray-50/50 min-h-[500px]">
             {weekDays.map((day, dayIndex) => {
-                // Check if this specific day is within the active semester range
                 const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
-                // Check for Exam Week
                 const isExamWeek = day >= EXAM_START && day <= EXAM_END;
-
-                // Calculate which week of the semester this is (0-indexed)
-                const weekIndex = Math.floor((day.getTime() - SEMESTER_START.getTime()) / (1000 * 60 * 60 * 24 * 7));
-
-                // Day of week (1-5)
                 const currentDayOfWeek = dayIndex + 1;
-                
-                // Get events for this day of week
                 const daysEvents = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === currentDayOfWeek);
+                const isoDate = formatDateToISO(day); // Data da coluna atual em string
 
                 return (
                     <div key={dayIndex} className="relative p-2 space-y-2">
@@ -236,7 +256,11 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
                                 const subject = getSubject(event.subjectId);
                                 if (!subject) return null;
 
-                                const lessonTitle = getLessonContent(event.subjectId, weekIndex);
+                                // LÓGICA DINÂMICA:
+                                // Procura no banco se tem alguma aula com o subjectId deste evento E com a data deste dia
+                                const foundLesson = dbLessons.find(l => 
+                                    l.subjectId === event.subjectId && l.date === isoDate
+                                );
 
                                 return (
                                     <button
@@ -246,22 +270,23 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
                                     >
                                         <div className="text-white w-full h-full flex flex-col">
                                             {/* Top Half: Subject Name & Time */}
-                                            <div className="flex-1 flex flex-col items-center justify-center p-1 gap-0.5">
-                                                <p className="text-[10px] lg:text-xs font-bold leading-tight uppercase tracking-wide opacity-95">
-                                                    {subject.title}
-                                                </p>
-                                                <p className="text-base lg:text-lg font-black tracking-wider">
+                                            <div className="flex-1 flex flex-col items-center justify-center p-2 gap-1">
+                                                <div className="text-[11px] lg:text-xs font-bold leading-tight tracking-wide opacity-100">
+                                                    {/* Aplica formatação de quebra de linha se necessário */}
+                                                    {formatSubjectTitle(subject.title)}
+                                                </div>
+                                                <p className="text-xs font-normal opacity-80 mt-1">
                                                     {event.startTime} – {event.endTime}
                                                 </p>
                                             </div>
 
                                             {/* Divider Line */}
-                                            <div className="w-10/12 mx-auto border-t border-white/30"></div>
+                                            <div className="w-10/12 mx-auto border-t border-white/20"></div>
 
-                                            {/* Bottom Half: Lesson Title */}
-                                            <div className="flex-1 flex items-center justify-center p-2">
-                                                <p className="text-[11px] lg:text-xs leading-snug font-medium text-white/90">
-                                                    {lessonTitle}
+                                            {/* Bottom Half: Lesson Title (Dynamic from DB) */}
+                                            <div className="flex-1 flex items-center justify-center p-2 bg-black/10">
+                                                <p className="text-[11px] lg:text-xs leading-snug font-medium text-white/90 line-clamp-3">
+                                                    {foundLesson ? foundLesson.title : "Conteúdo a definir"}
                                                 </p>
                                             </div>
                                         </div>

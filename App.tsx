@@ -117,6 +117,13 @@ const App: React.FC = () => {
     }
   };
 
+  // Nova função para atualizar usuário completo (usado no ExerciseView)
+  const handleUpdateUser = (updatedUser: User) => {
+      setCurrentUser(updatedUser);
+      // Persiste no LocalStorage imediatamente
+      localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
+  };
+
   const navigateToClasses = (subjectId?: string) => {
       setViewParams({ targetSubjectId: subjectId });
       setCurrentView('classes');
@@ -156,7 +163,14 @@ const App: React.FC = () => {
           />
         );
       case 'exercises':
-        return <ExerciseView />;
+        // Passando currentUser e a função de update para a gamificação
+        return (
+          <ExerciseView 
+            currentUser={currentUser} 
+            onUpdateUser={handleUpdateUser} 
+            onExit={() => setCurrentView('classes')}
+          />
+        );
       case 'library':
         return <LibraryView />;
       case 'rank':
@@ -168,10 +182,16 @@ const App: React.FC = () => {
     }
   };
 
+  // Lógica para exibir a Sidebar:
+  // 1. Usuário deve estar logado (currentUser existe)
+  // 2. Não pode estar na view de Admin
+  // 3. Não pode estar na view de Exercícios (Game Mode Fullscreen)
+  const showSidebar = currentUser && currentView !== 'admin' && currentView !== 'exercises';
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Conditionally render header/sidebar only if not in standalone admin view or if user is logged in */}
-      {currentView !== 'admin' && (
+      {/* Renderiza Sidebar apenas se as condições forem atendidas */}
+      {showSidebar && (
         <>
           <div className="lg:hidden fixed top-0 left-0 w-full bg-white z-30 shadow-sm px-4 py-3 flex items-center justify-between">
              <div className="flex items-center gap-3">
@@ -194,7 +214,8 @@ const App: React.FC = () => {
         </>
       )}
       
-      <main className={`flex-1 min-h-screen transition-all duration-300 w-full ${currentView !== 'admin' ? 'pt-16 lg:pt-0 lg:ml-64 lg:w-auto' : ''} overflow-x-hidden relative`}>
+      {/* Ajusta a margem e padding baseado na presença da Sidebar */}
+      <main className={`flex-1 min-h-screen transition-all duration-300 w-full ${showSidebar ? 'pt-16 lg:pt-0 lg:ml-64 lg:w-auto' : ''} overflow-x-hidden relative`}>
         {renderContent()}
       </main>
     </div>

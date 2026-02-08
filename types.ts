@@ -4,6 +4,15 @@ export interface User {
   name: string;
   completedLessons: string[]; // Array of Lesson IDs
   avatarColor: string;
+  // Novo campo para gamificação
+  exerciseProgress?: Record<string, LevelProgress>; // Key: "{subjectId}_level_{levelNumber}"
+}
+
+export interface LevelProgress {
+  score: number;      // 0-100
+  stars: number;      // 0-3
+  unlocked: boolean;
+  completedAt: string;
 }
 
 export interface Subject {

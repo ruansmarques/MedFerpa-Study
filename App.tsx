@@ -8,10 +8,10 @@ import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
 import ScheduleView from './components/ScheduleView';
 import AdminDashboard from './components/AdminDashboard';
-import { User, ViewState } from './types';
+import { User, ViewState, LevelProgress } from './types';
 import { IconMenu } from './components/Icons';
 import { db, storage } from './firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 const App: React.FC = () => {
@@ -63,6 +63,52 @@ const App: React.FC = () => {
     setFavicon();
   }, []);
 
+  // --- LOGICA DE AUTO-CORREÇÃO DE XP ---
+  // Recalcula o XP total baseado nas aulas e exercícios reais para garantir consistência
+  useEffect(() => {
+    const syncXP = async () => {
+      if (!currentUser) return;
+
+      let calculatedXP = 0;
+
+      // 1. XP de Aulas (10 XP por aula)
+      if (currentUser.completedLessons && Array.isArray(currentUser.completedLessons)) {
+        calculatedXP += currentUser.completedLessons.length * 10;
+      }
+
+      // 2. XP de Exercícios (Score / 10)
+      if (currentUser.exerciseProgress) {
+        Object.values(currentUser.exerciseProgress).forEach((item) => {
+          const progress = item as LevelProgress;
+          // Considera apenas scores positivos
+          if (progress.score > 0) {
+            calculatedXP += Math.round(progress.score / 10);
+          }
+        });
+      }
+
+      // Se houver discrepância entre o cálculo real e o valor salvo, atualiza
+      if (currentUser.totalXP !== calculatedXP) {
+        console.log(`Corrigindo XP: Anterior ${currentUser.totalXP} -> Novo ${calculatedXP}`);
+        
+        const updatedUser = { ...currentUser, totalXP: calculatedXP };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
+
+        try {
+          const userRef = doc(db, "users", currentUser.ra);
+          await updateDoc(userRef, { totalXP: calculatedXP });
+        } catch (error) {
+          console.error("Erro ao sincronizar XP:", error);
+        }
+      }
+    };
+
+    syncXP();
+    // Executa apenas quando completedLessons ou exerciseProgress mudam (ou no login)
+  }, [currentUser?.completedLessons?.length, JSON.stringify(currentUser?.exerciseProgress)]);
+
+
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('medferpa_user', JSON.stringify(currentUser));
@@ -82,23 +128,69 @@ const App: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Função centralizada para adicionar XP
+  const handleAddXP = async (amount: number) => {
+    if (!currentUser) return;
+
+    // Atualiza estado local
+    const newTotalXP = (currentUser.totalXP || 0) + amount;
+    // Evita XP negativo
+    const finalXP = newTotalXP < 0 ? 0 : newTotalXP;
+    
+    const updatedUser = { ...currentUser, totalXP: finalXP };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
+
+    // Atualiza Firestore
+    try {
+      const userRef = doc(db, "users", currentUser.ra);
+      await updateDoc(userRef, { totalXP: finalXP });
+    } catch (error) {
+      console.error("Erro ao atualizar XP no banco:", error);
+    }
+  };
+
   const handleUpdateProgress = async (lessonId: string) => {
     if (!currentUser) return;
     const isCompleted = currentUser.completedLessons.includes(lessonId);
     let newCompletedList: string[];
+    // A lógica de XP aqui é apenas visual imediata, o useEffect de syncXP garantirá a consistência matemática depois
+    let xpChange = 0;
+
     if (isCompleted) {
+      // Removendo aula
       newCompletedList = currentUser.completedLessons.filter(id => id !== lessonId);
+      xpChange = -10; 
     } else {
+      // Concluindo aula
       newCompletedList = [...currentUser.completedLessons, lessonId];
+      xpChange = 10; 
     }
-    const updatedUser = { ...currentUser, completedLessons: newCompletedList };
+
+    // Atualiza Lista Local e XP Local
+    const currentXP = currentUser.totalXP || 0;
+    const newTotalXP = Math.max(0, currentXP + xpChange);
+
+    const updatedUser = { 
+        ...currentUser, 
+        completedLessons: newCompletedList,
+        totalXP: newTotalXP
+    };
+    
     setCurrentUser(updatedUser);
+
     try {
       const userRef = doc(db, "users", currentUser.ra);
       if (isCompleted) {
-        await updateDoc(userRef, { completedLessons: arrayRemove(lessonId) });
+        await updateDoc(userRef, { 
+            completedLessons: arrayRemove(lessonId),
+            totalXP: newTotalXP
+        });
       } else {
-        await updateDoc(userRef, { completedLessons: arrayUnion(lessonId) });
+        await updateDoc(userRef, { 
+            completedLessons: arrayUnion(lessonId),
+            totalXP: newTotalXP
+        });
       }
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
@@ -163,12 +255,13 @@ const App: React.FC = () => {
           />
         );
       case 'exercises':
-        // Passando currentUser e a função de update para a gamificação
+        // Passando handleAddXP para a gamificação
         return (
           <ExerciseView 
             currentUser={currentUser} 
             onUpdateUser={handleUpdateUser} 
             onExit={() => setCurrentView('classes')}
+            onAddXP={handleAddXP}
           />
         );
       case 'library':

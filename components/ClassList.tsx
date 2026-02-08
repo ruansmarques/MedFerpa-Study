@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
@@ -129,61 +130,111 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     }
   };
 
+  // --- CÁLCULO DE PROGRESSO DO PERÍODO ---
+  const calculatePeriodProgress = () => {
+    // 1. Identificar todas as disciplinas do período selecionado
+    const subjectsInPeriod = SUBJECTS.filter(s => s.period === selectedPeriod).map(s => s.id);
+    
+    // 2. Filtrar todas as aulas (dbLessons) que pertencem a essas disciplinas
+    const lessonsInPeriod = dbLessons.filter(l => subjectsInPeriod.includes(l.subjectId));
+    const totalLessonsCount = lessonsInPeriod.length;
+
+    // 3. Contar quantas dessas aulas o usuário completou
+    const completedCount = lessonsInPeriod.filter(l => currentUser.completedLessons.includes(l.id)).length;
+
+    // 4. Calcular porcentagem
+    const percentage = totalLessonsCount > 0 ? Math.round((completedCount / totalLessonsCount) * 100) : 0;
+
+    return { completedCount, totalLessonsCount, percentage };
+  };
+
+  const { completedCount, totalLessonsCount, percentage } = calculatePeriodProgress();
+
+
   if (!selectedSubject) {
     const filteredSubjects = SUBJECTS.filter(s => s.period === selectedPeriod);
 
     return (
       <div className="p-4 lg:p-10 max-w-6xl mx-auto">
-        <div className="lg:hidden mb-8 relative">
-          <div 
-            className="flex items-center justify-between px-2 py-4 select-none touch-pan-y"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-          >
-            <div className="text-gray-300 font-bold text-xs select-none">...</div>
-            {visiblePeriods.map((p, index) => {
-              const isCenter = index === 2;
-              const isFarEdge = index === 0 || index === 4;
-              return (
-                <button
-                  key={`mobile-period-${p}`}
-                  onClick={() => setSelectedPeriod(p)}
-                  className={`
-                    rounded-full flex items-center justify-center font-bold transition-all duration-300
-                    ${isCenter 
-                      ? 'w-14 h-14 bg-slate-800 text-white shadow-xl scale-110 z-10 text-xl' 
-                      : 'w-10 h-10 bg-white text-gray-400 border border-gray-100'
-                    }
-                    ${!isCenter && !isFarEdge ? 'scale-90 opacity-80' : ''}
-                    ${isFarEdge ? 'scale-75 opacity-40' : ''}
-                  `}
-                >
-                  {p}º
-                </button>
-              );
-            })}
-            <div className="text-gray-300 font-bold text-xs select-none">...</div>
-          </div>
-          <p className="text-center text-xs text-gray-400 mt-[-5px] font-medium">
-            Deslize para ver mais
-          </p>
-        </div>
+        
+        {/* PROGRESS BAR HEADER (DESKTOP) */}
+        <div className="flex flex-col-reverse lg:flex-row lg:items-center justify-between mb-8 lg:mb-12 gap-6">
+            
+            {/* SELETOR DE PERÍODO */}
+            <div className="flex-1">
+                {/* Mobile Carousel */}
+                <div className="lg:hidden mb-4 relative">
+                    <div 
+                        className="flex items-center justify-between px-2 py-4 select-none touch-pan-y"
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                    >
+                        <div className="text-gray-300 font-bold text-xs select-none">...</div>
+                        {visiblePeriods.map((p, index) => {
+                        const isCenter = index === 2;
+                        const isFarEdge = index === 0 || index === 4;
+                        return (
+                            <button
+                            key={`mobile-period-${p}`}
+                            onClick={() => setSelectedPeriod(p)}
+                            className={`
+                                rounded-full flex items-center justify-center font-bold transition-all duration-300
+                                ${isCenter 
+                                ? 'w-14 h-14 bg-slate-800 text-white shadow-xl scale-110 z-10 text-xl' 
+                                : 'w-10 h-10 bg-white text-gray-400 border border-gray-100'
+                                }
+                                ${!isCenter && !isFarEdge ? 'scale-90 opacity-80' : ''}
+                                ${isFarEdge ? 'scale-75 opacity-40' : ''}
+                            `}
+                            >
+                            {p}º
+                            </button>
+                        );
+                        })}
+                        <div className="text-gray-300 font-bold text-xs select-none">...</div>
+                    </div>
+                    <p className="text-center text-xs text-gray-400 mt-[-5px] font-medium">
+                        Deslize para ver mais
+                    </p>
+                </div>
 
-        <div className="hidden lg:flex items-center justify-center gap-4 mb-12 flex-wrap">
-          {allPeriods.slice(0, 8).map((p) => (
-            <button
-              key={p}
-              onClick={() => setSelectedPeriod(p)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
-                selectedPeriod === p
-                  ? 'bg-slate-800 text-white shadow-lg scale-110'
-                  : 'bg-white text-gray-400 border-2 border-gray-200 hover:border-slate-800 hover:text-slate-800'
-              }`}
-            >
-              {p}º
-            </button>
-          ))}
+                {/* Desktop Selector */}
+                <div className="hidden lg:flex items-center gap-3 flex-wrap">
+                    {allPeriods.slice(0, 8).map((p) => (
+                        <button
+                        key={p}
+                        onClick={() => setSelectedPeriod(p)}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
+                            selectedPeriod === p
+                            ? 'bg-slate-800 text-white shadow-lg scale-110'
+                            : 'bg-white text-gray-400 border-2 border-gray-200 hover:border-slate-800 hover:text-slate-800'
+                        }`}
+                        >
+                        {p}º
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* BARRA DE PROGRESSO ESPECÍFICA DO PERÍODO */}
+            <div className="w-full lg:w-64 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="flex justify-between items-end mb-2">
+                    <div>
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Progresso do {selectedPeriod}º Período</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                            {completedCount} de {totalLessonsCount} aulas
+                        </span>
+                    </div>
+                    <span className="text-2xl font-black text-blue-600">{percentage}%</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${percentage}%` }}
+                    ></div>
+                </div>
+            </div>
         </div>
 
         <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-6 lg:mb-8 text-center lg:text-left">

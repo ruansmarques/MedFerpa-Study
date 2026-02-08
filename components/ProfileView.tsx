@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { User } from '../types';
-import { db } from '../firebase';
-import { collection, getCountFromServer } from 'firebase/firestore';
 import { IconEdit, IconSave } from './Icons';
 
 interface ProfileProps {
@@ -12,27 +11,6 @@ interface ProfileProps {
 const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [nameInput, setNameInput] = useState(user.name);
-  const [totalLessons, setTotalLessons] = useState(0);
-  const [loadingStats, setLoadingStats] = useState(true);
-
-  useEffect(() => {
-     const fetchStats = async () => {
-         try {
-             const coll = collection(db, "lessons");
-             const snapshot = await getCountFromServer(coll);
-             setTotalLessons(snapshot.data().count);
-         } catch (e) {
-             console.error(e);
-         } finally {
-             setLoadingStats(false);
-         }
-     }
-     fetchStats();
-  }, []);
-
-  const completedCount = user.completedLessons.length;
-  // Se totalLessons for 0 (erro ou banco vazio), evita NaN
-  const percentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const handleSave = () => {
     if (nameInput.trim() !== '') {
@@ -42,6 +20,18 @@ const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
     }
     setIsEditing(false);
   };
+
+  // CÁLCULO DE NÍVEL E XP
+  // Nível 1: 0-99 XP
+  // Nível 2: 100-199 XP
+  // Nível = Floor(XP / 100) + 1
+  const currentXP = user.totalXP || 0;
+  const currentLevel = Math.floor(currentXP / 100) + 1;
+  const xpTowardsNextLevel = currentXP % 100;
+  const xpNeededForNextLevel = 100;
+  
+  // Porcentagem da barra (0 a 100)
+  const progressPercent = (xpTowardsNextLevel / xpNeededForNextLevel) * 100;
 
   return (
     <div className="p-4 lg:p-10 max-w-2xl mx-auto">
@@ -83,22 +73,32 @@ const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
 
         <p className="text-gray-400 font-mono tracking-wider mb-8 text-sm lg:text-base">{user.ra}</p>
 
-        <div className="bg-slate-50 rounded-2xl p-4 lg:p-6 text-left">
-          <div className="flex justify-between items-end mb-2">
-            <span className="text-xs lg:text-sm font-semibold text-gray-600">Progresso Geral</span>
-            <span className="text-xl lg:text-2xl font-bold text-blue-600">
-               {loadingStats ? '...' : `${percentage}%`}
-            </span>
+        {/* ÁREA DE XP E NÍVEL */}
+        <div className="bg-slate-50 rounded-2xl p-4 lg:p-6 text-left border border-slate-100">
+          <div className="flex justify-between items-end mb-3">
+            <div>
+                <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-widest block mb-1">Experiência do Nível Atual</span>
+                <span className="text-3xl font-black text-slate-800">Nível {currentLevel}</span>
+            </div>
+            <div className="text-right">
+                <span className="text-sm font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">
+                   {xpTowardsNextLevel} / {xpNeededForNextLevel} XP
+                </span>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+          
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
             <div 
-              className="bg-blue-600 h-3 rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${percentage}%` }}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+              style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
-          <div className="mt-4 flex justify-between text-xs text-gray-500">
-             <span>{completedCount} aulas concluídas</span>
-             <span>Total: {loadingStats ? '...' : totalLessons} aulas</span>
+          
+          <div className="mt-4 flex justify-between items-center border-t border-gray-200 pt-3">
+             <span className="text-xs text-gray-500 font-medium">Continue estudando para subir de nível!</span>
+             <span className="text-xs font-bold text-slate-700 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm">
+                 XP Total: {currentXP}
+             </span>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, EXERCISES } from '../constants';
 import { db, storage } from '../firebase';
@@ -9,6 +10,7 @@ interface ExerciseViewProps {
   currentUser: User;
   onUpdateUser: (user: User) => void;
   onExit: () => void;
+  onAddXP: (amount: number) => void; // Prop para adicionar XP
 }
 
 // CORES E ESTILOS CÓSMICOS
@@ -58,6 +60,8 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
       // Verifica se o nível ATUAL está explicitamente desbloqueado
       const currentData = getLevelData(lvl);
       if (currentData && currentData.unlocked) return true;
+      // Se tiver score >= 0 (mesmo que 0), significa que já foi interagido/desbloqueado anteriormente
+      if (currentData && currentData.score >= 0) return true;
 
       // OU Verifica se o nível ANTERIOR foi completado com sucesso (score >= 50)
       const prevLevelData = getLevelData(lvl - 1);
@@ -97,16 +101,23 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
         svgPath += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
     }
 
-    // Encontrar posição do mascote
+    // Encontrar posição do mascote (Maior nível desbloqueado + 1 ou atual se incompleto)
     let currentActiveLevel = 1;
-    for (let l of levels) {
-        if (isLevelUnlocked(l)) currentActiveLevel = l;
+    for (let i = 0; i < levels.length; i++) {
+        const lvl = levels[i];
+        if (isLevelUnlocked(lvl)) {
+             currentActiveLevel = lvl;
+             // Se este nível já foi completado (score >= 50), o mascote pode estar no próximo
+             const data = getLevelData(lvl);
+             if (data && data.score >= 50 && i < levels.length - 1) {
+                 // Verifica apenas visualmente para o mascote
+                 currentActiveLevel = levels[i+1];
+             }
+        } else {
+            break;
+        }
     }
-    // Se completou o nível atual com sucesso (>0 score), mas o próximo ainda não foi jogado, mascote vai para o próximo
-    const activeData = getLevelData(currentActiveLevel);
-    if (activeData && activeData.score >= 50 && currentActiveLevel < levels.length) {
-        currentActiveLevel++;
-    }
+    
     const mascotPoint = pathPoints.find(p => p.level === currentActiveLevel) || pathPoints[0];
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -116,7 +127,7 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
             const targetScroll = mascotPoint.y - (window.innerHeight / 2);
             containerRef.current.scrollTop = targetScroll; 
         }
-    }, [mascotPoint]);
+    }, [mascotPoint, currentUser]); // Adicionado currentUser para garantir re-render
 
     return (
       <div className="fixed inset-0 z-50 bg-[#020617] flex flex-col items-center">
@@ -266,7 +277,7 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
 };
 
 // --- COMPONENTE PRINCIPAL ---
-const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit }) => {
+const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP }) => {
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1); // 1: Galáxias, 2: Sistema Solar, 3: Mapa, 4: Quiz
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -335,6 +346,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
 
   // --- ETAPA 1: SELEÇÃO DE UNIVERSO (PERÍODO) ---
   const renderGalaxies = () => {
+    // ... (mesmo código anterior)
     const periods = [1, 2, 3, 4, 5, 6, 7, 8];
     return (
       <div className="relative z-10 w-full max-w-6xl mx-auto p-4 flex flex-col items-center animate-fade-in">
@@ -377,14 +389,11 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
 
   // --- ETAPA 2: SISTEMA SOLAR ORBITAL (DISCIPLINAS) ---
   const renderSolarSystem = () => {
+    // ... (mesmo código anterior)
     const subjects = SUBJECTS.filter(s => s.period === selectedPeriod);
-    
-    // Configurações da Órbita Desktop
-    // Ajustado para usar lógica de transformação CSS (rotate/translate)
     const containerSize = 550; 
-    const orbitRadius = containerSize / 2; // Raio visual da órbita
+    const orbitRadius = containerSize / 2; 
 
-    // Logic for Mobile Swipe
     const handleTouchStart = (e: React.TouchEvent) => {
         setTouchStart(e.targetTouches[0].clientX);
     };
@@ -397,10 +406,8 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
         const minSwipeDistance = 50;
         
         if (distance > minSwipeDistance) {
-            // Swipe Left -> Next
             setMobileSubjectIndex((prev) => (prev + 1) % subjects.length);
         } else if (distance < -minSwipeDistance) {
-            // Swipe Right -> Prev
             setMobileSubjectIndex((prev) => (prev - 1 + subjects.length) % subjects.length);
         }
         setTouchStart(null);
@@ -429,15 +436,11 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
              
              <div className="relative w-full h-[400px] flex items-center justify-center perspective-1000">
                 {subjects.map((subj, idx) => {
-                    // Calcula posição relativa ao index ativo
                     let relativeIdx = idx - mobileSubjectIndex;
-                    
-                    // Ajuste para looping infinito visual
                     const total = subjects.length;
                     if (relativeIdx < -1) relativeIdx += total;
                     if (relativeIdx > 1) relativeIdx -= total;
 
-                    // Se estiver muito longe, esconde ou joga pra trás
                     const isActive = idx === mobileSubjectIndex;
                     const isPrev = relativeIdx === -1 || (mobileSubjectIndex === 0 && idx === total - 1);
                     const isNext = relativeIdx === 1 || (mobileSubjectIndex === total - 1 && idx === 0);
@@ -493,7 +496,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
         </div>
 
         {/* --- DESKTOP ORBITAL VIEW (>= md) --- */}
-        {/* Usando transform rotate/translate para posicionamento perfeito */}
         <div 
             className="hidden md:flex relative items-center justify-center rounded-full"
             style={{ 
@@ -501,11 +503,9 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 height: containerSize,
             }}
         >
-            {/* Linha da Órbita (Visual) */}
             <div className="absolute inset-0 rounded-full border border-white/5 animate-[orbit-pulse_4s_ease-in-out_infinite]"></div>
             <div className="absolute inset-[15%] rounded-full border border-white/5 border-dashed opacity-30"></div>
 
-            {/* CENTRO: SOL / TÍTULO */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 flex flex-col items-center justify-center text-center p-4">
                  <h2 className="text-4xl md:text-5xl font-black text-white text-shadow-lg leading-none">
                     {selectedPeriod}º
@@ -514,10 +514,8 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                  <div className="w-32 h-32 bg-yellow-500/10 rounded-full absolute blur-3xl -z-10"></div>
             </div>
 
-            {/* PLANETAS ORBITANDO */}
             {subjects.map((subj, idx) => {
                const total = subjects.length;
-               // Ângulo para distribuição uniforme. -90 para começar do topo.
                const angle = (360 / total) * idx - 90;
                const gradient = PLANET_GRADIENTS[idx % PLANET_GRADIENTS.length];
                
@@ -532,7 +530,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                    style={{
                      top: '50%',
                      left: '50%',
-                     // LÓGICA DE ALINHAMENTO ORBITAL:
                      transform: `rotate(${angle}deg) translate(${orbitRadius}px) rotate(${-angle}deg)`,
                      width: '120px', 
                      height: '120px',
@@ -540,14 +537,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                      marginLeft: '-60px',
                    }}
                  >
-                   {/* Container interno para a animação de flutuação e escala */}
                    <div 
                      className="w-full h-full flex flex-col items-center group"
                      style={{
                         animation: `float ${3 + (idx%2)}s ease-in-out infinite ${idx * 0.5}s`
                      }}
                    >
-                       {/* Planeta */}
                        <div className={`
                           w-20 h-20 md:w-24 md:h-24 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.8)] 
                           ${gradient} relative flex items-center justify-center
@@ -558,7 +553,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-black/40 pointer-events-none"></div>
                        </div>
                        
-                       {/* Nome (Abaixo do planeta) */}
                        <div className="absolute top-[85%] z-30 transition-all duration-300 pointer-events-none group-hover:z-50 w-[200px] flex justify-center">
                            <span className="
                                block bg-slate-900/90 backdrop-blur-md border border-white/10 
@@ -605,6 +599,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     const currentQ = quizQuestions[currentQuestionIndex];
     if (idx === currentQ.correctOptionIndex) {
       setScore(prev => prev + 1);
+      // REMOVIDO: onAddXP(1); AGORA O XP É CALCULADO APENAS NO FINAL
     }
     setTimeout(() => {
        if (currentQuestionIndex < quizQuestions.length - 1) {
@@ -622,16 +617,29 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
      const key = `${selectedSubject.id}_level_${currentLevel}`;
      const currentData = currentUser.exerciseProgress?.[key];
      
-     // Se já tiver uma pontuação melhor, não sobrescreve, mas pode precisar desbloquear o próximo
+     // LÓGICA DE XP BASEADA NO MELHOR RESULTADO
+     const currentXPFromThisLevel = currentData && currentData.score >= 0 
+        ? Math.round(currentData.score / 10) 
+        : 0;
+     
+     const newXPFromThisLevel = Math.round(finalScore / 10);
+     
+     // Se o novo XP for maior que o anterior, adiciona a diferença ao usuário
+     if (newXPFromThisLevel > currentXPFromThisLevel) {
+        const xpToAdd = newXPFromThisLevel - currentXPFromThisLevel;
+        if (xpToAdd > 0) {
+            onAddXP(xpToAdd);
+        }
+     }
+
      if (currentData && currentData.score > finalScore) {
-         // Mesmo se não sobrescrever o score, verifica se precisa desbloquear o próximo
          if (finalScore >= 50) {
              const nextKey = `${selectedSubject.id}_level_${currentLevel + 1}`;
              if (!currentUser.exerciseProgress?.[nextKey]) {
                   const updatedWithNext = {
                       ...currentUser.exerciseProgress,
                       [nextKey]: {
-                          score: -1, // Use -1 to represent "unlocked but not played"
+                          score: -1,
                           stars: 0,
                           unlocked: true,
                           completedAt: ''
@@ -659,19 +667,16 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
          [key]: newProgress 
      };
 
-     // Desbloquear o próximo nível se passou
      if (finalScore >= 50) {
          const nextKey = `${selectedSubject.id}_level_${currentLevel + 1}`;
-         // Cria o próximo nível como desbloqueado se ele não existir
          if (!updatedProgress[nextKey]) {
              updatedProgress[nextKey] = {
-                 score: -1, // Use -1 to represent "unlocked but not played"
+                 score: -1, 
                  stars: 0,
                  unlocked: true,
                  completedAt: ''
              }
          } else {
-             // Garante que está desbloqueado se já existia
              updatedProgress[nextKey].unlocked = true;
          }
      }
@@ -697,12 +702,11 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
      }
   }, [quizFinished]);
 
-  // --- ETAPA 4: ARENA (QUIZ) ---
   const renderArena = () => {
+    // ... (Mantém renderização do Quiz)
     if (quizFinished) {
        const percentage = Math.round((score / quizQuestions.length) * 100);
        return (
-         // Container FullScreen para o Quiz Result
          <div className="fixed inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center text-center p-6 animate-fade-in-up">
             <div className="text-8xl mb-4">
                 {percentage >= 90 ? '🏆' : percentage >= 50 ? '🚀' : '💥'}
@@ -728,7 +732,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                  Voltar ao Mapa
                </button>
                <button 
-                 onClick={() => startQuiz(currentLevel)} // Replay
+                 onClick={() => startQuiz(currentLevel)} 
                  className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors"
                >
                  Tentar Novamente
@@ -742,10 +746,8 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     const progress = ((currentQuestionIndex) / quizQuestions.length) * 100;
 
     return (
-      // Container FullScreen para o Quiz
       <div className="fixed inset-0 z-50 bg-[#020617] overflow-y-auto">
           <div className="w-full max-w-3xl mx-auto p-6 flex flex-col min-h-full">
-            {/* Top Bar */}
             <div className="flex items-center gap-4 mb-10 pt-4">
                 <button onClick={() => setStage(3)} className="text-gray-400 hover:text-white">
                 <span className="text-2xl">×</span>
@@ -761,7 +763,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 </div>
             </div>
 
-            {/* Question */}
             <div className="flex-1 flex flex-col justify-center pb-20">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-10 leading-relaxed">
                 {currentQ.question}

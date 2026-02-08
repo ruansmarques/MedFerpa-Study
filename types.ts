@@ -4,7 +4,8 @@ export interface User {
   name: string;
   completedLessons: string[]; // Array of Lesson IDs
   avatarColor: string;
-  // Novo campo para gamificação
+  totalXP: number; // Sistema de Gamificação (Novo)
+  // Novo campo para gamificação de trilhas
   exerciseProgress?: Record<string, LevelProgress>; // Key: "{subjectId}_level_{levelNumber}"
 }
 

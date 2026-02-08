@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -46,11 +47,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             // Tratamento de segurança:
             // Garante que completedLessons seja um array mesmo se não existir no banco
             // Garante que avatarColor tenha uma cor padrão se estiver vazio
+            // Garante que totalXP seja inicializado
             const userData: User = {
               ra: data.ra,
               name: data.name,
               completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
-              avatarColor: data.avatarColor || 'bg-blue-600'
+              avatarColor: data.avatarColor || 'bg-blue-600',
+              totalXP: data.totalXP || 0
             };
             
             onLogin(userData);

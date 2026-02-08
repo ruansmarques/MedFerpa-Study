@@ -54,24 +54,30 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
 
     const isLevelUnlocked = (lvl: number) => {
       if (lvl === 1) return true;
+      
+      // Verifica se o nível ATUAL está explicitamente desbloqueado
+      const currentData = getLevelData(lvl);
+      if (currentData && currentData.unlocked) return true;
+
+      // OU Verifica se o nível ANTERIOR foi completado com sucesso (score >= 50)
       const prevLevelData = getLevelData(lvl - 1);
-      return !!prevLevelData && prevLevelData.score >= 0;
+      return !!prevLevelData && prevLevelData.score >= 50;
     };
 
-    // --- CÁLCULO DO CAMINHO (SNAKE PATH) INVERTIDO ---
+    // --- CÁLCULO DO CAMINHO (SNAKE PATH) ---
+    // Usamos larguras fixas para cálculo geométrico, mas o SVG escala via CSS
     const ITEM_HEIGHT = 140; 
-    const VIEW_WIDTH = 320;  
+    const VIEW_WIDTH = 360; // Largura base para cálculo
     const CENTER_X = VIEW_WIDTH / 2;
-    const AMPLITUDE = 90;
+    const AMPLITUDE = 100; // Curva mais acentuada
     
-    const TOTAL_HEIGHT = (levels.length * ITEM_HEIGHT) + 200; // Altura extra para scroll confortável
+    const TOTAL_HEIGHT = (levels.length * ITEM_HEIGHT) + 200; 
 
-    // Gera os pontos da curva (Começando do nível 1 que ficará em BAIXO)
+    // Gera os pontos da curva
     const pathPoints = levels.map((lvl, i) => {
-      // Inversão lógica do Y:
-      // Index 0 (Lvl 1) -> Perto do fundo
-      const inverseIndex = i; // 0, 1, 2...
-      const y = TOTAL_HEIGHT - (inverseIndex * ITEM_HEIGHT) - 150; // Padding bottom generoso
+      // Inversão lógica do Y: Nível 1 embaixo
+      const inverseIndex = i; 
+      const y = TOTAL_HEIGHT - (inverseIndex * ITEM_HEIGHT) - 150;
 
       // Zig Zag no X
       const xOffset = Math.sin(inverseIndex * (Math.PI / 1.5)) * AMPLITUDE; 
@@ -83,7 +89,12 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     for (let i = 0; i < pathPoints.length - 1; i++) {
         const current = pathPoints[i];
         const next = pathPoints[i + 1];
-        svgPath += ` L ${next.x} ${next.y}`;
+        // Curva de Bézier cúbica para suavizar
+        const cp1x = current.x;
+        const cp1y = current.y - (ITEM_HEIGHT / 2);
+        const cp2x = next.x;
+        const cp2y = next.y + (ITEM_HEIGHT / 2);
+        svgPath += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
     }
 
     // Encontrar posição do mascote
@@ -91,6 +102,7 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     for (let l of levels) {
         if (isLevelUnlocked(l)) currentActiveLevel = l;
     }
+    // Se completou o nível atual com sucesso (>0 score), mas o próximo ainda não foi jogado, mascote vai para o próximo
     const activeData = getLevelData(currentActiveLevel);
     if (activeData && activeData.score >= 50 && currentActiveLevel < levels.length) {
         currentActiveLevel++;
@@ -100,16 +112,15 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     const containerRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (containerRef.current) {
-             // Tenta centralizar o mascote na tela
+            // Centraliza o mascote verticalmente na tela
             const targetScroll = mascotPoint.y - (window.innerHeight / 2);
             containerRef.current.scrollTop = targetScroll; 
         }
     }, [mascotPoint]);
 
     return (
-      // FIXO NA TELA INTEIRA
       <div className="fixed inset-0 z-50 bg-[#020617] flex flex-col items-center">
-         {/* HEADER FIXO */}
+         {/* HEADER */}
          <div className="w-full max-w-4xl flex justify-between items-center p-6 z-20 bg-gradient-to-b from-[#020617] to-transparent absolute top-0 pointer-events-none">
             <button 
               onClick={onBack}
@@ -123,40 +134,47 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
             </div>
          </div>
 
-         {/* CONTAINER DO MAPA SCROLLÁVEL */}
+         {/* SCROLL CONTAINER */}
          <div 
             ref={containerRef}
-            className="flex-1 w-full overflow-y-auto overflow-x-hidden scrollbar-hide"
+            className="flex-1 w-full overflow-y-auto overflow-x-hidden scrollbar-hide relative"
          >
-            <div className="relative w-full max-w-md mx-auto" style={{ height: TOTAL_HEIGHT }}>
+            {/* O Container interno tem a altura total calculada e centraliza o conteúdo */}
+            <div className="relative mx-auto" style={{ height: TOTAL_HEIGHT, width: '100%', maxWidth: '450px' }}>
                 
-                {/* SVG Background Path */}
-                <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 overflow-visible">
-                <path 
-                    d={svgPath} 
-                    fill="none" 
-                    stroke="rgba(255,255,255,0.15)" 
-                    strokeWidth="16" 
-                    strokeLinecap="round"
-                />
-                <path 
-                    d={svgPath} 
-                    fill="none" 
-                    stroke="rgba(255,255,255,0.3)" 
-                    strokeWidth="4" 
-                    strokeDasharray="12,12" 
-                    strokeLinecap="round"
-                    className="animate-[dash_20s_linear_infinite]"
-                />
+                {/* SVG Background Path - Usando viewBox para alinhamento perfeito */}
+                <svg 
+                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 overflow-visible"
+                    viewBox={`0 0 ${VIEW_WIDTH} ${TOTAL_HEIGHT}`}
+                    preserveAspectRatio="xMidYMin slice"
+                >
+                    <path 
+                        d={svgPath} 
+                        fill="none" 
+                        stroke="rgba(255,255,255,0.15)" 
+                        strokeWidth="16" 
+                        strokeLinecap="round"
+                    />
+                    <path 
+                        d={svgPath} 
+                        fill="none" 
+                        stroke="rgba(255,255,255,0.3)" 
+                        strokeWidth="4" 
+                        strokeDasharray="12,12" 
+                        strokeLinecap="round"
+                        className="animate-[dash_20s_linear_infinite]"
+                    />
                 </svg>
 
                 {/* MASCOTE */}
                 <div 
-                    className="absolute z-30 transition-all duration-1000 ease-in-out"
+                    className="absolute z-30 transition-all duration-1000 ease-in-out pointer-events-none"
                     style={{ 
+                        // Mapeamento proporcional da posição X baseada no VIEW_WIDTH
                         left: `${(mascotPoint.x / VIEW_WIDTH) * 100}%`,
                         top: mascotPoint.y,
-                        transform: 'translate(20%, -50%)', 
+                        // Translada para o centro e depois offset para o lado
+                        transform: 'translate(calc(-50% + 50px), -50%)', 
                     }}
                 >
                     <div style={{ animation: 'float-mascot 4s ease-in-out infinite' }}>
@@ -183,46 +201,57 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                     return (
                         <div 
                             key={lvl} 
-                            className="absolute flex flex-col items-center justify-center w-24 h-24 -ml-12"
+                            className="absolute flex flex-col items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
                             style={{ 
+                                // Posicionamento absoluto percentual baseado no VIEW_WIDTH para alinhar com SVG
                                 left: `${(p.x / VIEW_WIDTH) * 100}%`, 
-                                top: p.y - 48 
+                                top: p.y
                             }}
                         >
+                             {/* Informações Superiores (Estrelas e Porcentagem) */}
+                             <div className="absolute -top-12 flex flex-col items-center w-32 pointer-events-none z-30">
+                                {unlocked && stars > 0 && (
+                                    <div className="flex justify-center gap-1 mb-0.5">
+                                        {Array(3).fill(0).map((_, i) => (
+                                            <span key={i} className={`text-lg drop-shadow-md leading-none ${i < stars ? 'text-yellow-400' : 'text-slate-700'}`}>
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                {/* FEATURE: Porcentagem de Acerto */}
+                                {/* score -1 indica desbloqueado mas não jogado, então só mostra se >= 0 */}
+                                {unlocked && data && data.score >= 0 && (
+                                    <span className="text-[11px] font-black text-green-400 bg-slate-900/80 px-2 rounded-full border border-green-500/30 shadow-sm leading-tight">
+                                        {data.score}%
+                                    </span>
+                                )}
+                             </div>
+
                             <button
-                            disabled={!unlocked}
-                            onClick={() => onStartQuiz(lvl)}
-                            className={`
-                                w-20 h-20 rounded-[2.5rem] flex items-center justify-center text-2xl font-black shadow-2xl transition-all duration-300
-                                relative group z-20
-                                ${unlocked 
-                                ? 'bg-gradient-to-b from-blue-500 to-blue-700 text-white hover:scale-110 hover:-translate-y-1 border-b-4 border-blue-900 active:border-b-0 active:translate-y-1 ring-4 ring-blue-500/30' 
-                                : 'bg-slate-800 text-slate-600 border-b-4 border-slate-900 cursor-not-allowed'
-                                }
-                            `}
+                                disabled={!unlocked}
+                                onClick={() => onStartQuiz(lvl)}
+                                className={`
+                                    w-20 h-20 rounded-[2.5rem] flex items-center justify-center text-2xl font-black shadow-2xl transition-all duration-300
+                                    relative group z-20
+                                    ${unlocked 
+                                    ? 'bg-gradient-to-b from-blue-500 to-blue-700 text-white hover:scale-110 hover:-translate-y-1 border-b-4 border-blue-900 active:border-b-0 active:translate-y-1 ring-4 ring-blue-500/30' 
+                                    : 'bg-slate-800 text-slate-600 border-b-4 border-slate-900 cursor-not-allowed'
+                                    }
+                                `}
                             >
                                 {unlocked ? (
                                     <span className="drop-shadow-md">{lvl}</span>
                                 ) : (
                                     <span className="text-xl opacity-30">🔒</span>
                                 )}
-
-                                {/* Estrelas Flutuantes */}
-                                {unlocked && stars > 0 && (
-                                    <div className="absolute -top-8 w-32 flex justify-center gap-1 pointer-events-none">
-                                        {Array(3).fill(0).map((_, i) => (
-                                            <span key={i} className={`text-lg drop-shadow-md transform transition-all ${i < stars ? 'text-yellow-400 scale-100' : 'text-slate-700 scale-75'}`}>
-                                                ★
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
                             </button>
                             
                             {/* Placa de Nível (Chão) */}
                             <div className={`
                                 mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                backdrop-blur-sm border border-white/5
+                                backdrop-blur-sm border border-white/5 whitespace-nowrap
                                 ${unlocked ? 'bg-blue-900/60 text-blue-200' : 'bg-slate-900/60 text-slate-600'}
                             `}>
                                 Nível {lvl}
@@ -504,11 +533,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                      top: '50%',
                      left: '50%',
                      // LÓGICA DE ALINHAMENTO ORBITAL:
-                     // 1. rotate(angle): Gira o eixo
-                     // 2. translate(radius): Empurra o elemento para a borda
-                     // 3. rotate(-angle): Gira o elemento de volta para ficar "em pé"
                      transform: `rotate(${angle}deg) translate(${orbitRadius}px) rotate(${-angle}deg)`,
-                     // Centraliza o elemento no ponto pivot
                      width: '120px', 
                      height: '120px',
                      marginTop: '-60px', 
@@ -596,7 +621,31 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
      if (!currentUser || !selectedSubject) return;
      const key = `${selectedSubject.id}_level_${currentLevel}`;
      const currentData = currentUser.exerciseProgress?.[key];
-     if (currentData && currentData.score > finalScore) return;
+     
+     // Se já tiver uma pontuação melhor, não sobrescreve, mas pode precisar desbloquear o próximo
+     if (currentData && currentData.score > finalScore) {
+         // Mesmo se não sobrescrever o score, verifica se precisa desbloquear o próximo
+         if (finalScore >= 50) {
+             const nextKey = `${selectedSubject.id}_level_${currentLevel + 1}`;
+             if (!currentUser.exerciseProgress?.[nextKey]) {
+                  const updatedWithNext = {
+                      ...currentUser.exerciseProgress,
+                      [nextKey]: {
+                          score: -1, // Use -1 to represent "unlocked but not played"
+                          stars: 0,
+                          unlocked: true,
+                          completedAt: ''
+                      }
+                  };
+                  onUpdateUser({ ...currentUser, exerciseProgress: updatedWithNext });
+                  try {
+                      const userRef = doc(db, "users", currentUser.ra);
+                      await updateDoc(userRef, { exerciseProgress: updatedWithNext });
+                  } catch(e) { console.error(e); }
+             }
+         }
+         return;
+     }
 
      const newProgress: LevelProgress = {
          score: finalScore,
@@ -604,21 +653,29 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
          unlocked: true, 
          completedAt: new Date().toISOString()
      };
+     
      const updatedProgress = { 
          ...currentUser.exerciseProgress, 
          [key]: newProgress 
      };
+
+     // Desbloquear o próximo nível se passou
      if (finalScore >= 50) {
          const nextKey = `${selectedSubject.id}_level_${currentLevel + 1}`;
+         // Cria o próximo nível como desbloqueado se ele não existir
          if (!updatedProgress[nextKey]) {
              updatedProgress[nextKey] = {
-                 score: 0,
+                 score: -1, // Use -1 to represent "unlocked but not played"
                  stars: 0,
                  unlocked: true,
                  completedAt: ''
              }
+         } else {
+             // Garante que está desbloqueado se já existia
+             updatedProgress[nextKey].unlocked = true;
          }
      }
+
      const updatedUser = { ...currentUser, exerciseProgress: updatedProgress };
      onUpdateUser(updatedUser);
      try {

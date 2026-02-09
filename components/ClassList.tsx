@@ -4,7 +4,7 @@ import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
 import { db, storage } from '../firebase';
-import { ref, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL, getMetadata } from 'firebase/storage';
 import { collection, query, getDocs } from 'firebase/firestore';
 
 interface ClassListProps {
@@ -390,9 +390,48 @@ const LessonRow: React.FC<{
   
   const hasVideos = lesson.youtubeIds && lesson.youtubeIds.length > 0 && lesson.youtubeIds[0] !== '';
   
-  // Verifica se existe URL salva no banco
-  const hasSlide = !!lesson.slideUrl;
-  const hasSummary = !!lesson.summaryUrl;
+  const [slideAvailable, setSlideAvailable] = useState(!!lesson.slideUrl);
+  const [summaryAvailable, setSummaryAvailable] = useState(!!lesson.summaryUrl);
+
+  // Helper para construir caminho legado
+  const getLegacyStoragePath = (type: 'slide' | 'resumo') => {
+      const basePath = 'materials';
+      const subjectPath = subjectFolderName || 'default';
+      const categoryPath = lesson.category 
+        ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
+        : '';
+      const typeFolder = type === 'slide' ? 'slides' : 'resumos';
+      const fileName = `${lesson.title}.pdf`;
+
+      const parts = [basePath, subjectPath];
+      if (categoryPath) parts.push(categoryPath);
+      parts.push(typeFolder);
+      parts.push(fileName);
+      
+      return parts.join('/');
+  };
+
+  useEffect(() => {
+    // Verifica disponibilidade do Slide
+    if (lesson.slideUrl) {
+        setSlideAvailable(true);
+    } else {
+        const path = getLegacyStoragePath('slide');
+        getMetadata(ref(storage, path))
+            .then(() => setSlideAvailable(true))
+            .catch(() => setSlideAvailable(false));
+    }
+
+    // Verifica disponibilidade do Resumo
+    if (lesson.summaryUrl) {
+        setSummaryAvailable(true);
+    } else {
+        const path = getLegacyStoragePath('resumo');
+        getMetadata(ref(storage, path))
+            .then(() => setSummaryAvailable(true))
+            .catch(() => setSummaryAvailable(false));
+    }
+  }, [lesson, subjectFolderName]);
 
   const openPdf = async (type: 'slide' | 'resumo') => {
     setIsLoadingFile(true);
@@ -408,21 +447,8 @@ const LessonRow: React.FC<{
        return;
     }
 
-    // Fallback para estrutura antiga de arquivos locais (apenas para compatibilidade se algo não tiver URL)
-    const basePath = 'materials';
-    const subjectPath = subjectFolderName || 'default';
-    const categoryPath = lesson.category 
-      ? lesson.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-') 
-      : '';
-    const typeFolder = type === 'slide' ? 'slides' : 'resumos';
-    const fileName = `${lesson.title}.pdf`;
-
-    const parts = [basePath, subjectPath];
-    if (categoryPath) parts.push(categoryPath);
-    parts.push(typeFolder);
-    parts.push(fileName);
-    
-    const storagePath = parts.join('/');
+    // Fallback para estrutura antiga de arquivos locais
+    const storagePath = getLegacyStoragePath(type);
     
     try {
       const fileRef = ref(storage, storagePath);
@@ -439,7 +465,6 @@ const LessonRow: React.FC<{
   // Função helper para exibir a data corretamente sem conversão de fuso horário
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return '';
-    // Recebe "YYYY-MM-DD" e retorna "DD/MM/YYYY" tratando apenas como string
     const [year, month, day] = dateString.split('-');
     return `${day}/${month}/${year}`;
   };
@@ -470,17 +495,17 @@ const LessonRow: React.FC<{
           />
           <ActionButton 
             icon={IconPresentation} 
-            onClick={() => hasSlide && openPdf('slide')} 
-            tooltip={hasSlide ? "Baixar Slides" : "Sem Slides"} 
+            onClick={() => slideAvailable && openPdf('slide')} 
+            tooltip={slideAvailable ? "Baixar Slides" : "Sem Slides"} 
             disabled={isLoadingFile} 
-            isAvailable={hasSlide}
+            isAvailable={slideAvailable}
           />
           <ActionButton 
             icon={IconBook} 
-            onClick={() => hasSummary && openPdf('resumo')} 
-            tooltip={hasSummary ? "Baixar Resumo" : "Sem Resumo"} 
+            onClick={() => summaryAvailable && openPdf('resumo')} 
+            tooltip={summaryAvailable ? "Baixar Resumo" : "Sem Resumo"} 
             disabled={isLoadingFile} 
-            isAvailable={hasSummary}
+            isAvailable={summaryAvailable}
           />
           <div className="h-6 w-px bg-gray-300 mx-1 hidden lg:block"></div>
           <button 
@@ -530,7 +555,6 @@ const LessonRow: React.FC<{
           
           <div className="mt-4 flex flex-col lg:flex-row justify-between items-center text-xs lg:text-sm text-gray-500 gap-2 border-t border-gray-200 pt-3">
              <div className="flex gap-4">
-                {/* Correção aqui: usando formatação direta da string */}
                 {lesson.date && <span>Data: {formatDisplayDate(lesson.date)}</span>}
              </div>
              {onNavigateToSchedule && (

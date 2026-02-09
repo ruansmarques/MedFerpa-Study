@@ -389,6 +389,10 @@ const LessonRow: React.FC<{
   const [isLoadingFile, setIsLoadingFile] = useState(false);
   
   const hasVideos = lesson.youtubeIds && lesson.youtubeIds.length > 0 && lesson.youtubeIds[0] !== '';
+  
+  // Verifica se existe URL salva no banco
+  const hasSlide = !!lesson.slideUrl;
+  const hasSummary = !!lesson.summaryUrl;
 
   const openPdf = async (type: 'slide' | 'resumo') => {
     setIsLoadingFile(true);
@@ -458,9 +462,26 @@ const LessonRow: React.FC<{
         </div>
 
         <div className="flex items-center gap-1 lg:gap-2 flex-shrink-0">
-          <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
-          <ActionButton icon={IconPresentation} onClick={() => openPdf('slide')} tooltip="Baixar Slides" disabled={isLoadingFile} />
-          <ActionButton icon={IconBook} onClick={() => openPdf('resumo')} tooltip="Baixar Resumo" disabled={isLoadingFile} />
+          <ActionButton 
+            icon={IconPlay} 
+            onClick={() => setIsOpen(!isOpen)} 
+            tooltip="Assistir Aula" 
+            isAvailable={true} 
+          />
+          <ActionButton 
+            icon={IconPresentation} 
+            onClick={() => hasSlide && openPdf('slide')} 
+            tooltip={hasSlide ? "Baixar Slides" : "Sem Slides"} 
+            disabled={isLoadingFile} 
+            isAvailable={hasSlide}
+          />
+          <ActionButton 
+            icon={IconBook} 
+            onClick={() => hasSummary && openPdf('resumo')} 
+            tooltip={hasSummary ? "Baixar Resumo" : "Sem Resumo"} 
+            disabled={isLoadingFile} 
+            isAvailable={hasSummary}
+          />
           <div className="h-6 w-px bg-gray-300 mx-1 hidden lg:block"></div>
           <button 
             onClick={(e) => {
@@ -528,17 +549,19 @@ const LessonRow: React.FC<{
   );
 };
 
-const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string; disabled?: boolean }> = ({ icon: Icon, onClick, tooltip, disabled }) => (
+const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string; disabled?: boolean; isAvailable?: boolean }> = ({ icon: Icon, onClick, tooltip, disabled, isAvailable = true }) => (
   <button 
     onClick={(e) => {
       e.stopPropagation();
-      if (!disabled) onClick();
+      if (!disabled && isAvailable) onClick();
     }}
-    disabled={disabled}
-    className={`p-1.5 lg:p-2 rounded-lg transition-colors ${
-      disabled 
-      ? 'text-gray-300 cursor-wait' 
-      : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50'
+    disabled={disabled || !isAvailable}
+    className={`p-1.5 lg:p-2 rounded-lg transition-all ${
+      !isAvailable
+        ? 'text-gray-300 grayscale cursor-not-allowed opacity-50' 
+        : disabled 
+          ? 'text-gray-300 cursor-wait' 
+          : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50'
     }`}
     title={tooltip}
   >

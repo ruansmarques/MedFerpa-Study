@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { SUBJECTS } from '../constants';
 import { db } from '../firebase';
 import { collection, query, getDocs } from 'firebase/firestore';
 import { Lesson } from '../types';
+import { IconChevronDown } from './Icons'; // Reutilizando ícones se necessário ou usando SVG direto
 
 interface ScheduleEvent {
   dayOfWeek: number; // 1 = Monday, 5 = Friday
@@ -64,6 +66,14 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
     return today;
   });
 
+  // State for Mobile View (Day Index 0-4)
+  const [mobileDayIndex, setMobileDayIndex] = useState(0);
+
+  // Reset to Monday whenever the main week changes
+  useEffect(() => {
+    setMobileDayIndex(0);
+  }, [currentDate]);
+
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
 
   // Buscar aulas do banco para popular o cronograma dinamicamente
@@ -108,6 +118,12 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
 
   const formatDayNumber = (date: Date) => date.getDate().toString();
   const formatMonthNumber = (date: Date) => (date.getMonth() + 1).toString().padStart(2, '0');
+  
+  // Helper para nome do dia em português
+  const getDayName = (date: Date) => {
+      const days = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+      return days[date.getDay()];
+  };
 
   // Formata data JS para YYYY-MM-DD (para comparar com o banco)
   const formatDateToISO = (date: Date) => {
@@ -132,6 +148,15 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
     if (newDate <= getWeekStart(SEMESTER_END)) {
       setCurrentDate(newDate);
     }
+  };
+
+  // Mobile Day Navigation
+  const handleMobilePrevDay = () => {
+      if (mobileDayIndex > 0) setMobileDayIndex(mobileDayIndex - 1);
+  };
+  
+  const handleMobileNextDay = () => {
+      if (mobileDayIndex < 4) setMobileDayIndex(mobileDayIndex + 1);
   };
 
   // Generate Week Days (Mon-Fri)
@@ -174,45 +199,77 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
     <div className="p-4 lg:p-8 max-w-7xl mx-auto h-full flex flex-col">
       {/* Header Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4 md:mb-0">
-          Cronograma 5° Período <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded ml-2">Semana {Math.ceil((((currentWeekStart.getTime() - SEMESTER_START.getTime()) / 86400000) + SEMESTER_START.getDay() + 1) / 7)}</span>
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 md:mb-0 text-center md:text-left">
+          Cronograma 5° Período <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded ml-2 whitespace-nowrap">Semana {Math.ceil((((currentWeekStart.getTime() - SEMESTER_START.getTime()) / 86400000) + SEMESTER_START.getDay() + 1) / 7)}</span>
         </h2>
         
         <div className="flex items-center gap-2">
            <button 
              onClick={handlePrevWeek}
              disabled={currentWeekStart <= getWeekStart(SEMESTER_START)}
-             className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+             className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-100"
            >
              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
            </button>
-           <div className="px-4 font-medium text-slate-700 w-32 text-center">
+           <div className="px-4 font-medium text-slate-700 w-32 text-center text-sm lg:text-base">
              {currentWeekStart.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
            </div>
            <button 
              onClick={handleNextWeek}
              disabled={currentWeekStart >= getWeekStart(SEMESTER_END)}
-             className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+             className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-100"
            >
              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
            </button>
            
-           <div className="h-6 w-px bg-gray-200 mx-2"></div>
+           <div className="h-6 w-px bg-gray-200 mx-2 hidden sm:block"></div>
 
            <button 
              onClick={() => setCurrentDate(new Date())} 
-             className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-gray-50"
+             className="hidden sm:block px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-gray-50"
            >
              Hoje
            </button>
         </div>
       </div>
 
-      {/* Calendar Grid */}
+      {/* Mobile Day Navigation (Visible only on sm:hidden which is < 640px) */}
+      <div className="sm:hidden flex items-center justify-between bg-blue-50 p-3 rounded-xl mb-4 border border-blue-100">
+          <button 
+             onClick={handleMobilePrevDay}
+             disabled={mobileDayIndex === 0}
+             className="p-2 text-blue-700 disabled:text-gray-300 transition-colors"
+          >
+             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          
+          <div className="text-center">
+              <span className="block text-xs font-bold text-blue-400 uppercase tracking-widest">
+                  Visualizando
+              </span>
+              <span className="text-lg font-black text-slate-800">
+                  {getDayName(weekDays[mobileDayIndex])}
+                  <span className="ml-2 text-slate-500 font-medium">
+                      {weekDays[mobileDayIndex].toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                  </span>
+              </span>
+          </div>
+
+          <button 
+             onClick={handleMobileNextDay}
+             disabled={mobileDayIndex === 4}
+             className="p-2 text-blue-700 disabled:text-gray-300 transition-colors"
+          >
+             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+          </button>
+      </div>
+
+      {/* Calendar Grid Container */}
       <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         
         {/* Days Header */}
-        <div className="grid grid-cols-5 border-b border-gray-200 divide-x divide-gray-200">
+        {/* Mobile: Hidden. Desktop/Tablet (>=sm): Visible grid */}
+        <div className="hidden sm:grid sm:grid-cols-5 border-b border-gray-200 divide-x divide-gray-200">
             {weekDays.map((day, index) => (
                 <div key={index} className="p-4 text-center">
                     <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
@@ -231,7 +288,8 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
         </div>
 
         {/* Schedule Grid */}
-        <div className="flex-1 grid grid-cols-5 divide-x divide-gray-200 bg-gray-50/50 min-h-[500px]">
+        {/* Mobile: Flex col (one at a time). Desktop/Tablet: Grid cols 5 */}
+        <div className="flex-1 w-full sm:grid sm:grid-cols-5 sm:divide-x sm:divide-gray-200 bg-gray-50/50 min-h-[500px]">
             {weekDays.map((day, dayIndex) => {
                 const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
                 const isExamWeek = day >= EXAM_START && day <= EXAM_END;
@@ -239,8 +297,13 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
                 const daysEvents = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === currentDayOfWeek);
                 const isoDate = formatDateToISO(day); // Data da coluna atual em string
 
+                // Visibility Logic:
+                // Desktop/Tablet (>=sm): Always block
+                // Mobile (<sm): Block only if index matches state, else hidden
+                const visibilityClass = (dayIndex === mobileDayIndex) ? 'block' : 'hidden sm:block';
+
                 return (
-                    <div key={dayIndex} className="relative p-2 space-y-2">
+                    <div key={dayIndex} className={`${visibilityClass} w-full relative p-2 space-y-2`}>
                         {isExamWeek ? (
                              <div className="h-full flex flex-col items-center justify-center text-center opacity-50 p-4">
                                 <span className="text-4xl mb-2">📝</span>
@@ -271,7 +334,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
                                         <div className="text-white w-full h-full flex flex-col">
                                             {/* Top Half: Subject Name & Time */}
                                             <div className="flex-1 flex flex-col items-center justify-center p-2 gap-1">
-                                                <div className="text-[11px] lg:text-xs font-bold leading-tight tracking-wide opacity-100">
+                                                <div className="text-[11px] sm:text-xs font-bold leading-tight tracking-wide opacity-100">
                                                     {/* Aplica formatação de quebra de linha se necessário */}
                                                     {formatSubjectTitle(subject.title)}
                                                 </div>
@@ -285,7 +348,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
 
                                             {/* Bottom Half: Lesson Title (Dynamic from DB) */}
                                             <div className="flex-1 flex items-center justify-center p-2 bg-black/10">
-                                                <p className="text-[11px] lg:text-xs leading-snug font-medium text-white/90 line-clamp-3">
+                                                <p className="text-[11px] sm:text-xs leading-snug font-medium text-white/90 line-clamp-3">
                                                     {foundLesson ? foundLesson.title : "Conteúdo a definir"}
                                                 </p>
                                             </div>

@@ -1,5 +1,3 @@
-
-
 export interface User {
   ra: string;
   name: string;
@@ -41,6 +39,9 @@ export interface Lesson {
   // Novos campos para Avisos/Cancelamentos
   type?: 'class' | 'notice'; 
   description?: string; // Mensagem explicativa do aviso
+  
+  // Novo campo para identificação de slots no cronograma
+  targetSlots?: string[]; // Array de strings: ['1', '2', '3']
 }
 
 export interface Exercise {

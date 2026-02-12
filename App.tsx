@@ -6,12 +6,12 @@ import ExerciseView from './components/ExerciseView';
 import RankView from './components/RankView';
 import ProfileView from './components/ProfileView';
 import LibraryView from './components/LibraryView';
-import ScheduleView from './components/ScheduleView';
+import { ScheduleView } from './components/ScheduleView';
 import AdminDashboard from './components/AdminDashboard';
 import { User, ViewState, LevelProgress } from './types';
 import { IconMenu } from './components/Icons';
 import { db, storage } from './firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 const App: React.FC = () => {
@@ -105,8 +105,9 @@ const App: React.FC = () => {
     };
 
     syncXP();
-    // Executa apenas quando completedLessons ou exerciseProgress mudam (ou no login)
-  }, [currentUser?.completedLessons?.length, JSON.stringify(currentUser?.exerciseProgress)]);
+    // Executa apenas quando completedLessons length muda ou referência do exerciseProgress muda
+    // Removido JSON.stringify para evitar erro de referência circular e melhorar performance
+  }, [currentUser?.completedLessons?.length, currentUser?.exerciseProgress, currentUser?.ra]);
 
 
   useEffect(() => {

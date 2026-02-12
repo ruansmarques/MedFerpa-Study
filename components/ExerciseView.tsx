@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, EXERCISES } from '../constants';
 import { db, storage } from '../firebase';
@@ -10,10 +9,9 @@ interface ExerciseViewProps {
   currentUser: User;
   onUpdateUser: (user: User) => void;
   onExit: () => void;
-  onAddXP: (amount: number) => void; // Prop para adicionar XP
+  onAddXP: (amount: number) => void; 
 }
 
-// CORES E ESTILOS CÓSMICOS
 const UNIVERSE_THEMES: Record<number, string> = {
   1: 'from-blue-900 via-purple-900 to-slate-900 border-blue-500/30',
   2: 'from-orange-900 via-red-900 to-slate-900 border-orange-500/30',
@@ -34,7 +32,6 @@ const PLANET_GRADIENTS = [
   'bg-gradient-to-br from-cyan-400 to-cyan-700',
 ];
 
-// --- SUBCOMPONENTE: TerrainView (Mapa de Níveis) ---
 interface TerrainViewProps {
   currentUser: User;
   selectedSubject: Subject | null;
@@ -44,10 +41,8 @@ interface TerrainViewProps {
 }
 
 const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject, mascotUrl, onBack, onStartQuiz }) => {
-    // 6 níveis
     const levels = [1, 2, 3, 4, 5, 6];
     
-    // Recupera progresso do usuário
     const getLevelData = (lvl: number) => {
       if (!currentUser.exerciseProgress) return null;
       const key = `${selectedSubject?.id}_level_${lvl}`;
@@ -56,34 +51,23 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
 
     const isLevelUnlocked = (lvl: number) => {
       if (lvl === 1) return true;
-      
-      // Verifica se o nível ATUAL está explicitamente desbloqueado
       const currentData = getLevelData(lvl);
       if (currentData && currentData.unlocked) return true;
-      // Se tiver score >= 0 (mesmo que 0), significa que já foi interagido/desbloqueado anteriormente
       if (currentData && currentData.score >= 0) return true;
-
-      // OU Verifica se o nível ANTERIOR foi completado com sucesso (score >= 50)
       const prevLevelData = getLevelData(lvl - 1);
       return !!prevLevelData && prevLevelData.score >= 50;
     };
 
-    // --- CÁLCULO DO CAMINHO (SNAKE PATH) ---
-    // Usamos larguras fixas para cálculo geométrico, mas o SVG escala via CSS
     const ITEM_HEIGHT = 140; 
-    const VIEW_WIDTH = 360; // Largura base para cálculo
+    const VIEW_WIDTH = 360;
     const CENTER_X = VIEW_WIDTH / 2;
-    const AMPLITUDE = 100; // Curva mais acentuada
+    const AMPLITUDE = 100;
     
     const TOTAL_HEIGHT = (levels.length * ITEM_HEIGHT) + 200; 
 
-    // Gera os pontos da curva
     const pathPoints = levels.map((lvl, i) => {
-      // Inversão lógica do Y: Nível 1 embaixo
       const inverseIndex = i; 
       const y = TOTAL_HEIGHT - (inverseIndex * ITEM_HEIGHT) - 150;
-
-      // Zig Zag no X
       const xOffset = Math.sin(inverseIndex * (Math.PI / 1.5)) * AMPLITUDE; 
       const x = CENTER_X + xOffset;
       return { x, y, level: lvl };
@@ -93,7 +77,6 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     for (let i = 0; i < pathPoints.length - 1; i++) {
         const current = pathPoints[i];
         const next = pathPoints[i + 1];
-        // Curva de Bézier cúbica para suavizar
         const cp1x = current.x;
         const cp1y = current.y - (ITEM_HEIGHT / 2);
         const cp2x = next.x;
@@ -101,16 +84,13 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
         svgPath += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
     }
 
-    // Encontrar posição do mascote (Maior nível desbloqueado + 1 ou atual se incompleto)
     let currentActiveLevel = 1;
     for (let i = 0; i < levels.length; i++) {
         const lvl = levels[i];
         if (isLevelUnlocked(lvl)) {
              currentActiveLevel = lvl;
-             // Se este nível já foi completado (score >= 50), o mascote pode estar no próximo
              const data = getLevelData(lvl);
              if (data && data.score >= 50 && i < levels.length - 1) {
-                 // Verifica apenas visualmente para o mascote
                  currentActiveLevel = levels[i+1];
              }
         } else {
@@ -123,15 +103,13 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     const containerRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (containerRef.current) {
-            // Centraliza o mascote verticalmente na tela
             const targetScroll = mascotPoint.y - (window.innerHeight / 2);
             containerRef.current.scrollTop = targetScroll; 
         }
-    }, [mascotPoint, currentUser]); // Adicionado currentUser para garantir re-render
+    }, [mascotPoint, currentUser]);
 
     return (
       <div className="fixed inset-0 z-50 bg-[#020617] flex flex-col items-center">
-         {/* HEADER */}
          <div className="w-full max-w-4xl flex justify-between items-center p-6 z-20 bg-gradient-to-b from-[#020617] to-transparent absolute top-0 pointer-events-none">
             <button 
               onClick={onBack}
@@ -145,15 +123,12 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
             </div>
          </div>
 
-         {/* SCROLL CONTAINER */}
          <div 
             ref={containerRef}
             className="flex-1 w-full overflow-y-auto overflow-x-hidden scrollbar-hide relative"
          >
-            {/* O Container interno tem a altura total calculada e centraliza o conteúdo */}
             <div className="relative mx-auto" style={{ height: TOTAL_HEIGHT, width: '100%', maxWidth: '450px' }}>
                 
-                {/* SVG Background Path - Usando viewBox para alinhamento perfeito */}
                 <svg 
                     className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 overflow-visible"
                     viewBox={`0 0 ${VIEW_WIDTH} ${TOTAL_HEIGHT}`}
@@ -177,14 +152,11 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                     />
                 </svg>
 
-                {/* MASCOTE */}
                 <div 
                     className="absolute z-30 transition-all duration-1000 ease-in-out pointer-events-none"
                     style={{ 
-                        // Mapeamento proporcional da posição X baseada no VIEW_WIDTH
                         left: `${(mascotPoint.x / VIEW_WIDTH) * 100}%`,
                         top: mascotPoint.y,
-                        // Translada para o centro e depois offset para o lado
                         transform: 'translate(calc(-50% + 50px), -50%)', 
                     }}
                 >
@@ -202,7 +174,6 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                     </div>
                 </div>
 
-                {/* Níveis (Botões) */}
                 {pathPoints.map((p, index) => {
                     const lvl = p.level;
                     const data = getLevelData(lvl);
@@ -214,12 +185,10 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                             key={lvl} 
                             className="absolute flex flex-col items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
                             style={{ 
-                                // Posicionamento absoluto percentual baseado no VIEW_WIDTH para alinhar com SVG
                                 left: `${(p.x / VIEW_WIDTH) * 100}%`, 
                                 top: p.y
                             }}
                         >
-                             {/* Informações Superiores (Estrelas e Porcentagem) */}
                              <div className="absolute -top-12 flex flex-col items-center w-32 pointer-events-none z-30">
                                 {unlocked && stars > 0 && (
                                     <div className="flex justify-center gap-1 mb-0.5">
@@ -231,8 +200,6 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                                     </div>
                                 )}
                                 
-                                {/* FEATURE: Porcentagem de Acerto */}
-                                {/* score -1 indica desbloqueado mas não jogado, então só mostra se >= 0 */}
                                 {unlocked && data && data.score >= 0 && (
                                     <span className="text-[11px] font-black text-green-400 bg-slate-900/80 px-2 rounded-full border border-green-500/30 shadow-sm leading-tight">
                                         {data.score}%
@@ -259,7 +226,6 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
                                 )}
                             </button>
                             
-                            {/* Placa de Nível (Chão) */}
                             <div className={`
                                 mt-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
                                 backdrop-blur-sm border border-white/5 whitespace-nowrap
@@ -276,28 +242,24 @@ const TerrainView: React.FC<TerrainViewProps> = ({ currentUser, selectedSubject,
     );
 };
 
-// --- COMPONENTE PRINCIPAL ---
 const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP }) => {
-  const [stage, setStage] = useState<1 | 2 | 3 | 4>(1); // 1: Galáxias, 2: Sistema Solar, 3: Mapa, 4: Quiz
+  const [stage, setStage] = useState<1 | 2 | 3 | 4>(1); 
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [currentLevel, setCurrentLevel] = useState<number>(1);
   const [quizQuestions, setQuizQuestions] = useState<Exercise[]>([]);
   const [mascotUrl, setMascotUrl] = useState<string | null>(null);
   
-  // Mobile Carousel State
   const [mobileSubjectIndex, setMobileSubjectIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Quiz Logic State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswerChecked, setIsAnswerChecked] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
 
-  // Carrega o Mascote do Storage
   useEffect(() => {
     const fetchMascot = async () => {
         try {
@@ -311,7 +273,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     fetchMascot();
   }, []);
 
-  // Efeito de Fundo Estrelado
   const StarBackground = () => (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-[#020617]">
       <div className="absolute w-[2px] h-[2px] bg-white rounded-full top-10 left-10 animate-pulse opacity-50"></div>
@@ -336,7 +297,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
             50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.3); }
             100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
         }
-        /* Mobile Carousel Animations */
         .carousel-item {
           transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -344,9 +304,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     </div>
   );
 
-  // --- ETAPA 1: SELEÇÃO DE UNIVERSO (PERÍODO) ---
   const renderGalaxies = () => {
-    // ... (mesmo código anterior)
     const periods = [1, 2, 3, 4, 5, 6, 7, 8];
     return (
       <div className="relative z-10 w-full max-w-6xl mx-auto p-4 flex flex-col items-center animate-fade-in">
@@ -387,9 +345,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     );
   };
 
-  // --- ETAPA 2: SISTEMA SOLAR ORBITAL (DISCIPLINAS) ---
   const renderSolarSystem = () => {
-    // ... (mesmo código anterior)
     const subjects = SUBJECTS.filter(s => s.period === selectedPeriod);
     const containerSize = 550; 
     const orbitRadius = containerSize / 2; 
@@ -423,7 +379,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
           ← Voltar às Galáxias
         </button>
 
-        {/* --- MOBILE CAROUSEL VIEW (< md) --- */}
         <div 
             className="md:hidden relative w-full h-full flex flex-col items-center justify-center"
             onTouchStart={handleTouchStart}
@@ -495,7 +450,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
              <p className="text-white/40 text-xs mt-4 animate-pulse">Deslize para navegar • Toque para entrar</p>
         </div>
 
-        {/* --- DESKTOP ORBITAL VIEW (>= md) --- */}
         <div 
             className="hidden md:flex relative items-center justify-center rounded-full"
             style={{ 
@@ -572,7 +526,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     );
   };
 
-  // --- LOGICA DO QUIZ ---
   const startQuiz = (level: number) => {
     setCurrentLevel(level);
     const subjectExercises = EXERCISES.filter(e => e.subjectId === selectedSubject?.id);
@@ -599,7 +552,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     const currentQ = quizQuestions[currentQuestionIndex];
     if (idx === currentQ.correctOptionIndex) {
       setScore(prev => prev + 1);
-      // REMOVIDO: onAddXP(1); AGORA O XP É CALCULADO APENAS NO FINAL
     }
     setTimeout(() => {
        if (currentQuestionIndex < quizQuestions.length - 1) {
@@ -617,14 +569,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
      const key = `${selectedSubject.id}_level_${currentLevel}`;
      const currentData = currentUser.exerciseProgress?.[key];
      
-     // LÓGICA DE XP BASEADA NO MELHOR RESULTADO
      const currentXPFromThisLevel = currentData && currentData.score >= 0 
         ? Math.round(currentData.score / 10) 
         : 0;
      
      const newXPFromThisLevel = Math.round(finalScore / 10);
      
-     // Se o novo XP for maior que o anterior, adiciona a diferença ao usuário
      if (newXPFromThisLevel > currentXPFromThisLevel) {
         const xpToAdd = newXPFromThisLevel - currentXPFromThisLevel;
         if (xpToAdd > 0) {
@@ -647,8 +597,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                   };
                   onUpdateUser({ ...currentUser, exerciseProgress: updatedWithNext });
                   try {
-                      const userRef = doc(db, "users", currentUser.ra);
-                      await updateDoc(userRef, { exerciseProgress: updatedWithNext });
+                      await updateDoc(doc(db, "users", currentUser.ra), { exerciseProgress: updatedWithNext });
                   } catch(e) { console.error(e); }
              }
          }
@@ -684,8 +633,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
      const updatedUser = { ...currentUser, exerciseProgress: updatedProgress };
      onUpdateUser(updatedUser);
      try {
-         const userRef = doc(db, "users", currentUser.ra);
-         await updateDoc(userRef, { exerciseProgress: updatedProgress });
+         await updateDoc(doc(db, "users", currentUser.ra), { exerciseProgress: updatedProgress });
      } catch (e) {
          console.error("Erro ao salvar progresso", e);
      }
@@ -703,7 +651,6 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
   }, [quizFinished]);
 
   const renderArena = () => {
-    // ... (Mantém renderização do Quiz)
     if (quizFinished) {
        const percentage = Math.round((score / quizQuestions.length) * 100);
        return (

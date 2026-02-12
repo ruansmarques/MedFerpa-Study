@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { User } from '../types';
 
 interface RankedUser extends User {
@@ -16,7 +15,6 @@ const RankView: React.FC = () => {
     const fetchData = async () => {
       try {
         // Ordena diretamente pelo XP Total no banco
-        // Como o App.tsx agora corrige o totalXP automaticamente, esta query trará os dados corretos
         const q = query(collection(db, "users"), orderBy("totalXP", "desc"));
         const querySnapshot = await getDocs(q);
         

@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { SUBJECTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, addDoc, updateDoc, deleteDoc, doc, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX, IconEdit, IconVideoOff } from './Icons';
 import { Lesson } from '../types';
@@ -21,7 +20,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [filterSubjectId, setFilterSubjectId] = useState<string>('all');
 
   // Form State
-  const [entryType, setEntryType] = useState<'class' | 'notice'>('class'); // Novo estado para tipo
+  const [entryType, setEntryType] = useState<'class' | 'notice'>('class');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [period, setPeriod] = useState<number>(5);
@@ -29,7 +28,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [category, setCategory] = useState('');
   const [youtubeLink, setYoutubeLink] = useState('');
   const [date, setDate] = useState('');
-  const [noticeMessage, setNoticeMessage] = useState(''); // Mensagem do aviso
+  const [noticeMessage, setNoticeMessage] = useState('');
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]); // Novo estado para slots
   
   // Files State
   const [slideFile, setSlideFile] = useState<File | null>(null);
@@ -67,7 +67,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
           summaryUrl: data.summaryUrl,
           date: data.date,
           type: data.type || 'class',
-          description: data.description || ''
+          description: data.description || '',
+          targetSlots: data.targetSlots || []
         });
       });
       setDbLessons(lessons);
@@ -85,12 +86,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   // --- FILTER LOGIC ---
   const getFilteredLessons = () => {
     return dbLessons.filter(lesson => {
-      // Filter by Period
       if (filterPeriod !== 'all') {
         const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
         if (subj?.period !== filterPeriod) return false;
       }
-      // Filter by Subject
       if (filterSubjectId !== 'all') {
         if (lesson.subjectId !== filterSubjectId) return false;
       }
@@ -109,8 +108,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setAuthError('');
 
     try {
-      const adminsRef = collection(db, "admins");
-      const q = query(adminsRef, where("accessKey", "==", password.trim()));
+      const q = query(collection(db, "admins"), where("accessKey", "==", password.trim()));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -137,24 +135,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   const handleUpload = async (file: File, path: string) => {
     const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    const snapshot = await uploadBytes(storageRef, file);
+    return await getDownloadURL(snapshot.ref);
+  };
+
+  const handleSlotToggle = (slot: string) => {
+    setSelectedSlots(prev => 
+      prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot]
+    );
   };
 
   // --- PREPARAR EDIÇÃO ---
   const handleEdit = (lesson: Lesson) => {
     setEditingId(lesson.id);
-    setEntryType(lesson.type || 'class'); // Define o tipo ao editar
+    setEntryType(lesson.type || 'class');
     setTitle(lesson.title);
     setSubjectId(lesson.subjectId);
     setCategory(lesson.category || '');
     setNoticeMessage(lesson.description || '');
+    setSelectedSlots(lesson.targetSlots || []); // Carrega slots salvos
     
-    // Tenta encontrar o período baseado na disciplina
     const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
     if (subj) setPeriod(subj.period);
 
-    // Youtube
     if (lesson.youtubeIds && lesson.youtubeIds.length > 0) {
       setYoutubeLink(`https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}`);
     } else {
@@ -176,12 +179,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   // --- CANCELAR EDIÇÃO ---
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEntryType('class'); // Reset para aula
+    setEntryType('class');
     setTitle('');
     setYoutubeLink('');
     setCategory('');
     setDate('');
     setNoticeMessage('');
+    setSelectedSlots([]); // Limpa slots
     setSlideFile(null);
     setSummaryFile(null);
     setExistingSlideUrl(null);
@@ -215,7 +219,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
     if (!title || title.trim() === "") { alert("Título obrigatório."); return; }
     if (!subjectId) { alert("Disciplina obrigatória."); return; }
-    if (!date && !editingId) { alert("Data obrigatória."); return; } 
+    if (!date) { alert("Data obrigatória."); return; } 
+    if (selectedSlots.length === 0) { alert("Selecione pelo menos um horário de aula."); return; }
 
     if (subjectId === 'proc-patol' && !category && entryType === 'class') {
         alert("Para 'Processos Patológicos', selecione a Categoria.");
@@ -227,7 +232,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     try {
       const subject = SUBJECTS.find(s => s.id === subjectId);
       
-      // Upload ou Manter URL existente (Apenas para Aulas)
       let finalSlideUrl = existingSlideUrl;
       let finalSummaryUrl = existingSummaryUrl;
       const videoIds: string[] = [];
@@ -248,7 +252,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             if (id) videoIds.push(id);
           }
       } else {
-          // Se for aviso, limpa URLs
           finalSlideUrl = null;
           finalSummaryUrl = null;
       }
@@ -264,17 +267,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         date: date || null,
         updatedAt: new Date().toISOString(),
         type: entryType,
-        description: entryType === 'notice' ? noticeMessage : null
+        description: entryType === 'notice' ? noticeMessage : null,
+        targetSlots: selectedSlots // Salva os horários selecionados
       };
 
       if (editingId) {
-        // UPDATE
-        const docRef = doc(db, "lessons", editingId);
-        await updateDoc(docRef, lessonPayload);
+        await updateDoc(doc(db, "lessons", editingId), lessonPayload);
         setSuccessMsg(entryType === 'class' ? "Aula atualizada com sucesso!" : "Aviso atualizado com sucesso!");
         handleCancelEdit(); 
       } else {
-        // CREATE
         await addDoc(collection(db, "lessons"), {
           ...lessonPayload,
           createdAt: new Date().toISOString()
@@ -340,18 +341,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       <main className="max-w-[95%] mx-auto mt-8 px-2 lg:px-4">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           
-          {/* --- COLUNA DA ESQUERDA: LISTA DE AULAS (40% de largura) --- */}
           <div className="lg:col-span-2 order-2 lg:order-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                <div className="mb-6">
                  <h3 className="text-lg font-bold text-slate-800">Registros no Banco de Dados</h3>
-                 <p className="text-xs text-gray-500 mt-1">Use os filtros para encontrar aulas ou avisos.</p>
+                 <p className="text-xs text-gray-500 mt-1">Filtre para editar ou excluir registros.</p>
                </div>
                
-               {/* FILTROS */}
                <div className="bg-gray-50 p-3 rounded-xl mb-4 grid grid-cols-2 gap-3 border border-gray-100">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar por Período</label>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar Período</label>
                     <select 
                       value={filterPeriod} 
                       onChange={e => {
@@ -361,18 +360,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                       }}
                       className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
                     >
-                      <option value="all">Todos os Períodos</option>
+                      <option value="all">Todos</option>
                       {[1,2,3,4,5,6,7,8,9,10,11,12].map(p => <option key={p} value={p}>{p}º Período</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar por Disciplina</label>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar Disciplina</label>
                     <select 
                       value={filterSubjectId} 
                       onChange={e => setFilterSubjectId(e.target.value)}
                       className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
                     >
-                      <option value="all">Todas as Disciplinas</option>
+                      <option value="all">Todas</option>
                       {subjectsForFilter.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                     </select>
                   </div>
@@ -394,26 +393,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                 {lesson.type === 'notice' && (
                                     <span className="bg-yellow-100 text-yellow-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Aviso</span>
                                 )}
-                                <div className="font-medium text-xs lg:text-sm line-clamp-2" title={lesson.title}>{lesson.title}</div>
+                                <div className="font-medium text-xs lg:text-sm line-clamp-2">{lesson.title}</div>
                              </div>
                              <div className="text-[10px] text-gray-400 mt-1">
-                               {SUBJECTS.find(s => s.id === lesson.subjectId)?.title || lesson.subjectId}
-                               {lesson.date && <span className="ml-2 border-l pl-2 border-gray-200">{new Date(lesson.date + 'T00:00:00').toLocaleDateString('pt-BR')}</span>}
+                               {SUBJECTS.find(s => s.id === lesson.subjectId)?.title} • 
+                               Slots: {lesson.targetSlots?.join(', ')}
                              </div>
                            </td>
                            <td className="px-3 py-3 text-right">
-                             <div className="flex justify-end gap-1 opacity-100 lg:opacity-50 lg:group-hover:opacity-100 transition-opacity">
+                             <div className="flex justify-end gap-1">
                                <button 
                                  onClick={() => handleEdit(lesson)}
                                  className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
-                                 title="Editar"
                                >
                                  <IconEdit className="w-4 h-4" />
                                </button>
                                <button 
                                  onClick={() => handleDelete(lesson.id)}
                                  className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
-                                 title="Excluir"
                                >
                                  <IconX className="w-4 h-4" />
                                </button>
@@ -421,62 +418,36 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                            </td>
                         </tr>
                       ))}
-                      {getFilteredLessons().length === 0 && (
-                        <tr>
-                          <td colSpan={2} className="px-4 py-12 text-center text-gray-400">
-                            Nenhum registro encontrado com os filtros atuais.
-                          </td>
-                        </tr>
-                      )}
                     </tbody>
                  </table>
                </div>
             </div>
           </div>
 
-          {/* --- COLUNA DA DIREITA: FORMULÁRIO (60% de largura) --- */}
           <div className="lg:col-span-3 order-1 lg:order-2">
             <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-8 sticky top-24">
               
-              {/* TIPO TOGGLE */}
               <div className="flex gap-4 mb-8 bg-gray-100 p-1.5 rounded-xl">
                  <button
                     type="button"
-                    onClick={() => {
-                        setEntryType('class');
-                        setTitle('');
-                        setNoticeMessage('');
-                    }}
+                    onClick={() => { setEntryType('class'); handleCancelEdit(); }}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'class' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                  >
-                    ● Cadastrar Aula
+                    Cadastrar Aula
                  </button>
                  <button
                     type="button"
-                    onClick={() => {
-                        setEntryType('notice');
-                        setTitle('Aulas não lecionadas'); // Título padrão sugerido
-                    }}
+                    onClick={() => { setEntryType('notice'); handleCancelEdit(); }}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'notice' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                  >
-                    ○ Cadastrar Aviso
+                    Cadastrar Aviso
                  </button>
               </div>
 
-              <div className="mb-8 border-b border-gray-100 pb-4 flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-800">
-                    {editingId ? (entryType === 'class' ? 'Editar Aula' : 'Editar Aviso') : (entryType === 'class' ? 'Nova Aula' : 'Novo Aviso')}
-                  </h2>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {editingId ? 'Atualize os dados e clique em Atualizar.' : 'Preencha os campos para cadastrar.'}
-                  </p>
-                </div>
-                {editingId && (
-                  <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">
-                    MODO EDIÇÃO
-                  </span>
-                )}
+              <div className="mb-8 border-b border-gray-100 pb-4">
+                <h2 className="text-2xl font-bold text-slate-800">
+                  {editingId ? 'Editar Registro' : (entryType === 'class' ? 'Nova Aula' : 'Novo Aviso')}
+                </h2>
               </div>
 
               {successMsg && (
@@ -484,15 +455,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                   <IconCheck className="w-5 h-5" /> {successMsg}
                 </div>
               )}
-              {errorMsg && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium flex items-center gap-3">
-                  <IconX className="w-5 h-5" /> {errorMsg}
-                </div>
-              )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* --- CAMPOS COMUNS (Aula e Aviso) --- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Período *</label>
@@ -511,49 +476,89 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                       value={date}
                       onChange={e => setDate(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                      required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina (Grade) *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina *</label>
                   <select 
                     value={subjectId} 
-                    onChange={e => {
-                       setSubjectId(e.target.value);
-                       if (e.target.value !== 'proc-patol') setCategory('');
-                    }}
+                    onChange={e => setSubjectId(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
                     required
                   >
-                    <option value="">Selecione a disciplina para encaixar na grade...</option>
+                    <option value="">Selecione...</option>
                     {formSubjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                   </select>
-                  <p className="text-[10px] text-gray-400 mt-1">O aviso aparecerá no slot de horário desta disciplina.</p>
                 </div>
 
-                {/* --- CAMPOS ESPECÍFICOS DE AULA --- */}
-                {entryType === 'class' && (
-                    <>
-                        <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Título da Aula *</label>
-                        <input 
-                            type="text" 
-                            value={title}
-                            onChange={e => setTitle(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition shadow-sm"
-                            placeholder="Ex: AULA 01 - Introdução..."
+                {/* --- SELEÇÃO DE SLOTS (HORÁRIOS) --- */}
+                <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+                    <label className="block text-sm font-bold text-blue-900 mb-4 uppercase tracking-widest">
+                        Horários desta Aula (Slots) *
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {[
+                            { id: '1', label: '1º Horário', time: '07:00 - 08:40' },
+                            { id: '2', label: '2º Horário', time: '08:50 - 10:30' },
+                            { id: '3', label: '3º Horário', time: '10:50 - 12:30' }
+                        ].map(slot => (
+                            <button
+                                key={slot.id}
+                                type="button"
+                                onClick={() => handleSlotToggle(slot.id)}
+                                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                    selectedSlots.includes(slot.id)
+                                    ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+                                    : 'bg-white border-gray-200 text-slate-600 hover:border-blue-300'
+                                }`}
+                            >
+                                <div className="text-xs font-black uppercase opacity-80 mb-1">{slot.label}</div>
+                                <div className="text-sm font-bold">{slot.time}</div>
+                            </button>
+                        ))}
+                    </div>
+                    <p className="text-[10px] text-blue-400 mt-3 font-medium">Selecione todos os horários que a disciplina ocupa neste dia.</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                    {entryType === 'class' ? 'Título da Aula *' : 'Título do Aviso *'}
+                  </label>
+                  <input 
+                    type="text" 
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition shadow-sm"
+                    placeholder={entryType === 'class' ? "Ex: AULA 01 - Introdução..." : "Ex: Aula não ministrada"}
+                    required
+                  />
+                </div>
+
+                {entryType === 'notice' && (
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Mensagem do Aviso *</label>
+                        <textarea
+                            value={noticeMessage}
+                            onChange={e => setNoticeMessage(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition shadow-sm h-24 resize-none"
+                            placeholder="Ex: O professor não pôde comparecer por motivos de saúde."
                             required
                         />
-                        </div>
+                    </div>
+                )}
 
+                {entryType === 'class' && (
+                    <>
                         {subjectId === 'proc-patol' && (
                         <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
-                            <label className="block text-sm font-bold text-orange-800 mb-2">Categoria (Processos Patológicos) *</label>
+                            <label className="block text-sm font-bold text-orange-800 mb-2">Categoria *</label>
                             <select 
                                 value={category} 
                                 onChange={e => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 border border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition bg-white text-orange-900"
+                                className="w-full px-4 py-3 border border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition bg-white"
                                 required
                             >
                                 <option value="">Selecione...</option>
@@ -566,82 +571,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                        <div>
-                            <div className="flex justify-between mb-2">
-                                <label className="block text-sm font-bold text-gray-700">Slide (PDF)</label>
-                                {existingSlideUrl && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">SALVO</span>}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-2">Slide (PDF)</label>
+                                <input type="file" accept=".pdf" onChange={e => setSlideFile(e.target.files?.[0] || null)} className="w-full text-xs" />
                             </div>
-                            <input type="file" accept=".pdf" onChange={e => setSlideFile(e.target.files?.[0] || null)} className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 mb-2">Resumo (PDF)</label>
+                                <input type="file" accept=".pdf" onChange={e => setSummaryFile(e.target.files?.[0] || null)} className="w-full text-xs" />
+                            </div>
                         </div>
 
                         <div>
-                            <div className="flex justify-between mb-2">
-                                <label className="block text-sm font-bold text-gray-700">Resumo (PDF)</label>
-                                {existingSummaryUrl && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">SALVO</span>}
-                            </div>
-                            <input type="file" accept=".pdf" onChange={e => setSummaryFile(e.target.files?.[0] || null)} className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" />
-                        </div>
-                        </div>
-
-                        <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">YouTube Link</label>
-                        <div className="relative">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">YouTube Link</label>
                             <input 
-                            type="text" 
-                            value={youtubeLink}
-                            onChange={e => setYoutubeLink(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
-                            placeholder="Cole o link do YouTube aqui..."
+                                type="text" 
+                                value={youtubeLink}
+                                onChange={e => setYoutubeLink(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
+                                placeholder="Link do vídeo..."
                             />
-                            <div className="absolute left-3 top-3.5 text-gray-400">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                            </div>
-                        </div>
                         </div>
                     </>
                 )}
 
-                {/* --- CAMPOS ESPECÍFICOS DE AVISO --- */}
-                {entryType === 'notice' && (
-                    <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-                        <div className="mb-4">
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Título do Aviso *</label>
-                            <input 
-                                type="text" 
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                                className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition shadow-sm bg-white"
-                                placeholder="Ex: Aulas não lecionadas"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Mensagem do Aviso *</label>
-                            <textarea
-                                value={noticeMessage}
-                                onChange={e => setNoticeMessage(e.target.value)}
-                                className="w-full px-4 py-3 border border-yellow-300 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none transition shadow-sm bg-white h-24 resize-none"
-                                placeholder="Ex: O professor não pôde dar esta aula por motivos de saúde."
-                                required
-                            />
-                        </div>
-                    </div>
-                )}
-
                 <div className="pt-6 flex gap-4">
                   {editingId && (
-                    <button 
-                      type="button" 
-                      onClick={handleCancelEdit}
-                      className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold text-lg hover:bg-gray-200 transition-colors"
-                    >
-                      Cancelar
-                    </button>
+                    <button type="button" onClick={handleCancelEdit} className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold">Cancelar</button>
                   )}
                   <button 
                     type="submit" 
                     disabled={loading}
-                    className="flex-[2] py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl"
+                    className="flex-[2] py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg"
                   >
                     {loading ? 'Salvando...' : (editingId ? 'Atualizar' : 'Cadastrar')}
                   </button>

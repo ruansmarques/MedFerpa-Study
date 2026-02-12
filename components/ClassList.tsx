@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
 import { db, storage } from '../firebase';
-import { ref, getDownloadURL, getMetadata } from 'firebase/storage';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
+import { ref, getMetadata, getDownloadURL } from 'firebase/storage';
 
 interface ClassListProps {
   currentUser: User;
@@ -14,13 +13,38 @@ interface ClassListProps {
   onNavigateToSchedule?: (date?: Date) => void;
 }
 
+interface ActionButtonProps {
+  icon: React.FC<{ className?: string }>;
+  onClick: () => void;
+  tooltip: string;
+  isAvailable?: boolean;
+  disabled?: boolean;
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({ icon: Icon, onClick, tooltip, isAvailable = true, disabled = false }) => (
+  <button 
+    onClick={(e) => {
+      e.stopPropagation();
+      if (isAvailable && !disabled) onClick();
+    }}
+    className={`p-1.5 lg:p-2 rounded-lg transition-all group relative ${
+      !isAvailable || disabled
+        ? 'text-gray-300 cursor-not-allowed'
+        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+    }`}
+    title={tooltip}
+    disabled={!isAvailable || disabled}
+  >
+    <Icon className="w-5 h-5 lg:w-6 lg:h-6" />
+  </button>
+);
+
 const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, onNavigateToSchedule }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(5); 
   
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
 
-  // AGORA BUSCAMOS APENAS DO BANCO, SEM MERGE COM ARQUIVO ESTÁTICO
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [isLoadingLessons, setIsLoadingLessons] = useState(false);
 
@@ -28,8 +52,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     const fetchLessons = async () => {
       setIsLoadingLessons(true);
       try {
-        const q = query(collection(db, "lessons"));
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, "lessons"));
         const fetchedLessons: Lesson[] = [];
         
         querySnapshot.forEach((doc) => {
@@ -132,17 +155,10 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
 
   // --- CÁLCULO DE PROGRESSO DO PERÍODO ---
   const calculatePeriodProgress = () => {
-    // 1. Identificar todas as disciplinas do período selecionado
     const subjectsInPeriod = SUBJECTS.filter(s => s.period === selectedPeriod).map(s => s.id);
-    
-    // 2. Filtrar todas as aulas (dbLessons) que pertencem a essas disciplinas
     const lessonsInPeriod = dbLessons.filter(l => subjectsInPeriod.includes(l.subjectId));
     const totalLessonsCount = lessonsInPeriod.length;
-
-    // 3. Contar quantas dessas aulas o usuário completou
     const completedCount = lessonsInPeriod.filter(l => currentUser.completedLessons.includes(l.id)).length;
-
-    // 4. Calcular porcentagem
     const percentage = totalLessonsCount > 0 ? Math.round((completedCount / totalLessonsCount) * 100) : 0;
 
     return { completedCount, totalLessonsCount, percentage };
@@ -266,15 +282,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     );
   }
 
-  // AQUI FILTRAMOS AS AULAS DO BANCO (DBLESSONS)
   let subjectLessons = dbLessons.filter(l => l.subjectId === selectedSubject.id);
 
   if (selectedSubject.id === specialSubjectId) {
     subjectLessons = subjectLessons.filter(l => l.category === selectedCategory);
   }
 
-  // --- ORDENAÇÃO ALFABÉTICA ---
-  // Garante que as aulas apareçam em ordem alfabética pelo Título
   subjectLessons.sort((a, b) => a.title.localeCompare(b.title));
 
   return (
@@ -393,7 +406,6 @@ const LessonRow: React.FC<{
   const [slideAvailable, setSlideAvailable] = useState(!!lesson.slideUrl);
   const [summaryAvailable, setSummaryAvailable] = useState(!!lesson.summaryUrl);
 
-  // Helper para construir caminho legado
   const getLegacyStoragePath = (type: 'slide' | 'resumo') => {
       const basePath = 'materials';
       const subjectPath = subjectFolderName || 'default';
@@ -412,22 +424,22 @@ const LessonRow: React.FC<{
   };
 
   useEffect(() => {
-    // Verifica disponibilidade do Slide
     if (lesson.slideUrl) {
         setSlideAvailable(true);
     } else {
         const path = getLegacyStoragePath('slide');
-        getMetadata(ref(storage, path))
+        const storageRef = ref(storage, path);
+        getMetadata(storageRef)
             .then(() => setSlideAvailable(true))
             .catch(() => setSlideAvailable(false));
     }
 
-    // Verifica disponibilidade do Resumo
     if (lesson.summaryUrl) {
         setSummaryAvailable(true);
     } else {
         const path = getLegacyStoragePath('resumo');
-        getMetadata(ref(storage, path))
+        const storageRef = ref(storage, path);
+        getMetadata(storageRef)
             .then(() => setSummaryAvailable(true))
             .catch(() => setSummaryAvailable(false));
     }
@@ -447,12 +459,11 @@ const LessonRow: React.FC<{
        return;
     }
 
-    // Fallback para estrutura antiga de arquivos locais
     const storagePath = getLegacyStoragePath(type);
     
     try {
-      const fileRef = ref(storage, storagePath);
-      const url = await getDownloadURL(fileRef);
+      const storageRef = ref(storage, storagePath);
+      const url = await getDownloadURL(storageRef);
       window.open(url, '_blank');
     } catch (error) {
       console.error("Erro ao buscar arquivo:", error);
@@ -462,7 +473,6 @@ const LessonRow: React.FC<{
     }
   };
 
-  // Função helper para exibir a data corretamente sem conversão de fuso horário
   const formatDisplayDate = (dateString: string) => {
     if (!dateString) return '';
     const [year, month, day] = dateString.split('-');
@@ -572,25 +582,5 @@ const LessonRow: React.FC<{
     </div>
   );
 };
-
-const ActionButton: React.FC<{ icon: any; onClick: () => void; tooltip: string; disabled?: boolean; isAvailable?: boolean }> = ({ icon: Icon, onClick, tooltip, disabled, isAvailable = true }) => (
-  <button 
-    onClick={(e) => {
-      e.stopPropagation();
-      if (!disabled && isAvailable) onClick();
-    }}
-    disabled={disabled || !isAvailable}
-    className={`p-1.5 lg:p-2 rounded-lg transition-all ${
-      !isAvailable
-        ? 'text-gray-300 grayscale cursor-not-allowed opacity-50' 
-        : disabled 
-          ? 'text-gray-300 cursor-wait' 
-          : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50'
-    }`}
-    title={tooltip}
-  >
-    <Icon className="w-6 h-6 lg:w-7 lg:h-7" />
-  </button>
-);
 
 export default ClassList;

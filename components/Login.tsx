@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -35,7 +34,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         setLoading(true);
         try {
           const usersRef = collection(db, "users");
-          // Busca exata pelo RA (string)
+          // Busca exata pelo RA (string) na sintaxe modular
           const q = query(usersRef, where("ra", "==", ra));
           const querySnapshot = await getDocs(q);
 
@@ -45,15 +44,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             const data = userDoc.data();
             
             // Tratamento de segurança:
-            // Garante que completedLessons seja um array mesmo se não existir no banco
-            // Garante que avatarColor tenha uma cor padrão se estiver vazio
-            // Garante que totalXP seja inicializado
             const userData: User = {
               ra: data.ra,
               name: data.name,
               completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
               avatarColor: data.avatarColor || 'bg-blue-600',
-              totalXP: data.totalXP || 0
+              totalXP: data.totalXP || 0,
+              exerciseProgress: data.exerciseProgress || {} 
             };
             
             onLogin(userData);

@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { SUBJECTS } from '../constants';
 import { db } from '../firebase';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { Lesson } from '../types';
-import { IconChevronDown, IconVideoOff } from './Icons'; // Reutilizando ícones se necessário ou usando SVG direto
+import { IconChevronDown, IconVideoOff } from './Icons';
 
 interface ScheduleEvent {
   dayOfWeek: number; // 1 = Monday, 5 = Friday
@@ -46,7 +45,7 @@ interface ScheduleViewProps {
   initialDate?: Date;
 }
 
-const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialDate }) => {
+export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialDate }) => {
   // Start and End of the Semester
   const SEMESTER_START = new Date(2026, 1, 9); // Feb 9, 2026 (Month is 0-indexed)
   const SEMESTER_END = new Date(2026, 3, 10); // Apr 10, 2026
@@ -80,8 +79,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const q = query(collection(db, "lessons"));
-        const snapshot = await getDocs(q);
+        const snapshot = await getDocs(collection(db, "lessons"));
         const fetched: Lesson[] = [];
         snapshot.forEach((doc) => {
           const d = doc.data();
@@ -383,8 +381,5 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
             })}
         </div>
       </div>
-    </div>
-  );
-};
-
-export default ScheduleView;
+    );
+  };

@@ -35,8 +35,7 @@ const LibraryView: React.FC = () => {
     const storagePath = `materials/books/${fileName}`;
 
     try {
-      const fileRef = ref(storage, storagePath);
-      const url = await getDownloadURL(fileRef);
+      const url = await getDownloadURL(ref(storage, storagePath));
       window.open(url, '_blank');
     } catch (error) {
       console.error("Erro ao buscar livro:", error);

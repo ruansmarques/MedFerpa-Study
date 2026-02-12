@@ -381,5 +381,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
             })}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};

@@ -268,7 +268,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         updatedAt: new Date().toISOString(),
         type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
-        targetSlots: selectedSlots // Salva os horários selecionados
+        targetSlots: selectedSlots // Salva os horários selecionados (ex: ['1', '2'])
       };
 
       if (editingId) {

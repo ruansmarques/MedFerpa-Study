@@ -26,6 +26,15 @@ export const MOCK_USERS: User[] = [
   }
 ];
 
+// Mapeamento padrão de horários para o 5º Período (Automação Admin)
+export const DEFAULT_SUBJECT_SLOTS: Record<string, string[]> = {
+  'pna': ['1'],
+  'semio-sist': ['2', '3'],
+  'anat-patol': ['1', '2'],
+  'farma-med': ['3'],
+  'mbe': ['1']
+};
+
 // Mock Books
 export const LIBRARY_BOOKS: Book[] = [
   {

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { SUBJECTS } from '../constants';
+import React, { useState, useEffect, useRef } from 'react';
+import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { IconCheck, IconX, IconEdit, IconVideoOff } from './Icons';
+import { IconCheck, IconX, IconEdit, IconVideoOff, IconPresentation, IconBook } from './Icons';
 import { Lesson } from '../types';
 
 interface AdminDashboardProps {
@@ -16,7 +16,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [authError, setAuthError] = useState('');
   
   // Filter State (Table)
-  const [filterPeriod, setFilterPeriod] = useState<number | 'all'>('all');
+  const [filterPeriod, setFilterPeriod] = useState<number | 'all'>(5);
   const [filterSubjectId, setFilterSubjectId] = useState<string>('all');
 
   // Form State
@@ -29,11 +29,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [youtubeLink, setYoutubeLink] = useState('');
   const [date, setDate] = useState('');
   const [noticeMessage, setNoticeMessage] = useState('');
-  const [selectedSlots, setSelectedSlots] = useState<string[]>([]); // Novo estado para slots
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   
   // Files State
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
+  const slideInputRef = useRef<HTMLInputElement>(null);
+  const summaryInputRef = useRef<HTMLInputElement>(null);
   
   // URLs existentes
   const [existingSlideUrl, setExistingSlideUrl] = useState<string | null>(null);
@@ -45,6 +47,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   // UI State
   const [loading, setLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [migrationLoading, setMigrationLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -82,6 +85,42 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       fetchLessons();
     }
   }, [isAuthenticated]);
+
+  // --- AUTO-PREENCHIMENTO DE SLOTS AO MUDAR DISCIPLINA ---
+  useEffect(() => {
+    if (!editingId && subjectId && DEFAULT_SUBJECT_SLOTS[subjectId]) {
+        setSelectedSlots(DEFAULT_SUBJECT_SLOTS[subjectId]);
+    }
+  }, [subjectId, editingId]);
+
+  // --- MIGRAR SLOTS EXISTENTES (BOTÃO TEMPORÁRIO) ---
+  const handleMigrateSlots = async () => {
+    if (!window.confirm("Isso atualizará os horários de TODAS as aulas do 5º período no banco baseado no cronograma padrão. Continuar?")) return;
+    
+    setMigrationLoading(true);
+    try {
+        const batch = writeBatch(db);
+        let updatedCount = 0;
+
+        dbLessons.forEach(lesson => {
+            const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
+            // Só migra se for do 5º período e se houver mapeamento padrão
+            if (subj?.period === 5 && DEFAULT_SUBJECT_SLOTS[lesson.subjectId]) {
+                const lessonRef = doc(db, "lessons", lesson.id);
+                batch.update(lessonRef, { targetSlots: DEFAULT_SUBJECT_SLOTS[lesson.subjectId] });
+                updatedCount++;
+            }
+        });
+
+        await batch.commit();
+        setSuccessMsg(`${updatedCount} registros atualizados com sucesso.`);
+        await fetchLessons();
+    } catch (error: any) {
+        setErrorMsg("Erro na migração: " + error.message);
+    } finally {
+        setMigrationLoading(false);
+    }
+  };
 
   // --- FILTER LOGIC ---
   const getFilteredLessons = () => {
@@ -153,7 +192,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSubjectId(lesson.subjectId);
     setCategory(lesson.category || '');
     setNoticeMessage(lesson.description || '');
-    setSelectedSlots(lesson.targetSlots || []); // Carrega slots salvos
+    setSelectedSlots(lesson.targetSlots || []);
     
     const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
     if (subj) setPeriod(subj.period);
@@ -176,23 +215,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setErrorMsg('');
   };
 
-  // --- CANCELAR EDIÇÃO ---
+  // --- CANCELAR EDIÇÃO / LIMPAR ---
   const handleCancelEdit = () => {
     setEditingId(null);
-    setEntryType('class');
     setTitle('');
     setYoutubeLink('');
     setCategory('');
-    setDate('');
     setNoticeMessage('');
-    setSelectedSlots([]); // Limpa slots
+    setSelectedSlots([]);
     setSlideFile(null);
     setSummaryFile(null);
     setExistingSlideUrl(null);
     setExistingSummaryUrl(null);
     
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach((input) => { (input as HTMLInputElement).value = ''; });
+    if (slideInputRef.current) slideInputRef.current.value = '';
+    if (summaryInputRef.current) summaryInputRef.current.value = '';
+    
+    setSuccessMsg('');
+    setErrorMsg('');
   };
 
   // --- EXCLUIR ---
@@ -211,7 +251,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     }
   };
 
-  // --- SUBMIT (CRIAR ou EDITAR) ---
+  // --- SUBMIT ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
@@ -221,11 +261,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     if (!subjectId) { alert("Disciplina obrigatória."); return; }
     if (!date) { alert("Data obrigatória."); return; } 
     if (selectedSlots.length === 0) { alert("Selecione pelo menos um horário de aula."); return; }
-
-    if (subjectId === 'proc-patol' && !category && entryType === 'class') {
-        alert("Para 'Processos Patológicos', selecione a Categoria.");
-        return;
-    }
 
     setLoading(true);
 
@@ -268,19 +303,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         updatedAt: new Date().toISOString(),
         type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
-        targetSlots: selectedSlots // Salva os horários selecionados (ex: ['1', '2'])
+        targetSlots: selectedSlots
       };
 
       if (editingId) {
         await updateDoc(doc(db, "lessons", editingId), lessonPayload);
-        setSuccessMsg(entryType === 'class' ? "Aula atualizada com sucesso!" : "Aviso atualizado com sucesso!");
+        setSuccessMsg("Registro atualizado com sucesso!");
         handleCancelEdit(); 
       } else {
         await addDoc(collection(db, "lessons"), {
           ...lessonPayload,
           createdAt: new Date().toISOString()
         });
-        setSuccessMsg(entryType === 'class' ? "Aula cadastrada com sucesso!" : "Aviso cadastrado com sucesso!");
+        setSuccessMsg("Registro cadastrado com sucesso!");
         handleCancelEdit();
       }
 
@@ -343,9 +378,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
           
           <div className="lg:col-span-2 order-2 lg:order-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-               <div className="mb-6">
-                 <h3 className="text-lg font-bold text-slate-800">Registros no Banco de Dados</h3>
-                 <p className="text-xs text-gray-500 mt-1">Filtre para editar ou excluir registros.</p>
+               <div className="mb-6 flex justify-between items-start">
+                 <div>
+                    <h3 className="text-lg font-bold text-slate-800">Registros no Banco</h3>
+                    <p className="text-xs text-gray-500 mt-1">Filtre para gerenciar os dados.</p>
+                 </div>
+                 {/* BOTÃO DE MIGRAÇÃO EM MASSA */}
+                 <button 
+                    onClick={handleMigrateSlots}
+                    disabled={migrationLoading}
+                    className="text-[10px] font-black uppercase bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1.5 rounded-lg hover:bg-amber-100 transition-colors disabled:opacity-50"
+                    title="Atualiza horários de todas as aulas existentes do 5º Período"
+                 >
+                    {migrationLoading ? 'Migrando...' : 'Migrar Horários 5ºP'}
+                 </button>
                </div>
                
                <div className="bg-gray-50 p-3 rounded-xl mb-4 grid grid-cols-2 gap-3 border border-gray-100">
@@ -391,13 +437,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                            <td className="px-3 py-3 text-slate-700">
                              <div className="flex items-center gap-2">
                                 {lesson.type === 'notice' && (
-                                    <span className="bg-yellow-100 text-yellow-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Aviso</span>
+                                    <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Aviso</span>
                                 )}
                                 <div className="font-medium text-xs lg:text-sm line-clamp-2">{lesson.title}</div>
                              </div>
                              <div className="text-[10px] text-gray-400 mt-1">
                                {SUBJECTS.find(s => s.id === lesson.subjectId)?.title} • 
-                               Slots: {lesson.targetSlots?.join(', ')}
+                               {lesson.date && <span className="text-blue-500 font-bold">{lesson.date.split('-').reverse().join('/')}</span>} •
+                               Slots: {lesson.targetSlots?.length ? lesson.targetSlots.join(', ') : 'N/A'}
                              </div>
                            </td>
                            <td className="px-3 py-3 text-right">
@@ -433,26 +480,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     onClick={() => { setEntryType('class'); handleCancelEdit(); }}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'class' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                  >
-                    Cadastrar Aula
+                    ● Cadastrar Aula
                  </button>
                  <button
                     type="button"
-                    onClick={() => { setEntryType('notice'); handleCancelEdit(); }}
+                    onClick={() => { setEntryType('notice'); handleCancelEdit(); setTitle('Aula não ministrada'); }}
                     className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'notice' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                  >
-                    Cadastrar Aviso
+                    ○ Cadastrar Aviso
                  </button>
               </div>
 
-              <div className="mb-8 border-b border-gray-100 pb-4">
+              <div className="mb-8 border-b border-gray-100 pb-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-slate-800">
                   {editingId ? 'Editar Registro' : (entryType === 'class' ? 'Nova Aula' : 'Novo Aviso')}
                 </h2>
+                {editingId && (
+                    <button onClick={handleCancelEdit} className="text-xs text-gray-400 hover:text-red-500 font-bold uppercase underline">Cancelar Edição</button>
+                )}
               </div>
 
-              {successMsg && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 font-medium flex items-center gap-3">
-                  <IconCheck className="w-5 h-5" /> {successMsg}
+              {(successMsg || errorMsg) && (
+                <div className={`mb-6 p-4 border rounded-xl font-medium flex items-center gap-3 ${successMsg ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                  {successMsg ? <IconCheck className="w-5 h-5" /> : <IconX className="w-5 h-5" />}
+                  {successMsg || errorMsg}
                 </div>
               )}
 
@@ -497,7 +548,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                 {/* --- SELEÇÃO DE SLOTS (HORÁRIOS) --- */}
                 <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
                     <label className="block text-sm font-bold text-blue-900 mb-4 uppercase tracking-widest">
-                        Horários desta Aula (Slots) *
+                        Horários da Aula (Slots) *
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {[
@@ -515,12 +566,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                     : 'bg-white border-gray-200 text-slate-600 hover:border-blue-300'
                                 }`}
                             >
-                                <div className="text-xs font-black uppercase opacity-80 mb-1">{slot.label}</div>
+                                <div className="text-[10px] font-black uppercase opacity-80 mb-1">{slot.label}</div>
                                 <div className="text-sm font-bold">{slot.time}</div>
                             </button>
                         ))}
                     </div>
-                    <p className="text-[10px] text-blue-400 mt-3 font-medium">Selecione todos os horários que a disciplina ocupa neste dia.</p>
+                    <p className="text-[10px] text-blue-400 mt-3 font-medium flex items-center gap-1">
+                        <IconCheck className="w-3 h-3" /> Horários são preenchidos automaticamente conforme a grade.
+                    </p>
                 </div>
 
                 <div>
@@ -538,23 +591,23 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                 </div>
 
                 {entryType === 'notice' && (
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Mensagem do Aviso *</label>
+                    <div className="animate-fade-in">
+                        <label className="block text-sm font-bold text-amber-800 mb-2">Motivo do Aviso *</label>
                         <textarea
                             value={noticeMessage}
                             onChange={e => setNoticeMessage(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition shadow-sm h-24 resize-none"
-                            placeholder="Ex: O professor não pôde comparecer por motivos de saúde."
+                            className="w-full px-4 py-3 border border-amber-300 bg-amber-50 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none transition shadow-sm h-28 resize-none text-amber-900"
+                            placeholder="Ex: O professor não pôde comparecer por motivos de saúde. A aula será reposta em data oportuna."
                             required
                         />
                     </div>
                 )}
 
                 {entryType === 'class' && (
-                    <>
+                    <div className="animate-fade-in space-y-6">
                         {subjectId === 'proc-patol' && (
                         <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
-                            <label className="block text-sm font-bold text-orange-800 mb-2">Categoria *</label>
+                            <label className="block text-sm font-bold text-orange-800 mb-2">Categoria (Processos Patológicos) *</label>
                             <select 
                                 value={category} 
                                 onChange={e => setCategory(e.target.value)}
@@ -570,40 +623,90 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                         </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 mb-2">Slide (PDF)</label>
-                                <input type="file" accept=".pdf" onChange={e => setSlideFile(e.target.files?.[0] || null)} className="w-full text-xs" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* BOTÃO CUSTOMIZADO SLIDE */}
+                            <div className="flex flex-col">
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Material: Slides</label>
+                                <input 
+                                    type="file" 
+                                    ref={slideInputRef}
+                                    accept=".pdf" 
+                                    onChange={e => setSlideFile(e.target.files?.[0] || null)} 
+                                    className="hidden" 
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={() => slideInputRef.current?.click()}
+                                    className={`w-full py-4 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${
+                                        slideFile || existingSlideUrl
+                                        ? 'bg-blue-50 border-blue-400 text-blue-700'
+                                        : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-blue-300'
+                                    }`}
+                                >
+                                    <IconPresentation className="w-8 h-8 mb-1" />
+                                    <span className="text-xs font-black uppercase tracking-widest">
+                                        {slideFile ? 'Trocar Slide' : existingSlideUrl ? 'Slide Salvo ✓' : 'Escolher Slide'}
+                                    </span>
+                                    {slideFile && <span className="text-[10px] mt-1 font-medium truncate max-w-[150px]">{slideFile.name}</span>}
+                                </button>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 mb-2">Resumo (PDF)</label>
-                                <input type="file" accept=".pdf" onChange={e => setSummaryFile(e.target.files?.[0] || null)} className="w-full text-xs" />
+
+                            {/* BOTÃO CUSTOMIZADO RESUMO */}
+                            <div className="flex flex-col">
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Material: Resumo</label>
+                                <input 
+                                    type="file" 
+                                    ref={summaryInputRef}
+                                    accept=".pdf" 
+                                    onChange={e => setSummaryFile(e.target.files?.[0] || null)} 
+                                    className="hidden" 
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={() => summaryInputRef.current?.click()}
+                                    className={`w-full py-4 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${
+                                        summaryFile || existingSummaryUrl
+                                        ? 'bg-purple-50 border-purple-400 text-purple-700'
+                                        : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-purple-300'
+                                    }`}
+                                >
+                                    <IconBook className="w-8 h-8 mb-1" />
+                                    <span className="text-xs font-black uppercase tracking-widest">
+                                        {summaryFile ? 'Trocar Resumo' : existingSummaryUrl ? 'Resumo Salvo ✓' : 'Escolher Resumo'}
+                                    </span>
+                                    {summaryFile && <span className="text-[10px] mt-1 font-medium truncate max-w-[150px]">{summaryFile.name}</span>}
+                                </button>
                             </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-2">YouTube Link</label>
-                            <input 
-                                type="text" 
-                                value={youtubeLink}
-                                onChange={e => setYoutubeLink(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
-                                placeholder="Link do vídeo..."
-                            />
+                            <div className="relative">
+                                <input 
+                                    type="text" 
+                                    value={youtubeLink}
+                                    onChange={e => setYoutubeLink(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                />
+                                <div className="absolute left-3 top-3.5 text-red-500 opacity-30">
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                                </div>
+                            </div>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 <div className="pt-6 flex gap-4">
                   {editingId && (
-                    <button type="button" onClick={handleCancelEdit} className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold">Cancelar</button>
+                    <button type="button" onClick={handleCancelEdit} className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
                   )}
                   <button 
                     type="submit" 
                     disabled={loading}
-                    className="flex-[2] py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg"
+                    className="flex-[2] py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
                   >
-                    {loading ? 'Salvando...' : (editingId ? 'Atualizar' : 'Cadastrar')}
+                    {loading ? 'Processando...' : (editingId ? 'Salvar Alterações' : 'Cadastrar Registro')}
                   </button>
                 </div>
               </form>

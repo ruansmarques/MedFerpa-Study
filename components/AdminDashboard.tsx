@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX, IconEdit, IconVideoOff, IconPresentation, IconBook } from './Icons';
 import { Lesson } from '../types';
@@ -47,7 +47,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   // UI State
   const [loading, setLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-  const [migrationLoading, setMigrationLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -92,35 +91,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         setSelectedSlots(DEFAULT_SUBJECT_SLOTS[subjectId]);
     }
   }, [subjectId, editingId]);
-
-  // --- MIGRAR SLOTS EXISTENTES (BOTÃO TEMPORÁRIO) ---
-  const handleMigrateSlots = async () => {
-    if (!window.confirm("Isso atualizará os horários de TODAS as aulas do 5º período no banco baseado no cronograma padrão. Continuar?")) return;
-    
-    setMigrationLoading(true);
-    try {
-        const batch = writeBatch(db);
-        let updatedCount = 0;
-
-        dbLessons.forEach(lesson => {
-            const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
-            // Só migra se for do 5º período e se houver mapeamento padrão
-            if (subj?.period === 5 && DEFAULT_SUBJECT_SLOTS[lesson.subjectId]) {
-                const lessonRef = doc(db, "lessons", lesson.id);
-                batch.update(lessonRef, { targetSlots: DEFAULT_SUBJECT_SLOTS[lesson.subjectId] });
-                updatedCount++;
-            }
-        });
-
-        await batch.commit();
-        setSuccessMsg(`${updatedCount} registros atualizados com sucesso.`);
-        await fetchLessons();
-    } catch (error: any) {
-        setErrorMsg("Erro na migração: " + error.message);
-    } finally {
-        setMigrationLoading(false);
-    }
-  };
 
   // --- FILTER LOGIC ---
   const getFilteredLessons = () => {
@@ -383,15 +353,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     <h3 className="text-lg font-bold text-slate-800">Registros no Banco</h3>
                     <p className="text-xs text-gray-500 mt-1">Filtre para gerenciar os dados.</p>
                  </div>
-                 {/* BOTÃO DE MIGRAÇÃO EM MASSA */}
-                 <button 
-                    onClick={handleMigrateSlots}
-                    disabled={migrationLoading}
-                    className="text-[10px] font-black uppercase bg-amber-50 text-amber-600 border border-amber-200 px-2 py-1.5 rounded-lg hover:bg-amber-100 transition-colors disabled:opacity-50"
-                    title="Atualiza horários de todas as aulas existentes do 5º Período"
-                 >
-                    {migrationLoading ? 'Migrando...' : 'Migrar Horários 5ºP'}
-                 </button>
                </div>
                
                <div className="bg-gray-50 p-3 rounded-xl mb-4 grid grid-cols-2 gap-3 border border-gray-100">

@@ -4,7 +4,7 @@ import { SUBJECTS } from '../constants';
 import { db } from '../firebase';
 import { collection, query, getDocs } from 'firebase/firestore';
 import { Lesson } from '../types';
-import { IconChevronDown } from './Icons'; // Reutilizando ícones se necessário ou usando SVG direto
+import { IconChevronDown, IconVideoOff } from './Icons'; // Reutilizando ícones se necessário ou usando SVG direto
 
 interface ScheduleEvent {
   dayOfWeek: number; // 1 = Monday, 5 = Friday
@@ -91,7 +91,9 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
             title: d.title,
             date: d.date, // Formato YYYY-MM-DD vindo do Admin
             youtubeIds: d.youtubeIds || [],
-            duration: d.duration
+            duration: d.duration,
+            type: d.type || 'class',
+            description: d.description || ''
           });
         });
         setDbLessons(fetched);
@@ -324,6 +326,25 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialD
                                 const foundLesson = dbLessons.find(l => 
                                     l.subjectId === event.subjectId && l.date === isoDate
                                 );
+                                
+                                // Se encontrou uma lição e ela é do tipo AVISO
+                                if (foundLesson && foundLesson.type === 'notice') {
+                                    return (
+                                        <div key={idx} className="w-full text-center rounded-xl h-48 overflow-hidden bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-4 gap-2 shadow-sm">
+                                            <div className="text-blue-300">
+                                                <IconVideoOff className="w-8 h-8 opacity-50" />
+                                            </div>
+                                            <p className="text-sm font-bold text-slate-500 leading-tight">
+                                                {foundLesson.title}
+                                            </p>
+                                            {foundLesson.description && (
+                                                <p className="text-xs text-gray-400 leading-snug">
+                                                    {foundLesson.description}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )
+                                }
 
                                 return (
                                     <button

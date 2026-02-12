@@ -1,4 +1,5 @@
 
+
 export interface User {
   ra: string;
   name: string;
@@ -36,6 +37,10 @@ export interface Lesson {
   slideUrl?: string;
   summaryUrl?: string;
   date?: string; // ISO Date string
+  
+  // Novos campos para Avisos/Cancelamentos
+  type?: 'class' | 'notice'; 
+  description?: string; // Mensagem explicativa do aviso
 }
 
 export interface Exercise {

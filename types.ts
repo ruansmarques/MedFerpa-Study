@@ -1,3 +1,4 @@
+
 export interface User {
   ra: string;
   name: string;
@@ -42,6 +43,9 @@ export interface Lesson {
   
   // Novo campo para identificação de slots no cronograma
   targetSlots?: string[]; // Array de strings: ['1', '2', '3']
+
+  // Added period property to allow lessons to track their academic period, resolving type errors in Admin views.
+  period: number;
 }
 
 export interface Exercise {

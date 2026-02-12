@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, EXERCISES } from '../constants';
 import { db, storage } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { User, Subject, Exercise, LevelProgress } from '../types';
+import { GoogleGenAI, Type } from "@google/genai";
 
 interface ExerciseViewProps {
   currentUser: User;
@@ -249,6 +251,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
   const [currentLevel, setCurrentLevel] = useState<number>(1);
   const [quizQuestions, setQuizQuestions] = useState<Exercise[]>([]);
   const [mascotUrl, setMascotUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const [mobileSubjectIndex, setMobileSubjectIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -526,22 +529,72 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     );
   };
 
-  const startQuiz = (level: number) => {
+  // Fix: Generate questions using Gemini API
+  const startQuiz = async (level: number) => {
     setCurrentLevel(level);
-    const subjectExercises = EXERCISES.filter(e => e.subjectId === selectedSubject?.id);
-    const pool = subjectExercises.length > 0 ? subjectExercises : EXERCISES;
-    const questions: Exercise[] = [];
-    for (let i = 0; i < 10; i++) {
-        const randomEx = pool[i % pool.length]; 
-        questions.push({ ...randomEx, id: `${randomEx.id}_run_${i}` });
+    setIsGenerating(true);
+    
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-pro-preview',
+            contents: `Você é um professor de medicina. Gere 10 questões de múltipla escolha sobre o assunto "${selectedSubject?.title}" para estudantes de medicina. 
+            Nível de dificuldade: ${level} de 6 (1 é básico, 6 é avançado/especializado). 
+            As questões devem ser em Português do Brasil.
+            Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de 4 strings) e "correctOptionIndex" (inteiro 0-3).`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            question: { type: Type.STRING },
+                            options: { type: Type.ARRAY, items: { type: Type.STRING } },
+                            correctOptionIndex: { type: Type.INTEGER }
+                        },
+                        required: ["question", "options", "correctOptionIndex"]
+                    }
+                },
+                thinkingConfig: { thinkingBudget: 4000 }
+            }
+        });
+
+        const generatedData = JSON.parse(response.text || '[]');
+        const questions: Exercise[] = generatedData.map((q: any, i: number) => ({
+            ...q,
+            id: `ai-gen-${selectedSubject?.id}-${level}-${i}`,
+            subjectId: selectedSubject?.id || '',
+            lessonId: 'ai-generated'
+        }));
+
+        setQuizQuestions(questions);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setQuizFinished(false);
+        setIsAnswerChecked(false);
+        setSelectedOption(null);
+        setStage(4);
+    } catch (error) {
+        console.error("Erro ao gerar questões com AI:", error);
+        // Fallback to mock data if AI fails
+        const subjectExercises = EXERCISES.filter(e => e.subjectId === selectedSubject?.id);
+        const pool = subjectExercises.length > 0 ? subjectExercises : EXERCISES;
+        const questions: Exercise[] = [];
+        for (let i = 0; i < 10; i++) {
+            const randomEx = pool[i % pool.length]; 
+            questions.push({ ...randomEx, id: `${randomEx.id}_fallback_${i}` });
+        }
+        setQuizQuestions(questions);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setQuizFinished(false);
+        setIsAnswerChecked(false);
+        setSelectedOption(null);
+        setStage(4);
+    } finally {
+        setIsGenerating(false);
     }
-    setQuizQuestions(questions);
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setQuizFinished(false);
-    setIsAnswerChecked(false);
-    setSelectedOption(null);
-    setStage(4);
   };
 
   const handleOptionClick = (idx: number) => {
@@ -648,7 +701,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
         else if (finalPercentage >= 50) stars = 1;
         saveProgress(finalPercentage, stars);
      }
-  }, [quizFinished]);
+  }, [quizFinished, score, quizQuestions.length, currentLevel, selectedSubject, currentUser]);
 
   const renderArena = () => {
     if (quizFinished) {
@@ -712,11 +765,11 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
 
             <div className="flex-1 flex flex-col justify-center pb-20">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-10 leading-relaxed">
-                {currentQ.question}
+                {currentQ?.question}
                 </h2>
 
                 <div className="grid grid-cols-1 gap-4">
-                {currentQ.options.map((opt, idx) => {
+                {currentQ?.options.map((opt, idx) => {
                     let btnClass = "bg-slate-800 text-white border-b-4 border-slate-950 hover:bg-slate-700 active:border-b-0 active:translate-y-1";
                     
                     if (isAnswerChecked) {
@@ -754,6 +807,14 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     <div className="min-h-screen bg-[#020617] font-sans overflow-hidden relative">
        <StarBackground />
        
+       {isGenerating && (
+          <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center text-center p-6">
+              <div className="w-24 h-24 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+              <h3 className="text-2xl font-black text-white mb-2">Preparando Desafio...</h3>
+              <p className="text-blue-300">Nossa IA está gerando questões exclusivas de medicina para você.</p>
+          </div>
+       )}
+
        <div className="relative z-10 pt-8 pb-20">
           {stage === 1 && renderGalaxies()}
           {stage === 2 && renderSolarSystem()}

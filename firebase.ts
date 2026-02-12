@@ -1,6 +1,8 @@
-import { initializeApp } from "firebase/app";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+
+// Standard Firebase v9+ named export initialization to resolve import resolution errors.
+import { initializeApp } from 'firebase/app';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Configuração do Firebase do projeto "ub-medcenter"
 const firebaseConfig = {
@@ -13,7 +15,7 @@ const firebaseConfig = {
   measurementId: "G-60GVEZQ57M"
 };
 
-// Inicializa o Firebase
+// Initialize the Firebase app instance
 const app = initializeApp(firebaseConfig);
 
 // Inicializa e exporta o Banco de Dados (Firestore)

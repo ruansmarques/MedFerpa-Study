@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
 import { db, storage } from '../firebase';
-import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { IconCheck, IconX, IconEdit, IconVideoOff, IconPresentation, IconBook } from './Icons';
+import { IconCheck, IconX, IconEdit, IconPresentation, IconBook } from './Icons';
 import { Lesson } from '../types';
 
 interface AdminDashboardProps {
@@ -13,13 +14,8 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
   
-  // Filter State (Table)
-  const [filterPeriod, setFilterPeriod] = useState<number | 'all'>(5);
-  const [filterSubjectId, setFilterSubjectId] = useState<string>('all');
-
-  // Form State
+  // Form state
   const [entryType, setEntryType] = useState<'class' | 'notice'>('class');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -31,650 +27,258 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   
-  // Files State
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
-  const slideInputRef = useRef<HTMLInputElement>(null);
-  const summaryInputRef = useRef<HTMLInputElement>(null);
   
-  // URLs existentes
-  const [existingSlideUrl, setExistingSlideUrl] = useState<string | null>(null);
-  const [existingSummaryUrl, setExistingSummaryUrl] = useState<string | null>(null);
-
-  // Data Lists
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
-
-  // UI State
   const [loading, setLoading] = useState(false);
-  const [authLoading, setAuthLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
 
-  // --- BUSCA DADOS INICIAIS ---
-  const fetchLessons = async () => {
-    try {
-      const q = query(collection(db, "lessons"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const lessons: Lesson[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        lessons.push({
-          id: doc.id,
-          subjectId: data.subjectId,
-          title: data.title,
-          youtubeIds: data.youtubeIds || [],
-          duration: data.duration,
-          category: data.category,
-          slideUrl: data.slideUrl,
-          summaryUrl: data.summaryUrl,
-          date: data.date,
-          type: data.type || 'class',
-          description: data.description || '',
-          targetSlots: data.targetSlots || []
-        });
-      });
-      setDbLessons(lessons);
-    } catch (err) {
-      console.error("Erro ao buscar aulas:", err);
-    }
-  };
-
+  // --- AUTOMATION: Pre-select slots based on subject ---
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchLessons();
-    }
-  }, [isAuthenticated]);
-
-  // --- AUTO-PREENCHIMENTO DE SLOTS AO MUDAR DISCIPLINA ---
-  useEffect(() => {
-    if (!editingId && subjectId && DEFAULT_SUBJECT_SLOTS[subjectId]) {
-        setSelectedSlots(DEFAULT_SUBJECT_SLOTS[subjectId]);
+    if (subjectId && !editingId) {
+      const defaultSlots = DEFAULT_SUBJECT_SLOTS[subjectId] || [];
+      setSelectedSlots(defaultSlots);
     }
   }, [subjectId, editingId]);
 
-  // --- FILTER LOGIC ---
-  const getFilteredLessons = () => {
-    return dbLessons.filter(lesson => {
-      if (filterPeriod !== 'all') {
-        const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
-        if (subj?.period !== filterPeriod) return false;
-      }
-      if (filterSubjectId !== 'all') {
-        if (lesson.subjectId !== filterSubjectId) return false;
-      }
-      return true;
-    });
+  const fetchLessons = async () => {
+    const q = query(collection(db, "lessons"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    const list: Lesson[] = [];
+    snap.forEach(d => list.push({ id: d.id, ...d.data() } as Lesson));
+    setDbLessons(list);
   };
 
-  const subjectsForFilter = filterPeriod === 'all' 
-    ? SUBJECTS 
-    : SUBJECTS.filter(s => s.period === filterPeriod);
+  useEffect(() => { if (isAuthenticated) fetchLessons(); }, [isAuthenticated]);
 
-  // --- AUTH ---
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAuthLoading(true);
-    setAuthError('');
+    const q = query(collection(db, "admins"), where("accessKey", "==", password.trim()));
+    const snap = await getDocs(q);
+    if (!snap.empty) setIsAuthenticated(true); else alert("Senha incorreta");
+  };
 
+  const handleMigration = async () => {
+    if (!window.confirm("Isso atualizará os slots de TODAS as aulas do 5º período com base na grade padrão. Prosseguir?")) return;
+    setLoading(true);
     try {
-      const q = query(collection(db, "admins"), where("accessKey", "==", password.trim()));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        setIsAuthenticated(true);
-        setAuthError('');
-      } else {
-        setAuthError('Senha incorreta.');
-        setPassword('');
-      }
-    } catch (err: any) {
-      setAuthError('Erro de conexão: ' + err.message);
-    } finally {
-      setAuthLoading(false);
-    }
+        const batch = writeBatch(db);
+        const q = query(collection(db, "lessons"));
+        const snap = await getDocs(q);
+        
+        snap.forEach((doc) => {
+            const data = doc.data();
+            const slots = DEFAULT_SUBJECT_SLOTS[data.subjectId] || [];
+            if (slots.length > 0) {
+                batch.update(doc.ref, { targetSlots: slots });
+            }
+        });
+        
+        await batch.commit();
+        alert("Migração concluída com sucesso!");
+        fetchLessons();
+    } catch (e) { alert("Erro na migração: " + e.message); }
+    finally { setLoading(false); }
   };
 
-  const formSubjects = SUBJECTS.filter(s => s.period === period);
-  
-  const extractYoutubeId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+  // Fix: Clear form state
+  const clearForm = () => {
+    setEditingId(null);
+    setTitle('');
+    setSubjectId('');
+    setDate('');
+    setNoticeMessage('');
+    setSelectedSlots([]);
+    setYoutubeLink('');
+    setSlideFile(null);
+    setSummaryFile(null);
+    setEntryType('class');
   };
 
-  const handleUpload = async (file: File, path: string) => {
-    const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return await getDownloadURL(snapshot.ref);
-  };
-
-  const handleSlotToggle = (slot: string) => {
-    setSelectedSlots(prev => 
-      prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot]
-    );
-  };
-
-  // --- PREPARAR EDIÇÃO ---
+  // Fix: Handle Edit
   const handleEdit = (lesson: Lesson) => {
     setEditingId(lesson.id);
     setEntryType(lesson.type || 'class');
     setTitle(lesson.title);
     setSubjectId(lesson.subjectId);
-    setCategory(lesson.category || '');
+    setDate(lesson.date || '');
     setNoticeMessage(lesson.description || '');
     setSelectedSlots(lesson.targetSlots || []);
-    
-    const subj = SUBJECTS.find(s => s.id === lesson.subjectId);
-    if (subj) setPeriod(subj.period);
-
-    if (lesson.youtubeIds && lesson.youtubeIds.length > 0) {
-      setYoutubeLink(`https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}`);
-    } else {
-      setYoutubeLink('');
-    }
-
-    setDate(lesson.date || '');
-    setExistingSlideUrl(lesson.slideUrl || null);
-    setExistingSummaryUrl(lesson.summaryUrl || null);
-    
-    setSlideFile(null);
-    setSummaryFile(null);
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setSuccessMsg('');
-    setErrorMsg('');
+    setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
+    setPeriod(lesson.period);
   };
 
-  // --- CANCELAR EDIÇÃO / LIMPAR ---
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setTitle('');
-    setYoutubeLink('');
-    setCategory('');
-    setNoticeMessage('');
-    setSelectedSlots([]);
-    setSlideFile(null);
-    setSummaryFile(null);
-    setExistingSlideUrl(null);
-    setExistingSummaryUrl(null);
-    
-    if (slideInputRef.current) slideInputRef.current.value = '';
-    if (summaryInputRef.current) summaryInputRef.current.value = '';
-    
-    setSuccessMsg('');
-    setErrorMsg('');
-  };
-
-  // --- EXCLUIR ---
+  // Fix: Handle Delete
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Tem certeza que deseja excluir permanentemente?")) return;
-    
-    setLoading(true);
-    try {
-      await deleteDoc(doc(db, "lessons", id));
-      await fetchLessons(); 
-      setSuccessMsg("Excluído com sucesso.");
-    } catch (err: any) {
-      setErrorMsg("Erro ao excluir: " + err.message);
-    } finally {
-      setLoading(false);
+    if (window.confirm("Deseja realmente excluir este registro?")) {
+        setLoading(true);
+        try {
+            await deleteDoc(doc(db, "lessons", id));
+            fetchLessons();
+        } catch (e) {
+            alert("Erro ao excluir: " + e.message);
+        } finally {
+            setLoading(false);
+        }
     }
   };
 
-  // --- SUBMIT ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
-
-    if (!title || title.trim() === "") { alert("Título obrigatório."); return; }
-    if (!subjectId) { alert("Disciplina obrigatória."); return; }
-    if (!date) { alert("Data obrigatória."); return; } 
-    if (selectedSlots.length === 0) { alert("Selecione pelo menos um horário de aula."); return; }
-
     setLoading(true);
-
     try {
-      const subject = SUBJECTS.find(s => s.id === subjectId);
+      let slideUrl = null;
+      let summaryUrl = null;
       
-      let finalSlideUrl = existingSlideUrl;
-      let finalSummaryUrl = existingSummaryUrl;
-      const videoIds: string[] = [];
+      const currentLesson = dbLessons.find(l => l.id === editingId);
 
-      if (entryType === 'class') {
-          if (slideFile && subject) {
-            const path = `materials/${subject.folderName || 'default'}/${category ? category + '/' : ''}slides/${slideFile.name}`;
-            finalSlideUrl = await handleUpload(slideFile, path);
-          }
-
-          if (summaryFile && subject) {
-            const path = `materials/${subject.folderName || 'default'}/${category ? category + '/' : ''}resumos/${summaryFile.name}`;
-            finalSummaryUrl = await handleUpload(summaryFile, path);
-          }
-
-          if (youtubeLink && youtubeLink.trim() !== "") {
-            const id = extractYoutubeId(youtubeLink);
-            if (id) videoIds.push(id);
-          }
+      if (slideFile) {
+        const sRef = ref(storage, `materials/uploads/slides/${Date.now()}_${slideFile.name}`);
+        await uploadBytes(sRef, slideFile);
+        slideUrl = await getDownloadURL(sRef);
       } else {
-          finalSlideUrl = null;
-          finalSummaryUrl = null;
+        slideUrl = currentLesson?.slideUrl || null;
       }
 
-      const lessonPayload = {
-        subjectId,
-        title: title.trim(),
-        youtubeIds: videoIds,
-        duration: 'N/A', 
-        category: category || null,
-        slideUrl: finalSlideUrl || null,
-        summaryUrl: finalSummaryUrl || null,
-        date: date || null,
-        updatedAt: new Date().toISOString(),
-        type: entryType,
+      if (summaryFile) {
+        const rRef = ref(storage, `materials/uploads/resumos/${Date.now()}_${summaryFile.name}`);
+        await uploadBytes(rRef, summaryFile);
+        summaryUrl = await getDownloadURL(rRef);
+      } else {
+        summaryUrl = currentLesson?.summaryUrl || null;
+      }
+
+      const payload: any = {
+        subjectId, title, period, date, type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
-        targetSlots: selectedSlots
+        targetSlots: selectedSlots,
+        slideUrl, summaryUrl,
+        youtubeIds: youtubeLink ? [youtubeLink.split('v=')[1]?.split('&')[0] || youtubeLink] : (currentLesson?.youtubeIds || []),
+        updatedAt: new Date().toISOString()
       };
 
       if (editingId) {
-        await updateDoc(doc(db, "lessons", editingId), lessonPayload);
-        setSuccessMsg("Registro atualizado com sucesso!");
-        handleCancelEdit(); 
+        await updateDoc(doc(db, "lessons", editingId), payload);
       } else {
-        await addDoc(collection(db, "lessons"), {
-          ...lessonPayload,
-          createdAt: new Date().toISOString()
-        });
-        setSuccessMsg("Registro cadastrado com sucesso!");
-        handleCancelEdit();
+        payload.createdAt = new Date().toISOString();
+        await addDoc(collection(db, "lessons"), payload);
       }
-
-      await fetchLessons(); 
-
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(err.message || 'Erro ao salvar.');
-    } finally {
-      setLoading(false);
-    }
+      setSuccessMsg("Salvo com sucesso!");
+      fetchLessons();
+      clearForm();
+    } finally { setLoading(false); }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-gray-800">Área Administrativa</h1>
-            <p className="text-xs text-gray-400 mt-1">Validação via Servidor</p>
-          </div>
-          <form onSubmit={handleLogin}>
-             <input 
-               type="password" 
-               placeholder="Chave de Acesso"
-               className={`w-full text-center text-2xl tracking-widest px-4 py-3 border rounded-lg mb-4 focus:ring-2 outline-none transition-colors
-                 ${authError ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-slate-800'}
-               `}
-               value={password}
-               onChange={(e) => setPassword(e.target.value)}
-               disabled={authLoading}
-             />
-             <button 
-               type="submit" 
-               disabled={authLoading}
-               className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition"
-             >
-               {authLoading ? 'Verificando...' : 'Entrar'}
-             </button>
-             {authError && <p className="text-red-500 text-sm mt-4 font-medium">{authError}</p>}
-          </form>
-          <button onClick={onExit} className="mt-6 text-gray-400 text-sm hover:text-gray-600 underline">Voltar ao site</button>
-        </div>
-      </div>
-    );
-  }
+  if (!isAuthenticated) return (
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <form onSubmit={handleLogin} className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full">
+        <h1 className="text-2xl font-black mb-6 text-center">Admin Access</h1>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Access Key" className="w-full p-4 border rounded-xl mb-4 text-center tracking-widest outline-none focus:ring-2 ring-blue-500" />
+        <button type="submit" className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition">Entrar</button>
+      </form>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-slate-900 text-white px-6 py-4 shadow-lg flex justify-between items-center sticky top-0 z-50">
-         <div className="flex items-center gap-3">
-            <div className="bg-blue-600 text-xs font-bold px-2 py-1 rounded">ADMIN</div>
-            <h1 className="text-lg font-bold tracking-tight">Painel de Gestão</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
+         <div className="flex items-center gap-4">
+            <h1 className="font-black text-xl">MEDFERPA <span className="text-blue-600">ADMIN</span></h1>
+            <button onClick={handleMigration} disabled={loading} className="px-3 py-1.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg border border-amber-200 hover:bg-amber-200 transition">
+                {loading ? 'Migrando...' : 'Migrar Slots (Aulas Antigas)'}
+            </button>
          </div>
-         <button onClick={onExit} className="text-gray-400 hover:text-white transition text-sm font-medium">Sair</button>
+         <button onClick={onExit} className="text-gray-400 hover:text-slate-800 font-bold">Sair do Painel</button>
       </header>
 
-      <main className="max-w-[95%] mx-auto mt-8 px-2 lg:px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          
-          <div className="lg:col-span-2 order-2 lg:order-1">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-               <div className="mb-6 flex justify-between items-start">
-                 <div>
-                    <h3 className="text-lg font-bold text-slate-800">Registros no Banco</h3>
-                    <p className="text-xs text-gray-500 mt-1">Filtre para gerenciar os dados.</p>
-                 </div>
-               </div>
-               
-               <div className="bg-gray-50 p-3 rounded-xl mb-4 grid grid-cols-2 gap-3 border border-gray-100">
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar Período</label>
-                    <select 
-                      value={filterPeriod} 
-                      onChange={e => {
-                        const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
-                        setFilterPeriod(val);
-                        setFilterSubjectId('all'); 
-                      }}
-                      className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="all">Todos</option>
-                      {[1,2,3,4,5,6,7,8,9,10,11,12].map(p => <option key={p} value={p}>{p}º Período</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filtrar Disciplina</label>
-                    <select 
-                      value={filterSubjectId} 
-                      onChange={e => setFilterSubjectId(e.target.value)}
-                      className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="all">Todas</option>
-                      {subjectsForFilter.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                    </select>
-                  </div>
-               </div>
-
-               <div className="overflow-x-auto max-h-[800px] overflow-y-auto scrollbar-hide">
-                 <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b sticky top-0 z-10">
-                       <tr>
-                         <th className="px-3 py-3">Título / Tipo</th>
-                         <th className="px-3 py-3 text-right">Ações</th>
-                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {getFilteredLessons().map((lesson) => (
-                        <tr key={lesson.id} className="hover:bg-blue-50 transition-colors group">
-                           <td className="px-3 py-3 text-slate-700">
-                             <div className="flex items-center gap-2">
-                                {lesson.type === 'notice' && (
-                                    <span className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Aviso</span>
-                                )}
-                                <div className="font-medium text-xs lg:text-sm line-clamp-2">{lesson.title}</div>
-                             </div>
-                             <div className="text-[10px] text-gray-400 mt-1">
-                               {SUBJECTS.find(s => s.id === lesson.subjectId)?.title} • 
-                               {lesson.date && <span className="text-blue-500 font-bold">{lesson.date.split('-').reverse().join('/')}</span>} •
-                               Slots: {lesson.targetSlots?.length ? lesson.targetSlots.join(', ') : 'N/A'}
-                             </div>
-                           </td>
-                           <td className="px-3 py-3 text-right">
-                             <div className="flex justify-end gap-1">
-                               <button 
-                                 onClick={() => handleEdit(lesson)}
-                                 className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
-                               >
-                                 <IconEdit className="w-4 h-4" />
-                               </button>
-                               <button 
-                                 onClick={() => handleDelete(lesson.id)}
-                                 className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
-                               >
-                                 <IconX className="w-4 h-4" />
-                               </button>
-                             </div>
-                           </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                 </table>
-               </div>
+      <main className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto w-full">
+        {/* Formulário */}
+        <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6 sticky top-24 h-fit">
+            <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                <button onClick={() => setEntryType('class')} className={`flex-1 py-2 font-bold rounded-lg ${entryType === 'class' ? 'bg-white shadow-sm' : 'text-gray-400'}`}>Aula</button>
+                <button onClick={() => setEntryType('notice')} className={`flex-1 py-2 font-bold rounded-lg ${entryType === 'notice' ? 'bg-white shadow-sm' : 'text-gray-400'}`}>Aviso</button>
             </div>
-          </div>
 
-          <div className="lg:col-span-3 order-1 lg:order-2">
-            <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-8 sticky top-24">
-              
-              <div className="flex gap-4 mb-8 bg-gray-100 p-1.5 rounded-xl">
-                 <button
-                    type="button"
-                    onClick={() => { setEntryType('class'); handleCancelEdit(); }}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'class' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                 >
-                    ● Cadastrar Aula
-                 </button>
-                 <button
-                    type="button"
-                    onClick={() => { setEntryType('notice'); handleCancelEdit(); setTitle('Aula não ministrada'); }}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${entryType === 'notice' ? 'bg-white text-slate-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                 >
-                    ○ Cadastrar Aviso
-                 </button>
-              </div>
-
-              <div className="mb-8 border-b border-gray-100 pb-4 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-slate-800">
-                  {editingId ? 'Editar Registro' : (entryType === 'class' ? 'Nova Aula' : 'Novo Aviso')}
-                </h2>
-                {editingId && (
-                    <button onClick={handleCancelEdit} className="text-xs text-gray-400 hover:text-red-500 font-bold uppercase underline">Cancelar Edição</button>
-                )}
-              </div>
-
-              {(successMsg || errorMsg) && (
-                <div className={`mb-6 p-4 border rounded-xl font-medium flex items-center gap-3 ${successMsg ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
-                  {successMsg ? <IconCheck className="w-5 h-5" /> : <IconX className="w-5 h-5" />}
-                  {successMsg || errorMsg}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Período *</label>
-                    <select 
-                      value={period} 
-                      onChange={e => setPeriod(Number(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
-                    >
-                      {[1,2,3,4,5,6,7,8,9,10,11,12].map(p => <option key={p} value={p}>{p}º Período</option>)}
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <select value={subjectId} onChange={e => setSubjectId(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                        <option value="">Selecione a Disciplina</option>
+                        {SUBJECTS.filter(s => s.period === 5).map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                     </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Data *</label>
-                    <input 
-                      type="date" 
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
-                      required
-                    />
-                  </div>
+                    <input type="date" value={date} onChange={e => setDate(e.target.value)} className="p-3 border rounded-xl bg-gray-50" required />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Disciplina *</label>
-                  <select 
-                    value={subjectId} 
-                    onChange={e => setSubjectId(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition bg-white"
-                    required
-                  >
-                    <option value="">Selecione...</option>
-                    {formSubjects.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                  </select>
-                </div>
-
-                {/* --- SELEÇÃO DE SLOTS (HORÁRIOS) --- */}
-                <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-                    <label className="block text-sm font-bold text-blue-900 mb-4 uppercase tracking-widest">
-                        Horários da Aula (Slots) *
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {[
-                            { id: '1', label: '1º Horário', time: '07:00 - 08:40' },
-                            { id: '2', label: '2º Horário', time: '08:50 - 10:30' },
-                            { id: '3', label: '3º Horário', time: '10:50 - 12:30' }
-                        ].map(slot => (
-                            <button
-                                key={slot.id}
-                                type="button"
-                                onClick={() => handleSlotToggle(slot.id)}
-                                className={`p-4 rounded-xl border-2 text-left transition-all ${
-                                    selectedSlots.includes(slot.id)
-                                    ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                                    : 'bg-white border-gray-200 text-slate-600 hover:border-blue-300'
-                                }`}
-                            >
-                                <div className="text-[10px] font-black uppercase opacity-80 mb-1">{slot.label}</div>
-                                <div className="text-sm font-bold">{slot.time}</div>
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                    <p className="text-xs font-bold text-blue-800 mb-3 uppercase">Horários da Grade</p>
+                    <div className="flex gap-2">
+                        {['1', '2', '3'].map(s => (
+                            <button key={s} type="button" onClick={() => setSelectedSlots(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s])} 
+                                className={`flex-1 py-3 rounded-lg font-bold border-2 transition-all ${selectedSlots.includes(s) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-blue-100 text-blue-300'}`}>
+                                Slot {s}
                             </button>
                         ))}
                     </div>
-                    <p className="text-[10px] text-blue-400 mt-3 font-medium flex items-center gap-1">
-                        <IconCheck className="w-3 h-3" /> Horários são preenchidos automaticamente conforme a grade.
-                    </p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    {entryType === 'class' ? 'Título da Aula *' : 'Título do Aviso *'}
-                  </label>
-                  <input 
-                    type="text" 
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition shadow-sm"
-                    placeholder={entryType === 'class' ? "Ex: AULA 01 - Introdução..." : "Ex: Aula não ministrada"}
-                    required
-                  />
-                </div>
+                <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título do Conteúdo" className="w-full p-3 border rounded-xl focus:ring-2 ring-blue-500" required />
 
-                {entryType === 'notice' && (
-                    <div className="animate-fade-in">
-                        <label className="block text-sm font-bold text-amber-800 mb-2">Motivo do Aviso *</label>
-                        <textarea
-                            value={noticeMessage}
-                            onChange={e => setNoticeMessage(e.target.value)}
-                            className="w-full px-4 py-3 border border-amber-300 bg-amber-50 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none transition shadow-sm h-28 resize-none text-amber-900"
-                            placeholder="Ex: O professor não pôde comparecer por motivos de saúde. A aula será reposta em data oportuna."
-                            required
-                        />
-                    </div>
-                )}
-
-                {entryType === 'class' && (
-                    <div className="animate-fade-in space-y-6">
-                        {subjectId === 'proc-patol' && (
-                        <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
-                            <label className="block text-sm font-bold text-orange-800 mb-2">Categoria (Processos Patológicos) *</label>
-                            <select 
-                                value={category} 
-                                onChange={e => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 border border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition bg-white"
-                                required
-                            >
-                                <option value="">Selecione...</option>
-                                <option value="Patologia Geral">Patologia Geral</option>
-                                <option value="Imunologia">Imunologia</option>
-                                <option value="Microbiologia">Microbiologia</option>
-                                <option value="Parasitologia">Parasitologia</option>
-                            </select>
-                        </div>
-                        )}
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* BOTÃO CUSTOMIZADO SLIDE */}
-                            <div className="flex flex-col">
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Material: Slides</label>
-                                <input 
-                                    type="file" 
-                                    ref={slideInputRef}
-                                    accept=".pdf" 
-                                    onChange={e => setSlideFile(e.target.files?.[0] || null)} 
-                                    className="hidden" 
-                                />
-                                <button 
-                                    type="button"
-                                    onClick={() => slideInputRef.current?.click()}
-                                    className={`w-full py-4 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${
-                                        slideFile || existingSlideUrl
-                                        ? 'bg-blue-50 border-blue-400 text-blue-700'
-                                        : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-blue-300'
-                                    }`}
-                                >
-                                    <IconPresentation className="w-8 h-8 mb-1" />
-                                    <span className="text-xs font-black uppercase tracking-widest">
-                                        {slideFile ? 'Trocar Slide' : existingSlideUrl ? 'Slide Salvo ✓' : 'Escolher Slide'}
-                                    </span>
-                                    {slideFile && <span className="text-[10px] mt-1 font-medium truncate max-w-[150px]">{slideFile.name}</span>}
-                                </button>
-                            </div>
-
-                            {/* BOTÃO CUSTOMIZADO RESUMO */}
-                            <div className="flex flex-col">
-                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Material: Resumo</label>
-                                <input 
-                                    type="file" 
-                                    ref={summaryInputRef}
-                                    accept=".pdf" 
-                                    onChange={e => setSummaryFile(e.target.files?.[0] || null)} 
-                                    className="hidden" 
-                                />
-                                <button 
-                                    type="button"
-                                    onClick={() => summaryInputRef.current?.click()}
-                                    className={`w-full py-4 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${
-                                        summaryFile || existingSummaryUrl
-                                        ? 'bg-purple-50 border-purple-400 text-purple-700'
-                                        : 'bg-gray-50 border-gray-200 text-gray-400 hover:border-purple-300'
-                                    }`}
-                                >
-                                    <IconBook className="w-8 h-8 mb-1" />
-                                    <span className="text-xs font-black uppercase tracking-widest">
-                                        {summaryFile ? 'Trocar Resumo' : existingSummaryUrl ? 'Resumo Salvo ✓' : 'Escolher Resumo'}
-                                    </span>
-                                    {summaryFile && <span className="text-[10px] mt-1 font-medium truncate max-w-[150px]">{summaryFile.name}</span>}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">YouTube Link</label>
-                            <div className="relative">
-                                <input 
-                                    type="text" 
-                                    value={youtubeLink}
-                                    onChange={e => setYoutubeLink(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
-                                    placeholder="https://www.youtube.com/watch?v=..."
-                                />
-                                <div className="absolute left-3 top-3.5 text-red-500 opacity-30">
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                                </div>
-                            </div>
+                {entryType === 'notice' ? (
+                    <textarea value={noticeMessage} onChange={e => setNoticeMessage(e.target.value)} placeholder="Motivo do cancelamento..." className="w-full p-3 border rounded-xl h-32" required />
+                ) : (
+                    <div className="space-y-4">
+                        <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${slideFile ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-gray-50 border-gray-200'}`}>
+                                <input type="file" className="hidden" onChange={e => setSlideFile(e.target.files?.[0] || null)} />
+                                <div className="flex flex-col items-center"><IconPresentation className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{slideFile ? 'Slide Selecionado' : 'Carregar Slide'}</span></div>
+                            </label>
+                            <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${summaryFile ? 'bg-emerald-50 border-emerald-400 text-emerald-600' : 'bg-gray-50 border-gray-200'}`}>
+                                <input type="file" className="hidden" onChange={e => setSummaryFile(e.target.files?.[0] || null)} />
+                                <div className="flex flex-col items-center"><IconBook className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{summaryFile ? 'Resumo Selecionado' : 'Carregar Resumo'}</span></div>
+                            </label>
                         </div>
                     </div>
                 )}
 
-                <div className="pt-6 flex gap-4">
-                  {editingId && (
-                    <button type="button" onClick={handleCancelEdit} className="flex-1 py-4 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
-                  )}
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="flex-[2] py-4 bg-slate-900 text-white rounded-xl font-bold text-lg hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
-                  >
-                    {loading ? 'Processando...' : (editingId ? 'Salvar Alterações' : 'Cadastrar Registro')}
-                  </button>
+                <div className="flex gap-4">
+                    {editingId && (
+                        <button type="button" onClick={clearForm} className="flex-1 py-4 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 transition">Cancelar</button>
+                    )}
+                    <button type="submit" disabled={loading} className="flex-[2] py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition shadow-lg">{loading ? 'Salvando...' : editingId ? 'Atualizar Registro' : 'Publicar Registro'}</button>
                 </div>
-              </form>
-            </div>
-          </div>
+            </form>
+        </section>
 
-        </div>
+        {/* Tabela de aulas */}
+        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden h-fit">
+            <table className="w-full text-left border-collapse">
+                <thead className="bg-gray-50 border-b">
+                    <tr>
+                        <th className="p-4 text-xs font-bold text-gray-400 uppercase">Data / Título</th>
+                        <th className="p-4 text-xs font-bold text-gray-400 uppercase text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y">
+                    {dbLessons.map(l => (
+                        <tr key={l.id} className="hover:bg-gray-50">
+                            <td className="p-4">
+                                <div className="text-[10px] font-bold text-blue-500 mb-1">{l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'}</div>
+                                <div className="text-sm font-bold text-slate-800 line-clamp-1">{l.title}</div>
+                                <div className="text-[10px] text-gray-400 uppercase">{SUBJECTS.find(s => s.id === l.subjectId)?.title}</div>
+                            </td>
+                            <td className="p-4 text-right flex justify-end gap-2">
+                                <button onClick={() => handleEdit(l)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><IconEdit className="w-5 h-5" /></button>
+                                <button onClick={() => handleDelete(l.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><IconX className="w-5 h-5" /></button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {dbLessons.length === 0 && (
+                <div className="p-10 text-center text-gray-400">Nenhum registro encontrado.</div>
+            )}
+        </section>
       </main>
     </div>
   );

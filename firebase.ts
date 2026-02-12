@@ -1,6 +1,5 @@
-
-// Standard Firebase v9+ named export initialization to resolve import resolution errors.
-import { initializeApp } from 'firebase/app';
+// Standard Firebase v9+ modular SDK initialization
+import { initializeApp } from "firebase/app";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -18,7 +17,7 @@ const firebaseConfig = {
 // Initialize the Firebase app instance
 const app = initializeApp(firebaseConfig);
 
-// Inicializa e exporta o Banco de Dados (Firestore)
+// Inicializa e exporta o Banco de Dados (Firestore) com persistência local e suporte a múltiplas abas
 const db = initializeFirestore(app, {
   localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()}),
   experimentalForceLongPolling: true,

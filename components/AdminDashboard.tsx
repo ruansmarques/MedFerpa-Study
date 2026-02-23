@@ -40,6 +40,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       const defaultSlots = DEFAULT_SUBJECT_SLOTS[subjectId] || [];
       setSelectedSlots(defaultSlots);
     }
+    
+    // Auto-set period based on subject if subject changes
+    const subj = SUBJECTS.find(s => s.id === subjectId);
+    if (subj) {
+      setPeriod(subj.period);
+    }
   }, [subjectId, editingId]);
 
   const fetchLessons = async () => {
@@ -87,6 +93,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setEditingId(null);
     setTitle('');
     setSubjectId('');
+    setCategory('');
     setDate('');
     setNoticeMessage('');
     setSelectedSlots([]);
@@ -94,6 +101,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSlideFile(null);
     setSummaryFile(null);
     setEntryType('class');
+    // Don't reset period to 5, keep user context or let it update via subject
   };
 
   // Fix: Handle Edit
@@ -102,6 +110,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setEntryType(lesson.type || 'class');
     setTitle(lesson.title);
     setSubjectId(lesson.subjectId);
+    setCategory(lesson.category || '');
     setDate(lesson.date || '');
     setNoticeMessage(lesson.description || '');
     setSelectedSlots(lesson.targetSlots || []);
@@ -150,7 +159,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       }
 
       const payload: any = {
-        subjectId, title, period, date, type: entryType,
+        subjectId, title, period, date, category, type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
         targetSlots: selectedSlots,
         slideUrl, summaryUrl,
@@ -201,11 +210,48 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <select value={subjectId} onChange={e => setSubjectId(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
-                        <option value="">Selecione a Disciplina</option>
-                        {SUBJECTS.filter(s => s.period === 5).map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
-                    </select>
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-bold text-gray-400 uppercase">Período *</label>
+                        <select value={period} onChange={e => setPeriod(Number(e.target.value))} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(p => <option key={p} value={p}>{p}º Período</option>)}
+                        </select>
+                    </div>
+                    <div className="col-span-2 flex flex-col gap-1">
+                        <label className="text-xs font-bold text-gray-400 uppercase">Disciplina *</label>
+                        <select value={subjectId} onChange={e => setSubjectId(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                            <option value="">Selecione a Disciplina</option>
+                            {SUBJECTS.filter(s => s.period === period).map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                {(subjectId === 'proc-patol' || subjectId === 'anat-patol') && (
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-bold text-gray-400 uppercase">Categoria</label>
+                        <select value={category} onChange={e => setCategory(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500">
+                            <option value="">Selecione a Categoria</option>
+                            {subjectId === 'proc-patol' && (
+                                <>
+                                    <option value="Patologia Geral">Patologia Geral</option>
+                                    <option value="Imunologia">Imunologia</option>
+                                    <option value="Parasitologia">Parasitologia</option>
+                                    <option value="Microbiologia">Microbiologia</option>
+                                </>
+                            )}
+                            {subjectId === 'anat-patol' && (
+                                <>
+                                    <option value="Geral">Geral</option>
+                                    <option value="Parasitologia">Parasitologia</option>
+                                    <option value="Microbiologia">Microbiologia</option>
+                                </>
+                            )}
+                        </select>
+                    </div>
+                )}
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase">Data *</label>
                     <input type="date" value={date} onChange={e => setDate(e.target.value)} className="p-3 border rounded-xl bg-gray-50" required />
                 </div>
 
@@ -221,13 +267,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     </div>
                 </div>
 
-                <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título do Conteúdo" className="w-full p-3 border rounded-xl focus:ring-2 ring-blue-500" required />
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase">Título *</label>
+                    <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título do Conteúdo" className="w-full p-3 border rounded-xl focus:ring-2 ring-blue-500" required />
+                </div>
 
                 {entryType === 'notice' ? (
-                    <textarea value={noticeMessage} onChange={e => setNoticeMessage(e.target.value)} placeholder="Motivo do cancelamento..." className="w-full p-3 border rounded-xl h-32" required />
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-bold text-gray-400 uppercase">Mensagem do Aviso *</label>
+                        <textarea value={noticeMessage} onChange={e => setNoticeMessage(e.target.value)} placeholder="Motivo do cancelamento..." className="w-full p-3 border rounded-xl h-32" required />
+                    </div>
                 ) : (
                     <div className="space-y-4">
-                        <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
+                        <div className="flex flex-col gap-1">
+                            <label className="text-xs font-bold text-gray-400 uppercase">Link do YouTube</label>
+                            <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${slideFile ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-gray-50 border-gray-200'}`}>
                                 <input type="file" className="hidden" onChange={e => setSlideFile(e.target.files?.[0] || null)} />

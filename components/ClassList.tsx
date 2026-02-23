@@ -35,6 +35,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   const [selectedPeriod, setSelectedPeriod] = useState<number>(5);
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -53,6 +54,14 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     };
     fetchLessons();
   }, []);
+
+  useEffect(() => {
+    if (selectedSubject?.id === 'proc-patol') {
+      setSelectedCategory('Patologia Geral');
+    } else if (selectedSubject?.id === 'anat-patol') {
+      setSelectedCategory('Geral');
+    }
+  }, [selectedSubject]);
 
   useEffect(() => {
     if (initialSubjectId) {
@@ -87,6 +96,20 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     l.subjectId === selectedSubject?.id && 
     (l.type === 'class' || !l.type)
   ).sort((a, b) => a.title.localeCompare(b.title));
+
+  // Logic for Processos Patológicos categories
+  const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol';
+  
+  let categories: string[] = [];
+  if (selectedSubject?.id === 'proc-patol') {
+    categories = ['Patologia Geral', 'Imunologia', 'Parasitologia', 'Microbiologia'];
+  } else if (selectedSubject?.id === 'anat-patol') {
+    categories = ['Geral', 'Parasitologia', 'Microbiologia'];
+  }
+
+  const displayLessons = isCategorized
+    ? filteredLessons.filter(l => (l.category || (selectedSubject?.id === 'proc-patol' ? 'Patologia Geral' : 'Geral')) === selectedCategory)
+    : filteredLessons;
 
   if (!selectedSubject) {
     const subjects = SUBJECTS.filter(s => s.period === selectedPeriod);
@@ -162,12 +185,30 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
         </div>
       </div>
 
+      {isCategorized && (
+        <div className="flex justify-center gap-2 mb-8 flex-wrap">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full font-bold transition-all ${
+                selectedCategory === cat 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="space-y-4 pb-24">
-        {loading ? <div className="p-10 text-center text-gray-400">Carregando aulas...</div> : filteredLessons.length > 0 ? (
-          filteredLessons.map(l => (
+        {loading ? <div className="p-10 text-center text-gray-400">Carregando aulas...</div> : displayLessons.length > 0 ? (
+          displayLessons.map(l => (
             <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
           ))
-        ) : <div className="p-10 text-center text-gray-400 border-2 border-dashed rounded-3xl">Nenhuma aula cadastrada nesta disciplina.</div>}
+        ) : <div className="p-10 text-center text-gray-400 border-2 border-dashed rounded-3xl">Nenhuma aula cadastrada nesta categoria.</div>}
       </div>
     </div>
   );

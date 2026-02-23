@@ -65,28 +65,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     if (!snap.empty) setIsAuthenticated(true); else alert("Senha incorreta");
   };
 
-  const handleMigration = async () => {
-    if (!window.confirm("Isso atualizará os slots de TODAS as aulas do 5º período com base na grade padrão. Prosseguir?")) return;
-    setLoading(true);
-    try {
-        const batch = writeBatch(db);
-        const q = query(collection(db, "lessons"));
-        const snap = await getDocs(q);
-        
-        snap.forEach((doc) => {
-            const data = doc.data();
-            const slots = DEFAULT_SUBJECT_SLOTS[data.subjectId] || [];
-            if (slots.length > 0) {
-                batch.update(doc.ref, { targetSlots: slots });
-            }
-        });
-        
-        await batch.commit();
-        alert("Migração concluída com sucesso!");
-        fetchLessons();
-    } catch (e) { alert("Erro na migração: " + e.message); }
-    finally { setLoading(false); }
-  };
+
 
   // Fix: Clear form state
   const clearForm = () => {
@@ -189,14 +168,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     </div>
   );
 
+  // Filter lessons based on form state
+  const filteredLessons = dbLessons.filter(l => {
+    const type = l.type || 'class';
+    if (type !== entryType) return false;
+    if (l.period !== period) return false;
+    if (subjectId && l.subjectId !== subjectId) return false;
+    if (category && l.category !== category) return false;
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
          <div className="flex items-center gap-4">
             <h1 className="font-black text-xl">MEDFERPA <span className="text-blue-600">ADMIN</span></h1>
-            <button onClick={handleMigration} disabled={loading} className="px-3 py-1.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg border border-amber-200 hover:bg-amber-200 transition">
-                {loading ? 'Migrando...' : 'Migrar Slots (Aulas Antigas)'}
-            </button>
          </div>
          <button onClick={onExit} className="text-gray-400 hover:text-slate-800 font-bold">Sair do Painel</button>
       </header>
@@ -219,7 +205,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     </div>
                     <div className="col-span-2 flex flex-col gap-1">
                         <label className="text-xs font-bold text-gray-400 uppercase">Disciplina *</label>
-                        <select value={subjectId} onChange={e => setSubjectId(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                        <select value={subjectId} onChange={e => { setSubjectId(e.target.value); setCategory(''); }} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
                             <option value="">Selecione a Disciplina</option>
                             {SUBJECTS.filter(s => s.period === period).map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
                         </select>
@@ -315,7 +301,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     </tr>
                 </thead>
                 <tbody className="divide-y">
-                    {dbLessons.map(l => (
+                    {filteredLessons.map(l => (
                         <tr key={l.id} className="hover:bg-gray-50">
                             <td className="p-4">
                                 <div className="text-[10px] font-bold text-blue-500 mb-1">{l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'}</div>
@@ -330,8 +316,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     ))}
                 </tbody>
             </table>
-            {dbLessons.length === 0 && (
-                <div className="p-10 text-center text-gray-400">Nenhum registro encontrado.</div>
+            {filteredLessons.length === 0 && (
+                <div className="p-10 text-center text-gray-400">Nenhum registro encontrado para os filtros selecionados.</div>
             )}
         </section>
       </main>

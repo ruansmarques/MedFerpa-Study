@@ -7,9 +7,16 @@ interface RankedUser extends User {
   level: number;
 }
 
-const RankView: React.FC = () => {
+interface RankViewProps {
+  currentUser: User;
+  onToggleVisibility: () => void;
+}
+
+const RankView: React.FC<RankViewProps> = ({ currentUser, onToggleVisibility }) => {
   const [rankedUsers, setRankedUsers] = useState<RankedUser[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const isVisible = currentUser.isRankVisible !== false;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +29,10 @@ const RankView: React.FC = () => {
         
         querySnapshot.forEach((doc) => {
           const data = doc.data() as User;
+          
+          // Filter out users who have opted out of the rank
+          if (data.isRankVisible === false) return;
+
           const xp = data.totalXP || 0;
           
           usersList.push({
@@ -43,7 +54,7 @@ const RankView: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isVisible]); // Re-fetch when visibility changes to update the list immediately if the user toggles it
 
   if (loading) {
     return (
@@ -55,9 +66,23 @@ const RankView: React.FC = () => {
 
   return (
     <div className="p-4 lg:p-10 max-w-4xl mx-auto">
-      <div className="text-center mb-6 lg:mb-10">
-        <h2 className="text-2xl lg:text-3xl font-black text-slate-800 mb-2">Ranking Geral</h2>
-        <p className="text-gray-500">Veja quem são os mestres do conhecimento.</p>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 lg:mb-10 gap-4">
+        <div className="text-center md:text-left">
+          <h2 className="text-2xl lg:text-3xl font-black text-slate-800 mb-2">Ranking Geral</h2>
+          <p className="text-gray-500">Veja quem são os mestres do conhecimento.</p>
+        </div>
+        
+        <button
+          onClick={onToggleVisibility}
+          className={`px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${
+            isVisible 
+              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border border-emerald-200' 
+              : 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-200'
+          }`}
+        >
+          <span className={`w-3 h-3 rounded-full ${isVisible ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+          {isVisible ? 'Participando do Rank' : 'Não Participando'}
+        </button>
       </div>
 
       <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
@@ -77,8 +102,10 @@ const RankView: React.FC = () => {
             else if (index === 2) { rankBadge = "🥉"; rankColor = "text-amber-700 scale-110"; }
             else rankBadge = `#${index + 1}`;
 
+            const isCurrentUser = user.ra === currentUser.ra;
+
             return (
-              <div key={user.ra} className="grid grid-cols-12 gap-2 lg:gap-4 p-4 lg:p-5 items-center hover:bg-slate-50 transition-colors">
+              <div key={user.ra} className={`grid grid-cols-12 gap-2 lg:gap-4 p-4 lg:p-5 items-center transition-colors ${isCurrentUser ? 'bg-blue-50/50 hover:bg-blue-50' : 'hover:bg-slate-50'}`}>
                 <div className={`col-span-2 text-center text-lg lg:text-xl font-black ${rankColor} transition-transform`}>
                   {rankBadge}
                 </div>
@@ -88,8 +115,10 @@ const RankView: React.FC = () => {
                     {user.name.charAt(0)}
                   </div>
                   <div className="overflow-hidden">
-                    <h3 className="font-bold text-slate-800 truncate text-sm lg:text-base">{user.name}</h3>
-                    <p className="text-xs text-gray-400 truncate hidden lg:block">RA: {user.ra}</p>
+                    <h3 className={`font-bold truncate text-sm lg:text-base ${isCurrentUser ? 'text-blue-700' : 'text-slate-800'}`}>
+                      {user.name} {isCurrentUser && '(Você)'}
+                    </h3>
+                    {/* RA removed as requested */}
                   </div>
                 </div>
 
@@ -102,7 +131,7 @@ const RankView: React.FC = () => {
             );
           }) : (
             <div className="p-8 text-center text-gray-400">
-              Nenhum aluno encontrado no banco de dados.
+              Nenhum aluno participando do ranking no momento.
             </div>
           )}
         </div>

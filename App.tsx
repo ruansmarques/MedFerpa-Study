@@ -227,6 +227,27 @@ const App: React.FC = () => {
       setCurrentView('schedule');
   };
 
+  const handleToggleRankVisibility = async () => {
+    if (!currentUser) return;
+    
+    // Default to true if undefined, so toggle makes it false. 
+    // If it is false, toggle makes it true.
+    const currentVisibility = currentUser.isRankVisible !== false; 
+    const newVisibility = !currentVisibility;
+
+    const updatedUser = { ...currentUser, isRankVisible: newVisibility };
+    setCurrentUser(updatedUser);
+    localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
+
+    try {
+      const userRef = doc(db, "users", currentUser.ra);
+      await updateDoc(userRef, { isRankVisible: newVisibility });
+    } catch (error) {
+      console.error("Erro ao atualizar visibilidade no rank:", error);
+      // Revert on error? For now, just log.
+    }
+  };
+
   const renderContent = () => {
     // Admin bypasses login check
     if (currentView === 'admin') {
@@ -268,7 +289,12 @@ const App: React.FC = () => {
       case 'library':
         return <LibraryView />;
       case 'rank':
-        return <RankView />;
+        return (
+          <RankView 
+            currentUser={currentUser}
+            onToggleVisibility={handleToggleRankVisibility}
+          />
+        );
       case 'profile':
         return <ProfileView user={currentUser} onUpdateName={handleUpdateName} />;
       default:

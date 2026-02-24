@@ -7,6 +7,7 @@ export interface User {
   totalXP: number; // Sistema de Gamificação (Novo)
   // Novo campo para gamificação de trilhas
   exerciseProgress?: Record<string, LevelProgress>; // Key: "{subjectId}_level_{levelNumber}"
+  isRankVisible?: boolean; // Controls visibility in the global rank
 }
 
 export interface LevelProgress {

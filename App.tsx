@@ -70,7 +70,22 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, [currentUser?.ra]);
 
-  const [currentView, setCurrentView] = useState<ViewState>('classes');
+  const [currentView, setCurrentView] = useState<ViewState>(() => {
+    try {
+      const savedView = sessionStorage.getItem('medferpa_view_state');
+      return (savedView as ViewState) || 'classes';
+    } catch {
+      return 'classes';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('medferpa_view_state', currentView);
+    } catch (e) {
+      console.error("Error saving view state", e);
+    }
+  }, [currentView]);
   
   // State for Deep Linking (Passing data between views)
   const [viewParams, setViewParams] = useState<{

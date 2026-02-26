@@ -32,7 +32,18 @@ const ActionButton: React.FC<ActionButtonProps> = ({ icon: Icon, onClick, toolti
 
 const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, onNavigateToSchedule }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(5);
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('medferpa_selected_period');
+      return saved ? parseInt(saved, 10) : 5;
+    } catch {
+      return 5;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('medferpa_selected_period', selectedPeriod.toString());
+  }, [selectedPeriod]);
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');

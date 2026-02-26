@@ -74,7 +74,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   }, [initialSubjectId]);
 
   const getSubjectProgress = (subjectId: string) => {
-    const lessons = dbLessons.filter(l => l.subjectId === subjectId && (l.type === 'class' || !l.type));
+    const lessons = dbLessons.filter(l => l.subjectId === subjectId && (l.type === 'class' || !l.type) && !l.isContinuation);
     const total = lessons.length;
     const completed = lessons.filter(l => currentUser.completedLessons.includes(l.id)).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -83,7 +83,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
 
   const calculatePeriodProgress = () => {
     const subjectsInPeriod = SUBJECTS.filter(s => s.period === selectedPeriod).map(s => s.id);
-    const lessonsInPeriod = dbLessons.filter(l => subjectsInPeriod.includes(l.subjectId) && (l.type === 'class' || !l.type));
+    const lessonsInPeriod = dbLessons.filter(l => subjectsInPeriod.includes(l.subjectId) && (l.type === 'class' || !l.type) && !l.isContinuation);
     const total = lessonsInPeriod.length;
     const completed = lessonsInPeriod.filter(l => currentUser.completedLessons.includes(l.id)).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;

@@ -11,7 +11,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { User, ViewState, LevelProgress } from './types';
 import { IconMenu } from './components/Icons';
 import { db, storage } from './firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 const App: React.FC = () => {
@@ -25,6 +25,50 @@ const App: React.FC = () => {
       return null;
     }
   });
+
+  // --- REAL-TIME SYNC: Listen for user changes in Firestore ---
+  useEffect(() => {
+    if (!currentUser?.ra) return;
+
+    // Set up a real-time listener for the current user's document
+    const unsubscribe = onSnapshot(doc(db, "users", currentUser.ra), (docSnap) => {
+      if (docSnap.exists()) {
+        const userData = docSnap.data() as User;
+        
+        // Only update state if there are actual changes to avoid loops
+        // We compare key fields that might change from other devices
+        setCurrentUser(prevUser => {
+          if (!prevUser) return userData;
+          
+          // Check if completedLessons changed (most common sync issue)
+          const prevLessons = JSON.stringify(prevUser.completedLessons.sort());
+          const newLessons = JSON.stringify(userData.completedLessons.sort());
+          
+          // Check if totalXP changed
+          const prevXP = prevUser.totalXP;
+          const newXP = userData.totalXP;
+
+          // Check if exerciseProgress changed
+          const prevExercises = JSON.stringify(prevUser.exerciseProgress);
+          const newExercises = JSON.stringify(userData.exerciseProgress);
+
+          if (prevLessons !== newLessons || prevXP !== newXP || prevExercises !== newExercises) {
+            console.log("Syncing user data from Firestore...");
+            // Update local storage to keep it in sync
+            localStorage.setItem('medferpa_user', JSON.stringify(userData));
+            return userData;
+          }
+          
+          return prevUser;
+        });
+      }
+    }, (error) => {
+      console.error("Error listening to user updates:", error);
+    });
+
+    // Cleanup subscription on unmount or user change
+    return () => unsubscribe();
+  }, [currentUser?.ra]);
 
   const [currentView, setCurrentView] = useState<ViewState>('classes');
   

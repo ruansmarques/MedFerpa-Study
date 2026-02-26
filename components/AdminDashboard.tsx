@@ -26,6 +26,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [date, setDate] = useState('');
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
+  const [isContinuation, setIsContinuation] = useState(false);
   
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
@@ -80,6 +81,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSlideFile(null);
     setSummaryFile(null);
     setEntryType('class');
+    setIsContinuation(false);
     // Don't reset period to 5, keep user context or let it update via subject
   };
 
@@ -95,6 +97,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSelectedSlots(lesson.targetSlots || []);
     setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
     setPeriod(lesson.period);
+    setIsContinuation(lesson.isContinuation || false);
   };
 
   // Fix: Handle Delete
@@ -143,7 +146,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         targetSlots: selectedSlots,
         slideUrl, summaryUrl,
         youtubeIds: youtubeLink ? [youtubeLink.split('v=')[1]?.split('&')[0] || youtubeLink] : (currentLesson?.youtubeIds || []),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        isContinuation
       };
 
       if (editingId) {
@@ -256,6 +260,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold text-gray-400 uppercase">Título *</label>
                     <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Título do Conteúdo" className="w-full p-3 border rounded-xl focus:ring-2 ring-blue-500" required />
+                    
+                    <div className="flex items-center gap-2 mt-2">
+                        <input 
+                            type="checkbox" 
+                            id="isContinuation" 
+                            checked={isContinuation} 
+                            onChange={e => setIsContinuation(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="isContinuation" className="text-sm text-gray-600 font-medium cursor-pointer">
+                            Esta aula é uma continuação (Ocultar da Lista de Conteúdos)
+                        </label>
+                    </div>
                 </div>
 
                 {entryType === 'notice' ? (

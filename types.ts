@@ -47,6 +47,9 @@ export interface Lesson {
 
   // Added period property to allow lessons to track their academic period, resolving type errors in Admin views.
   period: number;
+  
+  // Flag to mark if the lesson is a continuation of a previous one (hidden from class list)
+  isContinuation?: boolean;
 }
 
 export interface Exercise {

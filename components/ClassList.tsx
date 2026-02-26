@@ -94,7 +94,8 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
 
   const filteredLessons = dbLessons.filter(l => 
     l.subjectId === selectedSubject?.id && 
-    (l.type === 'class' || !l.type)
+    (l.type === 'class' || !l.type) &&
+    !l.isContinuation
   ).sort((a, b) => a.title.localeCompare(b.title));
 
   // Logic for Processos Patológicos categories

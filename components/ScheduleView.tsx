@@ -33,7 +33,7 @@ const SCHEDULE_TEMPLATE: ScheduleEvent[] = [
 ];
 
 interface ScheduleViewProps {
-  onNavigateToClass: (subjectId: string) => void;
+  onNavigateToClass: (subjectId: string, category?: string) => void;
   initialDate?: Date;
 }
 
@@ -178,7 +178,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                             return (
                                 <button
                                     key={idx}
-                                    onClick={() => onNavigateToClass(subject?.id || '')}
+                                    onClick={() => onNavigateToClass(subject?.id || '', foundLesson?.category)}
                                     className={`w-full text-center rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all flex flex-col h-48 overflow-hidden animate-fade-in ${getSubjectColor(event.subjectId)}`}
                                 >
                                     <div className="text-white w-full h-full flex flex-col">

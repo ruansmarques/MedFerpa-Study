@@ -9,6 +9,7 @@ interface ClassListProps {
   currentUser: User;
   onUpdateProgress: (lessonId: string) => void;
   initialSubjectId?: string;
+  initialCategory?: string;
   onNavigateToSchedule?: (date?: Date) => void;
 }
 
@@ -30,7 +31,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ icon: Icon, onClick, toolti
   </button>
 );
 
-const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, onNavigateToSchedule }) => {
+const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, initialCategory, onNavigateToSchedule }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(() => {
     try {
@@ -67,12 +68,14 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   }, []);
 
   useEffect(() => {
-    if (selectedSubject?.id === 'proc-patol') {
+    if (initialCategory && selectedSubject?.id === initialSubjectId) {
+        setSelectedCategory(initialCategory);
+    } else if (selectedSubject?.id === 'proc-patol') {
       setSelectedCategory('Patologia Geral');
     } else if (selectedSubject?.id === 'anat-patol') {
       setSelectedCategory('Geral');
     }
-  }, [selectedSubject]);
+  }, [selectedSubject, initialCategory, initialSubjectId]);
 
   useEffect(() => {
     if (initialSubjectId) {

@@ -91,6 +91,7 @@ const App: React.FC = () => {
   const [viewParams, setViewParams] = useState<{
     targetSubjectId?: string;
     targetDate?: Date;
+    targetCategory?: string;
   }>({});
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -276,8 +277,8 @@ const App: React.FC = () => {
       localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
   };
 
-  const navigateToClasses = (subjectId?: string) => {
-      setViewParams({ targetSubjectId: subjectId });
+  const navigateToClasses = (subjectId?: string, category?: string) => {
+      setViewParams({ targetSubjectId: subjectId, targetCategory: category });
       setCurrentView('classes');
   };
 
@@ -325,6 +326,7 @@ const App: React.FC = () => {
             currentUser={currentUser} 
             onUpdateProgress={handleUpdateProgress} 
             initialSubjectId={viewParams.targetSubjectId}
+            initialCategory={viewParams.targetCategory}
             onNavigateToSchedule={navigateToSchedule}
           />
         );

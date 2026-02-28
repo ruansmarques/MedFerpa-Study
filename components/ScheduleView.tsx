@@ -72,7 +72,8 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
             description: d.description || '',
             targetSlots: d.targetSlots || [],
             // Fix: Adding missing period property to satisfy Lesson interface requirements
-            period: d.period || 5
+            period: d.period || 5,
+            category: d.category
           });
         });
         setDbLessons(fetched);

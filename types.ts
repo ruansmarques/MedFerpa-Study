@@ -59,6 +59,7 @@ export interface Exercise {
   question: string;
   options: string[];
   correctOptionIndex: number;
+  explanation?: string;
 }
 
 export interface Book {

@@ -30,10 +30,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
+  const [deleteSlide, setDeleteSlide] = useState(false);
+  const [deleteSummary, setDeleteSummary] = useState(false);
   
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Helper to get current lesson being edited
+  const editingLesson = editingId ? dbLessons.find(l => l.id === editingId) : null;
 
   // --- AUTOMATION: Pre-select slots based on subject ---
   useEffect(() => {
@@ -80,6 +85,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setYoutubeLink('');
     setSlideFile(null);
     setSummaryFile(null);
+    setDeleteSlide(false);
+    setDeleteSummary(false);
     setEntryType('class');
     setIsContinuation(false);
     // Don't reset period to 5, keep user context or let it update via subject
@@ -98,6 +105,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
     setPeriod(lesson.period);
     setIsContinuation(lesson.isContinuation || false);
+    setSlideFile(null);
+    setSummaryFile(null);
+    setDeleteSlide(false);
+    setDeleteSummary(false);
   };
 
   // Fix: Handle Delete
@@ -107,7 +118,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         try {
             await deleteDoc(doc(db, "lessons", id));
             fetchLessons();
-        } catch (e) {
+        } catch (e: any) {
             alert("Erro ao excluir: " + e.message);
         } finally {
             setLoading(false);
@@ -124,18 +135,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       
       const currentLesson = dbLessons.find(l => l.id === editingId);
 
+      // Handle Slide
       if (slideFile) {
         const sRef = ref(storage, `materials/uploads/slides/${Date.now()}_${slideFile.name}`);
         await uploadBytes(sRef, slideFile);
         slideUrl = await getDownloadURL(sRef);
+      } else if (deleteSlide) {
+        slideUrl = null;
       } else {
         slideUrl = currentLesson?.slideUrl || null;
       }
 
+      // Handle Summary
       if (summaryFile) {
         const rRef = ref(storage, `materials/uploads/resumos/${Date.now()}_${summaryFile.name}`);
         await uploadBytes(rRef, summaryFile);
         summaryUrl = await getDownloadURL(rRef);
+      } else if (deleteSummary) {
+        summaryUrl = null;
       } else {
         summaryUrl = currentLesson?.summaryUrl || null;
       }
@@ -176,7 +193,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const filteredLessons = dbLessons.filter(l => {
     const type = l.type || 'class';
     if (type !== entryType) return false;
-    if (l.period !== period) return false;
+    
+    // Fix: If a subject is selected, we want to see ALL lessons for that subject,
+    // regardless of the period stored in the lesson (in case of data inconsistency).
+    // Only filter by period if NO subject is selected.
+    if (!subjectId && l.period !== period) return false;
+    
     if (subjectId && l.subjectId !== subjectId) return false;
     if (category && l.category !== category) return false;
     return true;
@@ -287,14 +309,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                             <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${slideFile ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-gray-50 border-gray-200'}`}>
-                                <input type="file" className="hidden" onChange={e => setSlideFile(e.target.files?.[0] || null)} />
-                                <div className="flex flex-col items-center"><IconPresentation className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{slideFile ? 'Slide Selecionado' : 'Carregar Slide'}</span></div>
-                            </label>
-                            <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${summaryFile ? 'bg-emerald-50 border-emerald-400 text-emerald-600' : 'bg-gray-50 border-gray-200'}`}>
-                                <input type="file" className="hidden" onChange={e => setSummaryFile(e.target.files?.[0] || null)} />
-                                <div className="flex flex-col items-center"><IconBook className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{summaryFile ? 'Resumo Selecionado' : 'Carregar Resumo'}</span></div>
-                            </label>
+                            <div className="flex flex-col gap-2">
+                                <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${slideFile ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-gray-50 border-gray-200'}`}>
+                                    <input type="file" className="hidden" onChange={e => { setSlideFile(e.target.files?.[0] || null); setDeleteSlide(false); }} />
+                                    <div className="flex flex-col items-center"><IconPresentation className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{slideFile ? 'Slide Selecionado' : 'Carregar Slide'}</span></div>
+                                </label>
+                                {editingLesson?.slideUrl && !slideFile && !deleteSlide && (
+                                    <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-100">
+                                        <a href={editingLesson.slideUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:underline truncate max-w-[120px]">Ver Slide Atual</a>
+                                        <button type="button" onClick={() => setDeleteSlide(true)} className="text-red-500 hover:bg-red-100 p-1 rounded"><IconX className="w-4 h-4" /></button>
+                                    </div>
+                                )}
+                                {deleteSlide && (
+                                    <div className="text-xs text-red-500 font-bold text-center">Slide será removido ao salvar</div>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${summaryFile ? 'bg-emerald-50 border-emerald-400 text-emerald-600' : 'bg-gray-50 border-gray-200'}`}>
+                                    <input type="file" className="hidden" onChange={e => { setSummaryFile(e.target.files?.[0] || null); setDeleteSummary(false); }} />
+                                    <div className="flex flex-col items-center"><IconBook className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{summaryFile ? 'Resumo Selecionado' : 'Carregar Resumo'}</span></div>
+                                </label>
+                                {editingLesson?.summaryUrl && !summaryFile && !deleteSummary && (
+                                    <div className="flex items-center justify-between p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+                                        <a href={editingLesson.summaryUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-emerald-600 hover:underline truncate max-w-[120px]">Ver Resumo Atual</a>
+                                        <button type="button" onClick={() => setDeleteSummary(true)} className="text-red-500 hover:bg-red-100 p-1 rounded"><IconX className="w-4 h-4" /></button>
+                                    </div>
+                                )}
+                                {deleteSummary && (
+                                    <div className="text-xs text-red-500 font-bold text-center">Resumo será removido ao salvar</div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -313,7 +358,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-50 border-b">
                     <tr>
-                        <th className="p-4 text-xs font-bold text-gray-400 uppercase">Data / Título</th>
+                        <th className="p-4 text-xs font-bold text-gray-400 uppercase">Data / Título ({filteredLessons.length})</th>
                         <th className="p-4 text-xs font-bold text-gray-400 uppercase text-right">Ações</th>
                     </tr>
                 </thead>

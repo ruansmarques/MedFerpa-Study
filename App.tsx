@@ -92,9 +92,29 @@ const App: React.FC = () => {
     targetSubjectId?: string;
     targetDate?: Date;
     targetCategory?: string;
-  }>({});
+  }>(() => {
+    try {
+      const saved = sessionStorage.getItem('medferpa_view_params');
+      const parsed = saved ? JSON.parse(saved) : {};
+      if (parsed.targetDate) {
+        parsed.targetDate = new Date(parsed.targetDate);
+      }
+      return parsed;
+    } catch {
+      return {};
+    }
+  });
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('medferpa_view_state', currentView);
+      sessionStorage.setItem('medferpa_view_params', JSON.stringify(viewParams));
+    } catch (e) {
+      console.error("Error saving view state", e);
+    }
+  }, [currentView, viewParams]);
 
   // Check URL for admin access on load
   useEffect(() => {

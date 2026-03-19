@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { ref, getBlob } from 'firebase/storage';
 
 interface ClassListProps {
   currentUser: User;
@@ -233,10 +234,94 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
   const [isOpen, setIsOpen] = useState(false);
   const [isLoadingFile, setIsLoadingFile] = useState(false);
 
-  const openMaterial = async (url?: string) => {
+  const downloadMaterial = async (url: string | undefined, type: string) => {
     if (!url) return;
     setIsLoadingFile(true);
-    try { window.open(url, '_blank'); } finally { setIsLoadingFile(false); }
+
+    // 1. Tenta abrir a janela imediatamente para evitar bloqueio de popup
+    // Se o download funcionar, fechamos ela. Se falhar, redirecionamos ela.
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+        newWindow.document.write(`
+            <html>
+                <head><title>Baixando...</title></head>
+                <body style="background-color: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: system-ui, -apple-system, sans-serif; color: #475569; margin: 0;">
+                    <div style="margin-bottom: 16px;">
+                        <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 40px; height: 40px; color: #2563eb;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+                    </div>
+                    <div style="font-weight: 600; font-size: 1.125rem; margin-bottom: 8px;">Iniciando download...</div>
+                    <div style="font-size: 0.875rem; opacity: 0.8;">Aguarde um momento.</div>
+                </body>
+            </html>
+        `);
+    }
+
+    try {
+      let blob: Blob;
+
+      // Try to use Firebase SDK if it's a Firebase Storage URL (avoids CORS)
+      if (url.includes('firebasestorage.googleapis.com')) {
+        try {
+            // Extract file path from URL
+            const urlObj = new URL(url);
+            const pathStart = urlObj.pathname.indexOf('/o/');
+            if (pathStart !== -1) {
+                const encodedPath = urlObj.pathname.substring(pathStart + 3);
+                const path = decodeURIComponent(encodedPath);
+                const fileRef = ref(storage, path);
+                blob = await getBlob(fileRef);
+            } else {
+                throw new Error("Invalid Firebase Storage URL format");
+            }
+        } catch (firebaseError) {
+            console.warn("Error downloading via SDK, trying normal fetch:", firebaseError);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            blob = await response.blob();
+        }
+      } else {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        blob = await response.blob();
+      }
+
+      const urlBlob = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = urlBlob;
+      
+      // Extract extension or default to pdf
+      let extension = 'pdf';
+      try {
+        const urlPath = new URL(url).pathname;
+        const ext = urlPath.split('.').pop();
+        if (ext && ext.length < 5) extension = ext;
+      } catch {}
+
+      link.setAttribute('download', `${lesson.title} - ${type}.${extension}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(urlBlob);
+      
+      // Sucesso: fecha a janela temporária
+      if (newWindow) newWindow.close();
+
+    } catch (error) {
+      console.error("Error downloading file, redirecting popup:", error);
+      // Falha: redireciona a janela temporária para a URL do arquivo (fallback)
+      if (newWindow) {
+          newWindow.location.href = url;
+      } else {
+          // Se o popup foi bloqueado inicialmente, tenta abrir agora (pode falhar, mas é a última tentativa)
+          window.open(url, '_blank');
+      }
+    } finally {
+      setIsLoadingFile(false);
+    }
   };
 
   return (
@@ -250,8 +335,8 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
         </div>
         <div className="flex items-center gap-1 lg:gap-3">
            <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
-           <ActionButton icon={IconPresentation} onClick={() => openMaterial(lesson.slideUrl)} tooltip="Slides" isAvailable={!!lesson.slideUrl} />
-           <ActionButton icon={IconBook} onClick={() => openMaterial(lesson.summaryUrl)} tooltip="Resumo" isAvailable={!!lesson.summaryUrl} />
+           <ActionButton icon={IconPresentation} onClick={() => downloadMaterial(lesson.slideUrl, 'Slides')} tooltip="Baixar Slides" isAvailable={!!lesson.slideUrl} />
+           <ActionButton icon={IconBook} onClick={() => downloadMaterial(lesson.summaryUrl, 'Resumo')} tooltip="Baixar Resumo" isAvailable={!!lesson.summaryUrl} />
            
            {/* Divisória Vertical (Imagem 2) */}
            <div className="h-8 w-px bg-gray-100 mx-2"></div>

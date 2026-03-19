@@ -39,16 +39,14 @@ interface ScheduleViewProps {
 
 export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialDate }) => {
   const SEMESTER_START = new Date(2026, 1, 9);
-  const SEMESTER_END = new Date(2026, 3, 10);
-  const EXAM_START = new Date(2026, 3, 14);
-  const EXAM_END = new Date(2026, 3, 17);
+  const SEMESTER_END = new Date(2026, 5, 12, 23, 59, 59); // June 12, 2026, end of day
 
   const [currentDate, setCurrentDate] = useState<Date>(() => {
     if (initialDate && initialDate >= SEMESTER_START && initialDate <= SEMESTER_END) {
         return initialDate;
     }
     const today = new Date();
-    if (today < SEMESTER_START || today > EXAM_END) return SEMESTER_START;
+    if (today < SEMESTER_START || today > SEMESTER_END) return SEMESTER_START;
     return today;
   });
 
@@ -73,7 +71,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
             targetSlots: d.targetSlots || [],
             // Fix: Adding missing period property to satisfy Lesson interface requirements
             period: d.period || 5,
-            category: d.category
+            category: (d.category || d.Category || '').trim()
           });
         });
         setDbLessons(fetched);
@@ -93,6 +91,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(d.setDate(diff));
@@ -123,6 +122,56 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     }
   };
 
+  // Define full-day events (holidays, exams, etc.)
+  const FULL_DAY_EVENTS: Record<string, { title: string; description: string }> = {
+    '2026-04-03': { title: 'Dia não letivo', description: 'Sexta-feira Santa' },
+    '2026-04-14': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-04-15': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-04-16': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-04-17': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    // 20/04 and 21/04 remain blank as requested
+    '2026-04-22': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-04-23': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-04-24': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-05-01': { title: 'Dia não letivo', description: 'Dia do Trabalhador' },
+    '2026-05-22': { title: 'Dia não letivo', description: 'Aniversário de Fernandópolis' },
+    '2026-06-08': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-06-09': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-06-10': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-06-11': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-06-12': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+  };
+
+  const segments: any[] = [];
+  let currentSegment: any = null;
+
+  weekDays.forEach((day, dayIndex) => {
+    const isoDate = formatDateToISO(day);
+    const fullDayEvent = FULL_DAY_EVENTS[isoDate];
+    const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
+    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21';
+
+    if (!isWithinSemester || isBlankDay || !fullDayEvent) {
+      if (currentSegment) {
+        segments.push(currentSegment);
+        currentSegment = null;
+      }
+      segments.push({ type: 'normal', day, dayIndex, isWithinSemester, isBlankDay, isoDate });
+    } else {
+      if (currentSegment && currentSegment.event.title === fullDayEvent.title && currentSegment.event.description === fullDayEvent.description) {
+        currentSegment.span += 1;
+      } else {
+        if (currentSegment) {
+          segments.push(currentSegment);
+        }
+        currentSegment = { type: 'fullDay', event: fullDayEvent, span: 1, dayIndex };
+      }
+    }
+  });
+  if (currentSegment) {
+    segments.push(currentSegment);
+  }
+
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto h-full flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -151,52 +200,82 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
         </div>
 
         <div className="flex-1 w-full sm:grid sm:grid-cols-5 sm:divide-x sm:divide-gray-200 bg-gray-50/50 min-h-[500px]">
-            {weekDays.map((day, dayIndex) => {
-                const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
+            {segments.map((segment, idx) => {
+                const colSpanClass = {
+                    1: 'sm:col-span-1',
+                    2: 'sm:col-span-2',
+                    3: 'sm:col-span-3',
+                    4: 'sm:col-span-4',
+                    5: 'sm:col-span-5',
+                }[segment.span as 1|2|3|4|5] || 'sm:col-span-1';
+
+                if (segment.type === 'fullDay') {
+                    return (
+                        <div key={`full-${idx}`} className={`w-full p-2 ${colSpanClass}`}>
+                            <div className="w-full rounded-xl h-full min-h-[400px] bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-6 text-center shadow-sm">
+                                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                                    <IconVideoOff className="w-6 h-6 text-blue-300" />
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-700 mb-2">{segment.event.title}</h3>
+                                <p className="text-sm text-gray-500">{segment.event.description}</p>
+                            </div>
+                        </div>
+                    );
+                }
+
+                // Normal day
+                const { dayIndex, isWithinSemester, isBlankDay, isoDate } = segment;
                 const events = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === dayIndex + 1);
-                const isoDate = formatDateToISO(day);
 
                 return (
-                    <div key={dayIndex} className="w-full p-2 space-y-2">
-                        {isWithinSemester ? events.map((event, idx) => {
-                            const subject = getSubject(event.subjectId);
-                            const foundLesson = dbLessons.find(l => 
-                                l.subjectId === event.subjectId && 
-                                l.date === isoDate && 
-                                l.targetSlots?.includes(event.slot)
-                            );
-
-                            if (foundLesson && foundLesson.type === 'notice') {
-                                return (
-                                    <div key={idx} className="w-full text-center rounded-xl h-48 bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-4 gap-2 shadow-sm animate-fade-in">
-                                        <IconVideoOff className="w-8 h-8 text-blue-300 opacity-50" />
-                                        <p className="text-sm font-bold text-slate-500 leading-tight">{foundLesson.title}</p>
-                                        {foundLesson.description && <p className="text-[11px] text-gray-400 leading-snug">{foundLesson.description}</p>}
-                                    </div>
+                    <div key={`normal-${idx}`} className="w-full p-2 space-y-2 sm:col-span-1">
+                        {isWithinSemester ? (
+                            isBlankDay ? (
+                                <div className="w-full rounded-xl h-full min-h-[400px] bg-gray-50/50 border-2 border-dashed border-gray-200 flex items-center justify-center opacity-60">
+                                    <span className="text-gray-400 text-sm font-medium">Sem atividades</span>
+                                </div>
+                            ) : events.map((event, eventIdx) => {
+                                const subject = getSubject(event.subjectId);
+                                const foundLesson = dbLessons.find(l => 
+                                    l.subjectId === event.subjectId && 
+                                    l.date === isoDate && 
+                                    l.targetSlots?.includes(event.slot)
                                 );
-                            }
 
-                            return (
-                                <button
-                                    key={idx}
-                                    onClick={() => onNavigateToClass(subject?.id || '', foundLesson?.category)}
-                                    className={`w-full text-center rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all flex flex-col h-48 overflow-hidden animate-fade-in ${getSubjectColor(event.subjectId)}`}
-                                >
-                                    <div className="text-white w-full h-full flex flex-col">
-                                        <div className="flex-1 flex flex-col items-center justify-center p-2 gap-1">
-                                            <div className="text-[11px] sm:text-xs font-bold leading-tight uppercase tracking-wider">{subject?.title}</div>
-                                            <p className="text-[11px] font-bold opacity-90">{event.startTime} – {event.endTime}</p>
+                                if (foundLesson && foundLesson.type === 'notice') {
+                                    return (
+                                        <div key={eventIdx} className="w-full text-center rounded-xl h-48 bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-4 gap-2 shadow-sm animate-fade-in">
+                                            <IconVideoOff className="w-8 h-8 text-blue-300 opacity-50" />
+                                            <p className="text-sm font-bold text-slate-500 leading-tight">{foundLesson.title}</p>
+                                            {foundLesson.description && <p className="text-[11px] text-gray-400 leading-snug">{foundLesson.description}</p>}
                                         </div>
-                                        <div className="w-10/12 mx-auto border-t border-white/20"></div>
-                                        <div className="flex-1 flex items-center justify-center p-2 bg-black/10">
-                                            <p className="text-[11px] sm:text-xs leading-snug font-medium text-white/90 line-clamp-3">
-                                                {foundLesson ? foundLesson.title : "Conteúdo a definir"}
-                                            </p>
+                                    );
+                                }
+
+                                return (
+                                    <button
+                                        key={eventIdx}
+                                        onClick={() => onNavigateToClass(subject?.id || '', foundLesson?.category)}
+                                        className={`w-full text-center rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all flex flex-col h-48 overflow-hidden animate-fade-in ${getSubjectColor(event.subjectId)}`}
+                                    >
+                                        <div className="text-white w-full h-full flex flex-col">
+                                            <div className="flex-1 flex flex-col items-center justify-center p-2 gap-1">
+                                                <div className="text-[11px] sm:text-xs font-bold leading-tight uppercase tracking-wider">{subject?.title}</div>
+                                                <p className="text-[11px] font-bold opacity-90">{event.startTime} – {event.endTime}</p>
+                                            </div>
+                                            <div className="w-10/12 mx-auto border-t border-white/20"></div>
+                                            <div className="flex-1 flex items-center justify-center p-2 bg-black/10">
+                                                <p className="text-[11px] sm:text-xs leading-snug font-medium text-white/90 line-clamp-3">
+                                                    {foundLesson ? foundLesson.title : "Conteúdo a definir"}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </button>
-                            );
-                        }) : <div className="h-full flex items-center justify-center opacity-30 text-xs">-</div>}
+                                    </button>
+                                );
+                            })
+                        ) : (
+                            <div className="h-full flex items-center justify-center opacity-30 text-xs">-</div>
+                        )}
                     </div>
                 );
             })}

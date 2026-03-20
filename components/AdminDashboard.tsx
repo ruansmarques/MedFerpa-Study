@@ -6,6 +6,7 @@ import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDo
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX, IconEdit, IconPresentation, IconBook } from './Icons';
 import { Lesson } from '../types';
+import { AdminQuestions } from './AdminQuestions';
 
 interface AdminDashboardProps {
   onExit: () => void;
@@ -14,6 +15,7 @@ interface AdminDashboardProps {
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [activeAdminTab, setActiveAdminTab] = useState<'content' | 'questions'>('content');
   
   // Form state
   const [entryType, setEntryType] = useState<'class' | 'notice'>('class');
@@ -207,15 +209,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b p-4 px-8 flex justify-between items-center sticky top-0 z-50">
-         <div className="flex items-center gap-4">
+         <div className="flex items-center gap-8">
             <h1 className="font-black text-xl">MEDFERPA <span className="text-blue-600">ADMIN</span></h1>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setActiveAdminTab('content')}
+                className={`font-bold pb-1 border-b-2 transition-colors ${activeAdminTab === 'content' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+              >
+                Conteúdos
+              </button>
+              <button 
+                onClick={() => setActiveAdminTab('questions')}
+                className={`font-bold pb-1 border-b-2 transition-colors ${activeAdminTab === 'questions' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+              >
+                Questões
+              </button>
+            </div>
          </div>
          <button onClick={onExit} className="text-gray-400 hover:text-slate-800 font-bold">Sair do Painel</button>
       </header>
 
-      <main className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto w-full">
-        {/* Formulário */}
-        <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6 sticky top-24 h-fit">
+      {activeAdminTab === 'content' ? (
+        <main className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto w-full">
+          {/* Formulário */}
+          <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6 sticky top-24 h-fit">
             <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
                 <button onClick={() => setEntryType('class')} className={`flex-1 py-2 font-bold rounded-lg ${entryType === 'class' ? 'bg-white shadow-sm' : 'text-gray-400'}`}>Aula</button>
                 <button onClick={() => setEntryType('notice')} className={`flex-1 py-2 font-bold rounded-lg ${entryType === 'notice' ? 'bg-white shadow-sm' : 'text-gray-400'}`}>Aviso</button>
@@ -383,6 +400,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             )}
         </section>
       </main>
+      ) : (
+        <AdminQuestions />
+      )}
     </div>
   );
 };

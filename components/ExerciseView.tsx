@@ -129,40 +129,64 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
     }
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const response = await ai.models.generateContent({
-            model: 'gemini-3.1-pro-preview',
-            contents: `Você é um professor de medicina. Gere ${quantity} questões de múltipla escolha sobre o assunto "${subjectTitle}" para estudantes de medicina. 
-            Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado). 
-            As questões devem ser em Português do Brasil.
-            Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.ARRAY,
-                    items: {
-                        type: Type.OBJECT,
-                        properties: {
-                            question: { type: Type.STRING },
-                            options: { type: Type.ARRAY, items: { type: Type.STRING } },
-                            correctOptionIndex: { type: Type.INTEGER },
-                            explanation: { type: Type.STRING }
-                        },
-                        required: ["question", "options", "correctOptionIndex", "explanation"]
-                    }
-                }
-            }
-        });
+        let dbQuestions: any[] = [];
+        
+        // Try to fetch from database first
+        if (activeTab === 'internas' && selectedSubjectId) {
+          const q = query(
+            collection(db, 'questions'), 
+            where('subjectId', '==', selectedSubjectId),
+            limit(quantity)
+          );
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            dbQuestions.push({ id: doc.id, ...doc.data() });
+          });
+        }
+        
+        let finalQuestions = [...dbQuestions];
+        
+        // If we don't have enough questions from the DB, generate the rest
+        if (finalQuestions.length < quantity) {
+          const remainingQuantity = quantity - finalQuestions.length;
+          
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          const response = await ai.models.generateContent({
+              model: 'gemini-3.1-pro-preview',
+              contents: `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha sobre o assunto "${subjectTitle}" para estudantes de medicina. 
+              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado). 
+              As questões devem ser em Português do Brasil.
+              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`,
+              config: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                      type: Type.ARRAY,
+                      items: {
+                          type: Type.OBJECT,
+                          properties: {
+                              question: { type: Type.STRING },
+                              options: { type: Type.ARRAY, items: { type: Type.STRING } },
+                              correctOptionIndex: { type: Type.INTEGER },
+                              explanation: { type: Type.STRING }
+                          },
+                          required: ["question", "options", "correctOptionIndex", "explanation"]
+                      }
+                  }
+              }
+          });
 
-        const generatedData = JSON.parse(response.text || '[]');
-        const newQuestions: Exercise[] = generatedData.map((q: any, i: number) => ({
-            ...q,
-            id: `ai-gen-${Date.now()}-${i}`,
-            subjectId: selectedSubjectId || 'enamed',
-            lessonId: 'ai-generated'
-        }));
+          const generatedData = JSON.parse(response.text || '[]');
+          const newQuestions: Exercise[] = generatedData.map((q: any, i: number) => ({
+              ...q,
+              id: `ai-gen-${Date.now()}-${i}`,
+              subjectId: selectedSubjectId || 'enamed',
+              lessonId: 'ai-generated'
+          }));
+          
+          finalQuestions = [...finalQuestions, ...newQuestions];
+        }
 
-        setQuestions(newQuestions);
+        setQuestions(finalQuestions.slice(0, quantity));
         // Simulate total available questions based on filters
         setTotalAvailable(quantity + Math.floor(Math.random() * 50) + 20);
     } catch (error) {

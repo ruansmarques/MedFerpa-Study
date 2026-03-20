@@ -49,7 +49,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               name: data.name,
               completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
               avatarColor: data.avatarColor || 'bg-blue-600',
-              totalXP: data.totalXP || 0,
+              totalXP: typeof data.totalXP === 'number' ? data.totalXP : parseInt(data.totalXP) || 0,
               exerciseProgress: data.exerciseProgress || {} 
             };
             

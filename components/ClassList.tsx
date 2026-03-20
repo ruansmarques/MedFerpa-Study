@@ -111,7 +111,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     l.subjectId === selectedSubject?.id && 
     (l.type === 'class' || !l.type) &&
     !l.isContinuation
-  ).sort((a, b) => a.title.localeCompare(b.title));
+  ).sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
 
   // Logic for Processos Patológicos categories
   const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol';
@@ -266,7 +266,7 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
       </div>
       {isOpen && (
         <div className="p-4 lg:p-8 bg-blue-50/5 border-t border-blue-50/50 animate-fade-in">
-          {lesson.youtubeIds?.length ? (
+          {Array.isArray(lesson.youtubeIds) && lesson.youtubeIds.length > 0 ? (
             <div className="space-y-6">
               {lesson.youtubeIds.map(id => (
                 <div key={id} className="aspect-video w-full rounded-2xl overflow-hidden shadow-2xl bg-black border-4 border-white">
@@ -290,7 +290,7 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
           <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
              <div className="flex items-center gap-2 text-sm text-gray-400 font-bold">
                <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-               Data da Aula: {lesson.date?.split('-').reverse().join('/') || '00/00/0000'}
+               Data da Aula: {typeof lesson.date === 'string' ? lesson.date.split('-').reverse().join('/') : '00/00/0000'}
              </div>
              {onNavigateToSchedule && (
                <button 

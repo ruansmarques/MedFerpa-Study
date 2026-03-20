@@ -178,6 +178,9 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
           });
 
           const generatedData = JSON.parse(response.text || '[]');
+          if (!Array.isArray(generatedData)) {
+            throw new Error("A resposta da IA não é um array válido.");
+          }
           const newQuestions: Exercise[] = generatedData.map((q: any, i: number) => ({
               ...q,
               id: `ai-gen-${Date.now()}-${i}`,

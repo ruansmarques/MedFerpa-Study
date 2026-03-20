@@ -18,8 +18,19 @@ const App: React.FC = () => {
   // Inicializa o estado buscando do LocalStorage para persistir sessão no F5
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
-      const savedUser = localStorage.getItem('medferpa_user');
-      return savedUser ? JSON.parse(savedUser) : null;
+      const savedUserStr = localStorage.getItem('medferpa_user');
+      if (savedUserStr) {
+        const savedUser = JSON.parse(savedUserStr);
+        if (savedUser && typeof savedUser === 'object') {
+          return {
+            ...savedUser,
+            completedLessons: Array.isArray(savedUser.completedLessons) ? savedUser.completedLessons : [],
+            totalXP: typeof savedUser.totalXP === 'number' ? savedUser.totalXP : parseInt(savedUser.totalXP) || 0,
+            exerciseProgress: savedUser.exerciseProgress || {}
+          };
+        }
+      }
+      return null;
     } catch (error) {
       console.error("Erro ao recuperar sessão:", error);
       return null;
@@ -38,25 +49,34 @@ const App: React.FC = () => {
         // Only update state if there are actual changes to avoid loops
         // We compare key fields that might change from other devices
         setCurrentUser(prevUser => {
-          if (!prevUser) return userData;
+          const safeUserData: User = {
+            ...userData,
+            completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
+            totalXP: typeof userData.totalXP === 'number' ? userData.totalXP : parseInt(userData.totalXP) || 0,
+            exerciseProgress: userData.exerciseProgress || {}
+          };
+          
+          if (!prevUser) return safeUserData;
           
           // Check if completedLessons changed (most common sync issue)
-          const prevLessons = JSON.stringify(prevUser.completedLessons.sort());
-          const newLessons = JSON.stringify(userData.completedLessons.sort());
+          const prevLessonsArr = Array.isArray(prevUser.completedLessons) ? [...prevUser.completedLessons].sort() : [];
+          const newLessonsArr = [...safeUserData.completedLessons].sort();
+          const prevLessons = JSON.stringify(prevLessonsArr);
+          const newLessons = JSON.stringify(newLessonsArr);
           
           // Check if totalXP changed
-          const prevXP = prevUser.totalXP;
-          const newXP = userData.totalXP;
+          const prevXP = prevUser.totalXP || 0;
+          const newXP = safeUserData.totalXP;
 
           // Check if exerciseProgress changed
-          const prevExercises = JSON.stringify(prevUser.exerciseProgress);
-          const newExercises = JSON.stringify(userData.exerciseProgress);
+          const prevExercises = JSON.stringify(prevUser.exerciseProgress || {});
+          const newExercises = JSON.stringify(safeUserData.exerciseProgress);
 
           if (prevLessons !== newLessons || prevXP !== newXP || prevExercises !== newExercises) {
             console.log("Syncing user data from Firestore...");
+            
             // Update local storage to keep it in sync
-            localStorage.setItem('medferpa_user', JSON.stringify(userData));
-            return userData;
+            return safeUserData;
           }
           
           return prevUser;
@@ -173,7 +193,6 @@ const App: React.FC = () => {
         
         const updatedUser = { ...currentUser, totalXP: calculatedXP };
         setCurrentUser(updatedUser);
-        localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
 
         try {
           const userRef = doc(db, "users", currentUser.ra);
@@ -192,12 +211,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('medferpa_user', JSON.stringify(currentUser));
+      try {
+        localStorage.setItem('medferpa_user', JSON.stringify(currentUser));
+      } catch (e) {
+        console.error("Erro ao salvar no localStorage", e);
+      }
     }
   }, [currentUser]);
 
   const handleLogin = (user: User) => {
-    localStorage.setItem('medferpa_user', JSON.stringify(user));
     setCurrentUser(user);
     setCurrentView('classes');
   };
@@ -220,7 +242,6 @@ const App: React.FC = () => {
     
     const updatedUser = { ...currentUser, totalXP: finalXP };
     setCurrentUser(updatedUser);
-    localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
 
     // Atualiza Firestore
     try {
@@ -293,8 +314,6 @@ const App: React.FC = () => {
   // Nova função para atualizar usuário completo (usado no ExerciseView)
   const handleUpdateUser = (updatedUser: User) => {
       setCurrentUser(updatedUser);
-      // Persiste no LocalStorage imediatamente
-      localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
   };
 
   const navigateToClasses = (subjectId?: string, category?: string) => {
@@ -317,7 +336,6 @@ const App: React.FC = () => {
 
     const updatedUser = { ...currentUser, isRankVisible: newVisibility };
     setCurrentUser(updatedUser);
-    localStorage.setItem('medferpa_user', JSON.stringify(updatedUser));
 
     try {
       const userRef = doc(db, "users", currentUser.ra);

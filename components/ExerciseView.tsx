@@ -3,6 +3,8 @@ import { SUBJECTS } from '../constants';
 import { User, Exercise } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { BookOpen, Brain, Target, CheckCircle, XCircle, Loader2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { db } from '../firebase';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 
 interface ExerciseViewProps {
   currentUser: User;

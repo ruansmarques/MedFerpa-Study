@@ -130,7 +130,8 @@ const App: React.FC = () => {
   useEffect(() => {
     try {
       sessionStorage.setItem('medferpa_view_state', currentView);
-      sessionStorage.setItem('medferpa_view_params', JSON.stringify(viewParams));
+      // Removed JSON.stringify to prevent circular reference errors
+      // sessionStorage.setItem('medferpa_view_params', JSON.stringify(viewParams));
     } catch (e) {
       console.error("Error saving view state", e);
     }

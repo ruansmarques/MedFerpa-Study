@@ -177,7 +177,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
               }
           });
 
-          const generatedData = JSON.parse(response.text || '[]');
+          let text = response.text || '[]';
+          const match = text.match(/\[[\s\S]*\]/);
+          if (match) {
+            text = match[0];
+          }
+          const generatedData = JSON.parse(text);
           if (!Array.isArray(generatedData)) {
             throw new Error("A resposta da IA não é um array válido.");
           }

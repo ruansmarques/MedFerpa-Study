@@ -101,9 +101,13 @@ export const AdminQuestions: React.FC = () => {
 
       setProcessingStatus('Processando resposta da IA...');
       
-      const text = response.text;
+      let text = response.text;
       if (!text) {
         throw new Error('A IA não retornou nenhum texto.');
+      }
+      const match = text.match(/\[[\s\S]*\]/);
+      if (match) {
+        text = match[0];
       }
 
       const extractedQuestions = JSON.parse(text);

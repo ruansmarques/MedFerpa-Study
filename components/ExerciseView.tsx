@@ -152,6 +152,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         if (finalQuestions.length < quantity) {
           const remainingQuantity = quantity - finalQuestions.length;
           
+          console.log("Iniciando geração com IA. Chave definida?", !!process.env.GEMINI_API_KEY);
           const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
           const response = await ai.models.generateContent({
               model: 'gemini-3.1-pro-preview',
@@ -177,11 +178,13 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
               }
           });
 
+          console.log("Resposta bruta da IA:", response.text);
           let text = response.text || '[]';
           const match = text.match(/\[[\s\S]*\]/);
           if (match) {
             text = match[0];
           }
+          console.log("Texto após regex:", text);
           const generatedData = JSON.parse(text);
           if (!Array.isArray(generatedData)) {
             throw new Error("A resposta da IA não é um array válido.");
@@ -201,7 +204,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         setTotalAvailable(quantity + Math.floor(Math.random() * 50) + 20);
     } catch (error) {
         console.error("Erro ao gerar questões com AI:", error);
-        alert("Ocorreu um erro ao gerar as questões. Tente novamente.");
+        alert(`Ocorreu um erro ao gerar as questões: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
         setIsGenerating(false);
     }

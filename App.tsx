@@ -61,18 +61,25 @@ const App: React.FC = () => {
           // Check if completedLessons changed (most common sync issue)
           const prevLessonsArr = Array.isArray(prevUser.completedLessons) ? [...prevUser.completedLessons].sort() : [];
           const newLessonsArr = [...safeUserData.completedLessons].sort();
-          const prevLessons = JSON.stringify(prevLessonsArr);
-          const newLessons = JSON.stringify(newLessonsArr);
+          const prevLessons = prevLessonsArr.join(',');
+          const newLessons = newLessonsArr.join(',');
           
           // Check if totalXP changed
           const prevXP = prevUser.totalXP || 0;
           const newXP = safeUserData.totalXP;
 
           // Check if exerciseProgress changed
-          const prevExercises = JSON.stringify(prevUser.exerciseProgress || {});
-          const newExercises = JSON.stringify(safeUserData.exerciseProgress);
+          // Simple check: compare number of keys and total XP
+          const prevExKeys = Object.keys(prevUser.exerciseProgress || {}).join(',');
+          const newExKeys = Object.keys(safeUserData.exerciseProgress || {}).join(',');
+          
+          let prevExXP = 0;
+          Object.values(prevUser.exerciseProgress || {}).forEach(p => prevExXP += (p.xp || 0));
+          
+          let newExXP = 0;
+          Object.values(safeUserData.exerciseProgress || {}).forEach(p => newExXP += (p.xp || 0));
 
-          if (prevLessons !== newLessons || prevXP !== newXP || prevExercises !== newExercises) {
+          if (prevLessons !== newLessons || prevXP !== newXP || prevExKeys !== newExKeys || prevExXP !== newExXP) {
             console.log("Syncing user data from Firestore...");
             
             // Update local storage to keep it in sync

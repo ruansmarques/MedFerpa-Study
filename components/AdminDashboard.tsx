@@ -29,6 +29,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isContinuation, setIsContinuation] = useState(false);
+  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2'>('N2');
   
   const [slideFile, setSlideFile] = useState<File | null>(null);
   const [summaryFile, setSummaryFile] = useState<File | null>(null);
@@ -91,6 +92,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setDeleteSummary(false);
     setEntryType('class');
     setIsContinuation(false);
+    setExamPeriod('N2');
     // Don't reset period to 5, keep user context or let it update via subject
   };
 
@@ -107,6 +109,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
     setPeriod(lesson.period);
     setIsContinuation(lesson.isContinuation || false);
+    setExamPeriod(lesson.examPeriod || 'N2');
     setSlideFile(null);
     setSummaryFile(null);
     setDeleteSlide(false);
@@ -166,7 +169,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         slideUrl, summaryUrl,
         youtubeIds: youtubeLink ? [youtubeLink.split('v=')[1]?.split('&')[0] || youtubeLink] : (currentLesson?.youtubeIds || []),
         updatedAt: new Date().toISOString(),
-        isContinuation
+        isContinuation,
+        examPeriod
       };
 
       if (editingId) {
@@ -282,6 +286,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold text-gray-400 uppercase">Data *</label>
                     <input type="date" value={date} onChange={e => setDate(e.target.value)} className="p-3 border rounded-xl bg-gray-50" required />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase">Período de Prova *</label>
+                    <select value={examPeriod} onChange={e => setExamPeriod(e.target.value as 'N1' | 'N2')} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                        <option value="N1">N1 (1º Bimestre)</option>
+                        <option value="N2">N2 (2º Bimestre)</option>
+                    </select>
                 </div>
 
                 <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">

@@ -219,12 +219,40 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
         </div>
       )}
 
-      <div className="space-y-4 pb-24">
-        {loading ? <div className="p-10 text-center text-gray-400">Carregando aulas...</div> : displayLessons.length > 0 ? (
-          displayLessons.map(l => (
-            <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
-          ))
-        ) : <div className="p-10 text-center text-gray-400 border-2 border-dashed rounded-3xl">Nenhuma aula cadastrada nesta categoria.</div>}
+      <div className="space-y-8 pb-24">
+        {loading ? (
+          <div className="p-10 text-center text-gray-400">Carregando aulas...</div>
+        ) : displayLessons.length > 0 ? (
+          <>
+            {displayLessons.filter(l => l.examPeriod === 'N1' || !l.examPeriod).length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-4 py-1 rounded-full border border-gray-100">N1 (1º Bimestre)</h3>
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                </div>
+                {displayLessons.filter(l => l.examPeriod === 'N1' || !l.examPeriod).map(l => (
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                ))}
+              </div>
+            )}
+
+            {displayLessons.filter(l => l.examPeriod === 'N2').length > 0 && (
+              <div className="space-y-4 mt-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-4 py-1 rounded-full border border-gray-100">N2 (2º Bimestre)</h3>
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                </div>
+                {displayLessons.filter(l => l.examPeriod === 'N2').map(l => (
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="p-10 text-center text-gray-400 border-2 border-dashed rounded-3xl">Nenhuma aula cadastrada nesta categoria.</div>
+        )}
       </div>
     </div>
   );

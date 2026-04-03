@@ -547,7 +547,20 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         </div>
 
         {/* Filter Card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8 w-full flex flex-col md:flex-row gap-6 md:gap-8">
+        <div className="relative bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8 w-full flex flex-col md:flex-row gap-6 md:gap-8 overflow-hidden">
+          {activeTab === 'enamed' && (
+            <div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
+              <div className="bg-white px-6 py-4 rounded-xl shadow-lg border border-blue-100 flex flex-col items-center gap-2">
+                <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-1">
+                  <BookOpen size={20} />
+                </div>
+                <h3 className="font-bold text-gray-800">Em Desenvolvimento</h3>
+                <p className="text-sm text-gray-500 text-center max-w-xs">
+                  O banco de questões do ENAMED estará disponível em breve.
+                </p>
+              </div>
+            </div>
+          )}
           {/* Column 1 */}
           <div className="flex-1 space-y-6">
             <div>
@@ -689,8 +702,8 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
           ) : (
             <button
               onClick={handleGenerate}
-              disabled={isGenerating || (activeTab === 'internas' && !selectedSubjectId)}
-              className="w-full py-3.5 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm"
+              disabled={isGenerating || (activeTab === 'internas' && !selectedSubjectId) || activeTab === 'enamed'}
+              className="w-full py-3.5 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm"
             >
               {isGenerating ? (
                 <>

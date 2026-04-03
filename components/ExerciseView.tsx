@@ -72,17 +72,21 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
   const [selectedBancas, setSelectedBancas] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEnamedSubjects, setSelectedEnamedSubjects] = useState<string[]>([]);
+  const [selectedLessonId, setSelectedLessonId] = useState<string>('');
+  const [subjectLessons, setSubjectLessons] = useState<any[]>([]);
   const [quantity, setQuantity] = useState<number>(10);
   const [difficulty, setDifficulty] = useState<string[]>(['Fácil', 'Médio', 'Difícil']);
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [questions, setQuestions] = useState<Exercise[]>([]);
   const [totalAvailable, setTotalAvailable] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const [resolutionStarted, setResolutionStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
+  const [showConfirmFinish, setShowConfirmFinish] = useState(false);
 
   const toggleDifficulty = (level: string) => {
     setDifficulty(prev => {
@@ -94,6 +98,28 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
       }
     });
   };
+
+  React.useEffect(() => {
+    const fetchLessons = async () => {
+      if (selectedSubjectId) {
+        try {
+          const q = query(collection(db, 'lessons'), where('subjectId', '==', selectedSubjectId));
+          const snap = await getDocs(q);
+          const lessonsList: any[] = [];
+          snap.forEach(doc => {
+            lessonsList.push({ id: doc.id, ...doc.data() });
+          });
+          setSubjectLessons(lessonsList);
+        } catch (error) {
+          console.error("Erro ao buscar aulas:", error);
+        }
+      } else {
+        setSubjectLessons([]);
+      }
+      setSelectedLessonId('');
+    };
+    fetchLessons();
+  }, [selectedSubjectId]);
 
   const handleGenerate = async () => {
     if (activeTab === 'internas' && !selectedSubjectId) {
@@ -115,6 +141,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
     }
 
     setIsGenerating(true);
+    setErrorMessage(null);
     setQuestions([]);
     setAnswers({});
     setShowResults(false);
@@ -134,7 +161,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         let dbQuestions: any[] = [];
         
         // Try to fetch from database first
-        if (activeTab === 'internas' && selectedSubjectId) {
+        if (activeTab === 'internas' && selectedSubjectId && !selectedLessonId) {
           const q = query(
             collection(db, 'questions'), 
             where('subjectId', '==', selectedSubjectId),
@@ -152,15 +179,41 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         if (finalQuestions.length < quantity) {
           const remainingQuantity = quantity - finalQuestions.length;
           
+          let prompt = `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha sobre o assunto "${subjectTitle}" para estudantes de medicina. 
+              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado). 
+              As questões devem ser em Português do Brasil.
+              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`;
+              
+          let tools: any[] = [];
+          
+          if (selectedLessonId) {
+            const lesson = subjectLessons.find(l => l.id === selectedLessonId);
+            if (lesson && (lesson.slideUrl || lesson.summaryUrl)) {
+              const fileUrl = lesson.slideUrl || lesson.summaryUrl;
+              
+              if (fileUrl && fileUrl.includes('drive.google.com')) {
+                throw new Error("O documento desta aula está hospedado no Google Drive e é restrito. A IA não consegue acessá-lo. Por favor, acesse o Painel Administrativo e faça o upload do arquivo diretamente no sistema (Firebase) para permitir a geração de questões.");
+              }
+
+              prompt = `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha baseadas EXCLUSIVAMENTE no conteúdo do documento fornecido na URL: ${fileUrl}.
+              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado).
+              As questões devem ser em Português do Brasil.
+              NÃO use conhecimentos externos que não estejam no documento. Se o documento não tiver informações suficientes para gerar ${remainingQuantity} questões, gere o máximo que conseguir com base apenas no documento.
+              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`;
+              
+              tools = [{ urlContext: {} }];
+            } else {
+              throw new Error("A aula selecionada não possui material (slide ou resumo) cadastrado para gerar questões.");
+            }
+          }
+          
           console.log("Iniciando geração com IA. Chave definida?", !!process.env.GEMINI_API_KEY);
           const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
           const response = await ai.models.generateContent({
               model: 'gemini-3.1-pro-preview',
-              contents: `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha sobre o assunto "${subjectTitle}" para estudantes de medicina. 
-              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado). 
-              As questões devem ser em Português do Brasil.
-              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`,
+              contents: prompt,
               config: {
+                  tools: tools.length > 0 ? tools : undefined,
                   responseMimeType: "application/json",
                   responseSchema: {
                       type: Type.ARRAY,
@@ -184,16 +237,28 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
           if (match) {
             text = match[0];
           }
-          console.log("Texto após regex:", text);
-          const generatedData = JSON.parse(text);
+          let generatedData;
+          try {
+            generatedData = JSON.parse(text);
+          } catch (parseError) {
+            console.error("Erro ao fazer parse do JSON:", text);
+            throw new Error("A IA retornou um formato inválido ou recusou-se a responder. Isso pode acontecer devido a filtros de segurança ou erro na formatação. Tente novamente.");
+          }
+          
           if (!Array.isArray(generatedData)) {
             throw new Error("A resposta da IA não é um array válido.");
           }
+          if (generatedData.length === 0) {
+            throw new Error("A IA não conseguiu gerar nenhuma questão. Se você selecionou uma aula específica, é possível que a IA não tenha conseguido ler o conteúdo do arquivo (ex: PDFs complexos ou imagens). Tente gerar questões gerais da disciplina.");
+          }
           const newQuestions: Exercise[] = generatedData.map((q: any, i: number) => ({
-              ...q,
               id: `ai-gen-${Date.now()}-${i}`,
               subjectId: selectedSubjectId || 'enamed',
-              lessonId: 'ai-generated'
+              lessonId: selectedLessonId || 'ai-generated',
+              question: q.question || "Questão sem enunciado",
+              options: Array.isArray(q.options) ? q.options : ["Opção A", "Opção B", "Opção C", "Opção D"],
+              correctOptionIndex: typeof q.correctOptionIndex === 'number' ? q.correctOptionIndex : parseInt(q.correctOptionIndex) || 0,
+              explanation: q.explanation || "Resolução não fornecida pela IA."
           }));
           
           finalQuestions = [...finalQuestions, ...newQuestions];
@@ -202,9 +267,9 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         setQuestions(finalQuestions.slice(0, quantity));
         // Simulate total available questions based on filters
         setTotalAvailable(quantity + Math.floor(Math.random() * 50) + 20);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Erro ao gerar questões com AI:", error);
-        alert(`Ocorreu um erro ao gerar as questões: ${error instanceof Error ? error.message : String(error)}`);
+        setErrorMessage(error instanceof Error ? error.message : String(error));
     } finally {
         setIsGenerating(false);
     }
@@ -221,12 +286,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
   };
 
   const handleFinish = () => {
-    if (Object.keys(answers).length < questions.length) {
-      if (!window.confirm("Você não respondeu todas as questões. Deseja finalizar mesmo assim?")) {
-        return;
-      }
+    if (Object.keys(answers).length < questions.length && !showConfirmFinish) {
+      setShowConfirmFinish(true);
+      return;
     }
     
+    setShowConfirmFinish(false);
     setShowResults(true);
     
     let correctCount = 0;
@@ -273,7 +338,48 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
 
         <div className="flex-1 max-w-5xl mx-auto w-full p-4 md:p-8 flex flex-col md:flex-row gap-8">
           {/* Question Area */}
-          <div className="flex-1">
+          <div className="flex-1 relative">
+            {showConfirmFinish && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-2xl">
+                <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 max-w-sm text-center">
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">Finalizar Resolução?</h3>
+                  <p className="text-gray-600 mb-6">Você não respondeu todas as questões. Deseja finalizar mesmo assim?</p>
+                  <div className="flex gap-3 justify-center">
+                    <button 
+                      onClick={() => setShowConfirmFinish(false)}
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
+                    >
+                      Continuar respondendo
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowConfirmFinish(false);
+                        setShowResults(true);
+                        let correctCount = 0;
+                        questions.forEach(q => {
+                          if (answers[q.id] === q.correctOptionIndex) {
+                            correctCount++;
+                          }
+                        });
+                        let diffMultiplier = 2;
+                        if (difficulty.length === 1) {
+                          diffMultiplier = difficulty[0] === 'Fácil' ? 1 : difficulty[0] === 'Médio' ? 2 : 3;
+                        } else if (difficulty.length > 1) {
+                          diffMultiplier = difficulty.includes('Difícil') ? 3 : 2;
+                        }
+                        const xpEarned = correctCount * 10 * diffMultiplier;
+                        if (xpEarned > 0) {
+                          onAddXP(xpEarned);
+                        }
+                      }}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                    >
+                      Sim, finalizar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
                 <span className="font-bold text-gray-500">Questão {currentQuestionIndex + 1} de {questions.length}</span>
@@ -461,18 +567,38 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
               </div>
             </div>
             {activeTab === 'internas' && (
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Disciplina disponível no curso:</label>
-                <select 
-                  value={selectedSubjectId}
-                  onChange={(e) => setSelectedSubjectId(e.target.value)}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                >
-                  <option value="">Selecione uma disciplina...</option>
-                  {SUBJECTS.filter(s => !selectedPeriod || s.period === selectedPeriod).map(s => (
-                    <option key={s.id} value={s.id}>{s.title}</option>
-                  ))}
-                </select>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">Disciplina disponível no curso:</label>
+                  <select 
+                    value={selectedSubjectId}
+                    onChange={(e) => setSelectedSubjectId(e.target.value)}
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                  >
+                    <option value="">Selecione uma disciplina...</option>
+                    {SUBJECTS.filter(s => !selectedPeriod || s.period === selectedPeriod).map(s => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
+                </div>
+                {selectedSubjectId && subjectLessons.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Aula específica (Opcional):</label>
+                    <select 
+                      value={selectedLessonId}
+                      onChange={(e) => setSelectedLessonId(e.target.value)}
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    >
+                      <option value="">Todas as aulas (Geral)</option>
+                      {subjectLessons.map(l => (
+                        <option key={l.id} value={l.id}>{l.title}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Selecione uma aula para gerar questões baseadas exclusivamente no material dela (slides/resumos).
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             {activeTab === 'enamed' && (
@@ -579,7 +705,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
 
           {/* Status Text */}
           <div className="mt-8 text-center">
-            {isGenerating ? (
+            {errorMessage ? (
+              <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 max-w-md mx-auto text-sm">
+                <p className="font-bold mb-1">Erro na geração</p>
+                <p>{errorMessage}</p>
+              </div>
+            ) : isGenerating ? (
               <div className="text-gray-500 flex flex-col items-center gap-2">
                 <Loader2 size={32} className="animate-spin text-blue-500" />
                 <p>Nossa IA está elaborando as questões...</p>

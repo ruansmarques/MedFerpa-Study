@@ -396,7 +396,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                         <tr key={l.id} className="hover:bg-gray-50">
                             <td className="p-4">
                                 <div className="text-[10px] font-bold text-blue-500 mb-1">{l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'}</div>
-                                <div className="text-sm font-bold text-slate-800 line-clamp-1">{l.title}</div>
+                                <div className="text-sm font-bold text-slate-800 line-clamp-1">
+                                    {l.title}
+                                    {(l.slideUrl?.includes('drive.google.com') || l.summaryUrl?.includes('drive.google.com')) && (
+                                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800" title="Link do Google Drive detectado. Atualize para o Firebase para permitir a leitura pela IA.">
+                                            ⚠️ Drive Link
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="text-[10px] text-gray-400 uppercase">{SUBJECTS.find(s => s.id === l.subjectId)?.title}</div>
                             </td>
                             <td className="p-4 text-right flex justify-end gap-2">

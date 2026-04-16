@@ -320,8 +320,21 @@ const App: React.FC = () => {
   };
 
   // Nova função para atualizar usuário completo (usado no ExerciseView)
-  const handleUpdateUser = (updatedUser: User) => {
+  const handleUpdateUser = async (updatedUser: User) => {
       setCurrentUser(updatedUser);
+      if (updatedUser && updatedUser.ra) {
+        try {
+          const userRef = doc(db, "users", updatedUser.ra);
+          // Atualiza dados inteiros para garantir que os campos novos sejam criados/modificados no Firestore
+          await updateDoc(userRef, { 
+            listProgress: updatedUser.listProgress || {},
+            exerciseProgress: updatedUser.exerciseProgress || {},
+            totalXP: updatedUser.totalXP || 0
+          });
+        } catch (error) {
+          console.error("Erro ao atualizar o usuário no banco:", error);
+        }
+      }
   };
 
   const navigateToClasses = (subjectId?: string, category?: string) => {

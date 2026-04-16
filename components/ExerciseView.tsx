@@ -65,7 +65,7 @@ const MultiSelect = ({ options, selected, onChange, placeholder }: { options: st
   );
 };
 
-const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddXP }) => {
+const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP }) => {
   const [activeTab, setActiveTab] = useState<'internas' | 'enamed'>('internas');
   const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');

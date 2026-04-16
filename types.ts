@@ -7,6 +7,7 @@ export interface User {
   totalXP: number; // Sistema de Gamificação (Novo)
   // Novo campo para gamificação de trilhas
   exerciseProgress?: Record<string, LevelProgress>; // Key: "{subjectId}_level_{levelNumber}"
+  listProgress?: Record<string, number>; // Key: "listId", Value: number of answered questions
   isRankVisible?: boolean; // Controls visibility in the global rank
 }
 
@@ -24,6 +25,16 @@ export interface Subject {
   description: string;
   period: number;
   folderName?: string; // Directory name in public/materials
+}
+
+export interface QuestionList {
+  id: string;
+  title: string;
+  description?: string;
+  period: number;
+  subjectId: string;
+  questions: Exercise[];
+  createdAt: string;
 }
 
 export interface Lesson {

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { db } from '../firebase';
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { GoogleGenAI, Type } from '@google/genai';
 import { SUBJECTS } from '../constants';
 
@@ -9,6 +9,8 @@ export const AdminQuestions: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [subjectId, setSubjectId] = useState('');
   const [period, setPeriod] = useState<number>(5);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [processingStatus, setProcessingStatus] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,7 +26,6 @@ export const AdminQuestions: React.FC = () => {
       reader.readAsDataURL(file);
       reader.onload = () => {
         if (typeof reader.result === 'string') {
-          // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
           const base64String = reader.result.split(',')[1];
           resolve(base64String);
         } else {
@@ -44,6 +45,10 @@ export const AdminQuestions: React.FC = () => {
       alert('Por favor, selecione uma disciplina.');
       return;
     }
+    if (!title) {
+      alert('Por favor, defina um título para a lista de questões.');
+      return;
+    }
 
     setIsProcessing(true);
     setProcessingStatus('Lendo arquivo PDF...');
@@ -55,16 +60,12 @@ export const AdminQuestions: React.FC = () => {
       
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       
-      const prompt = `Você é um assistente especializado em extrair questões de múltipla escolha de provas e materiais de estudo de medicina.
-      Analise o documento PDF fornecido e extraia TODAS as questões de múltipla escolha que encontrar.
-      
-      Para cada questão, você deve extrair:
-      1. O enunciado completo da questão (question)
-      2. As opções de resposta (options) - certifique-se de que sejam exatamente 4 ou 5 opções. Se houver mais ou menos, adapte para o padrão de múltipla escolha.
-      3. O índice da opção correta (correctOptionIndex) - um número inteiro começando de 0. Se não houver gabarito no documento, infira a resposta correta com base no seu conhecimento médico.
-      4. Uma explicação detalhada (explanation) - explique por que a alternativa correta está certa e por que as outras estão erradas. Se o documento não fornecer explicação, gere uma explicação médica precisa.
-      
-      Retorne os dados ESTRITAMENTE como um array JSON de objetos.`;
+      const prompt = `Você é um professor de medicina responsável por criar um simulado.
+      O documento fornecido contém uma prova, lista de exercícios ou roteiro de estudos com várias perguntas.
+      IDENTIFIQUE TODAS as perguntas presentes no documento e para cada uma, gere uma questão de múltipla escolha coerente.
+      Se a pergunta for aberta, transforme-a em uma questão de múltipla escolha elaborando 4 opções de resposta (sendo apenas 1 correta) e adicionando a explicação da alternativa correta.
+      Você DEVE gerar uma questão de múltipla escolha para CADA questão encontrada no documento (ex: se o documento tiver 57 questões, gere 57 questões).
+      Retorne os dados ESTRITAMENTE como um array JSON de objetos, com as chaves: "question" (string com o enunciado), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro de 0 a 3) e "explanation" (string com a resolução detalhada). Não retorne mais nenhum texto além do JSON.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3.1-pro-preview',
@@ -116,26 +117,33 @@ export const AdminQuestions: React.FC = () => {
         throw new Error('Nenhuma questão foi extraída ou o formato é inválido.');
       }
 
-      setProcessingStatus(`Salvando ${extractedQuestions.length} questões no banco de dados...`);
+      setProcessingStatus(`Salvando a Lista "${title}" com ${extractedQuestions.length} questões no banco de dados...`);
       
-      const subject = SUBJECTS.find(s => s.id === subjectId);
-      const subjectTitle = subject ? subject.title : 'Desconhecida';
-
-      let savedCount = 0;
-      for (const q of extractedQuestions) {
-        await addDoc(collection(db, 'questions'), {
-          ...q,
+      // Ensure all IDs are uniquely generated for the list items
+      const formattedQuestions = extractedQuestions.map((q, idx) => ({
+          id: `list-q-${Date.now()}-${idx}`,
           subjectId,
-          subjectTitle,
-          period,
-          source: pdfFile.name,
-          createdAt: new Date().toISOString()
-        });
-        savedCount++;
-      }
+          question: q.question,
+          options: q.options,
+          correctOptionIndex: q.correctOptionIndex,
+          explanation: q.explanation || ''
+      }));
 
-      alert(`${savedCount} questões extraídas e salvas com sucesso!`);
+      const listPayload = {
+          title,
+          description,
+          period,
+          subjectId,
+          questions: formattedQuestions,
+          createdAt: new Date().toISOString()
+      };
+
+      await addDoc(collection(db, 'question_lists'), listPayload);
+
+      alert(`Lista de questões "${title}" com ${extractedQuestions.length} questões salva com sucesso!`);
       setPdfFile(null);
+      setTitle('');
+      setDescription('');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -151,11 +159,37 @@ export const AdminQuestions: React.FC = () => {
   return (
     <main className="p-8 max-w-[1000px] mx-auto w-full">
       <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-4">Importar Questões via IA</h2>
+        <h2 className="text-2xl font-bold text-gray-800 border-b pb-4">Importar Lista de Questões via IA</h2>
+        <p className="text-sm text-gray-500 mb-6">O sistema lerá o PDF e utilizará inteligência artificial para criar uma lista estruturada de questões de múltipla escolha prontas para os alunos resolverem no Banco de Questões.</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-600 uppercase">Período</label>
+            <label className="text-sm font-bold text-gray-600 uppercase">Título da Lista *</label>
+            <input 
+              type="text" 
+              value={title} 
+              onChange={e => setTitle(e.target.value)} 
+              placeholder="Ex: Prova de Políticas Nacionais..." 
+              className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-bold text-gray-600 uppercase">Subtítulo / Descrição</label>
+            <input 
+              type="text" 
+              value={description} 
+              onChange={e => setDescription(e.target.value)} 
+              placeholder="Ex: Políticas de saúde pública e atenção primária..." 
+              className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-bold text-gray-600 uppercase">Período *</label>
             <select 
               value={period} 
               onChange={e => setPeriod(Number(e.target.value))} 
@@ -166,7 +200,7 @@ export const AdminQuestions: React.FC = () => {
           </div>
           
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-600 uppercase">Disciplina</label>
+            <label className="text-sm font-bold text-gray-600 uppercase">Disciplina *</label>
             <select 
               value={subjectId} 
               onChange={e => setSubjectId(e.target.value)} 
@@ -179,7 +213,7 @@ export const AdminQuestions: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-2 mt-6">
-          <label className="text-sm font-bold text-gray-600 uppercase">Arquivo PDF com Questões</label>
+          <label className="text-sm font-bold text-gray-600 uppercase">Arquivo PDF com Questões/Prova *</label>
           <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors">
             <input 
               type="file" 
@@ -197,7 +231,7 @@ export const AdminQuestions: React.FC = () => {
                 {pdfFile ? pdfFile.name : 'Clique para selecionar um arquivo PDF'}
               </span>
               <span className="text-sm text-gray-500 mt-2">
-                A IA irá ler o PDF, extrair as questões, identificar as respostas corretas e gerar explicações.
+                A IA irá extrair o conteúdo do PDF e montar uma lista de questões com alternativas.
               </span>
             </label>
           </div>
@@ -206,9 +240,9 @@ export const AdminQuestions: React.FC = () => {
         <div className="pt-4">
           <button 
             onClick={processPDF}
-            disabled={isProcessing || !pdfFile || !subjectId}
+            disabled={isProcessing || !pdfFile || !subjectId || !title}
             className={`w-full py-4 font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
-              isProcessing || !pdfFile || !subjectId 
+              isProcessing || !pdfFile || !subjectId || !title
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
                 : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
             }`}
@@ -222,7 +256,7 @@ export const AdminQuestions: React.FC = () => {
                 {processingStatus}
               </>
             ) : (
-              'Extrair e Salvar Questões'
+              'Extrair e Salvar Lista de Questões'
             )}
           </button>
         </div>

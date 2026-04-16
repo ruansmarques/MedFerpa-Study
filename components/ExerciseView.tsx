@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { SUBJECTS } from '../constants';
-import { User, Exercise } from '../types';
+import { User, Exercise, QuestionList } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
-import { BookOpen, Brain, Target, CheckCircle, XCircle, Loader2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpen, Brain, Target, CheckCircle, XCircle, Loader2, Filter, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 
@@ -81,6 +81,8 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
   const [questions, setQuestions] = useState<Exercise[]>([]);
   const [totalAvailable, setTotalAvailable] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [availableLists, setAvailableLists] = useState<QuestionList[]>([]);
+  const [activeListId, setActiveListId] = useState<string | null>(null);
   
   const [resolutionStarted, setResolutionStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -100,25 +102,34 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
   };
 
   React.useEffect(() => {
-    const fetchLessons = async () => {
+    const fetchLessonsAndLists = async () => {
       if (selectedSubjectId) {
         try {
-          const q = query(collection(db, 'lessons'), where('subjectId', '==', selectedSubjectId));
-          const snap = await getDocs(q);
+          const qLessons = query(collection(db, 'lessons'), where('subjectId', '==', selectedSubjectId));
+          const snapLessons = await getDocs(qLessons);
           const lessonsList: any[] = [];
-          snap.forEach(doc => {
+          snapLessons.forEach(doc => {
             lessonsList.push({ id: doc.id, ...doc.data() });
           });
           setSubjectLessons(lessonsList);
+
+          const qLists = query(collection(db, 'question_lists'), where('subjectId', '==', selectedSubjectId));
+          const snapLists = await getDocs(qLists);
+          const listsArray: any[] = [];
+          snapLists.forEach(doc => {
+            listsArray.push({ id: doc.id, ...doc.data() });
+          });
+          setAvailableLists(listsArray);
         } catch (error) {
-          console.error("Erro ao buscar aulas:", error);
+          console.error("Erro ao buscar dados:", error);
         }
       } else {
         setSubjectLessons([]);
+        setAvailableLists([]);
       }
       setSelectedLessonId('');
     };
-    fetchLessons();
+    fetchLessonsAndLists();
   }, [selectedSubjectId]);
 
   const handleGenerate = async () => {
@@ -147,6 +158,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
     setShowResults(false);
     setResolutionStarted(false);
     setTotalAvailable(null);
+    setActiveListId(null);
 
     let difficultyLevel = 'variado de 1 a 6';
     if (difficulty.length === 1) {
@@ -285,6 +297,15 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
     setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
   };
 
+  const startListResolution = (list: QuestionList) => {
+    setQuestions(list.questions);
+    setActiveListId(list.id);
+    setAnswers({});
+    setShowResults(false);
+    setResolutionStarted(true);
+    setCurrentQuestionIndex(0);
+  };
+
   const handleFinish = () => {
     if (Object.keys(answers).length < questions.length && !showConfirmFinish) {
       setShowConfirmFinish(true);
@@ -300,6 +321,17 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
         correctCount++;
       }
     });
+
+    if (activeListId) {
+      const answeredCount = Object.keys(answers).length;
+      onUpdateUser({
+        ...currentUser,
+        listProgress: {
+          ...(currentUser.listProgress || {}),
+          [activeListId]: Math.max(answeredCount, currentUser.listProgress?.[activeListId] || 0)
+        }
+      });
+    }
 
     let diffMultiplier = 2;
     if (difficulty.length === 1) {
@@ -361,6 +393,18 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
                             correctCount++;
                           }
                         });
+
+                        if (activeListId) {
+                          const answeredCount = Object.keys(answers).length;
+                          onUpdateUser({
+                            ...currentUser,
+                            listProgress: {
+                              ...(currentUser.listProgress || {}),
+                              [activeListId]: Math.max(answeredCount, currentUser.listProgress?.[activeListId] || 0)
+                            }
+                          });
+                        }
+
                         let diffMultiplier = 2;
                         if (difficulty.length === 1) {
                           diffMultiplier = difficulty[0] === 'Fácil' ? 1 : difficulty[0] === 'Médio' ? 2 : 3;
@@ -750,6 +794,32 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onExit, onAddX
             )}
           </div>
         </div>
+
+        {/* Listas Prontas */}
+        {activeTab === 'internas' && availableLists.length > 0 && !isGenerating && questions.length === 0 && (
+          <div className="w-full mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {availableLists.map(list => {
+               const answered = currentUser.listProgress?.[list.id] || 0;
+               const total = list.questions?.length || 0;
+               const pct = total > 0 ? Math.round((answered/total)*100) : 0;
+               return (
+                 <div key={list.id} onClick={() => startListResolution(list)} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-all hover:border-purple-200 group flex flex-col">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
+                       <FileText size={24} />
+                    </div>
+                    <h3 className="font-bold text-gray-800 text-lg mb-2 leading-tight">{list.title}</h3>
+                    {list.description && <p className="text-gray-500 text-sm mb-6 flex-1">{list.description}</p>}
+                    {!list.description && <div className="flex-1"></div>}
+                    
+                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-gray-400">
+                      <span>{answered} DE {total} QUESTÕES RESPONDIDAS</span>
+                      <span className="text-blue-600">{pct}%</span>
+                    </div>
+                 </div>
+               )
+            })}
+          </div>
+        )}
 
       </div>
     </div>

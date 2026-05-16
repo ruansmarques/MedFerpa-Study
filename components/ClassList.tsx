@@ -24,11 +24,11 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({ icon: Icon, onClick, tooltip, isAvailable = true }) => (
   <button 
     onClick={(e) => { e.stopPropagation(); if (isAvailable) onClick(); }}
-    className={`p-2 rounded-lg transition-all ${isAvailable ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50' : 'text-gray-200 cursor-not-allowed'}`}
+    className={`p-1 sm:p-2 rounded-lg transition-all ${isAvailable ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50' : 'text-gray-200 cursor-not-allowed'}`}
     title={tooltip}
     disabled={!isAvailable}
   >
-    <Icon className="w-6 h-6" />
+    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
   </button>
 );
 
@@ -288,27 +288,27 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
 
   return (
     <div className={`rounded-3xl border transition-all duration-300 ${isOpen ? 'bg-white border-blue-100 shadow-md ring-4 ring-blue-50/50' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'}`}>
-      <div className="flex items-center justify-between p-4 lg:p-5 cursor-pointer select-none" onClick={() => setIsOpen(!isOpen)}>
-        <div className="flex items-center gap-4">
-          <div className={`p-2 rounded-xl transition-colors ${isOpen ? 'bg-blue-50 text-blue-600' : 'text-gray-300'}`}>
-            <IconChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      <div className="flex items-center justify-between p-3 sm:p-4 lg:p-5 cursor-pointer select-none gap-2" onClick={() => setIsOpen(!isOpen)}>
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0 pr-1 sm:pr-2">
+          <div className={`p-1.5 sm:p-2 flex-shrink-0 rounded-xl transition-colors ${isOpen ? 'bg-blue-50 text-blue-600' : 'text-gray-300'}`}>
+            <IconChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
           </div>
-          <span className={`font-bold text-sm lg:text-lg transition-colors ${isOpen ? 'text-blue-700' : 'text-slate-700'}`}>{lesson.title}</span>
+          <span className={`font-bold text-xs sm:text-sm lg:text-lg truncate transition-colors ${isOpen ? 'text-blue-700' : 'text-slate-700'}`} title={lesson.title}>{lesson.title}</span>
         </div>
-        <div className="flex items-center gap-1 lg:gap-3">
+        <div className="flex items-center gap-0.5 sm:gap-1 lg:gap-3 flex-shrink-0">
            <ActionButton icon={IconPlay} onClick={() => setIsOpen(!isOpen)} tooltip="Assistir Aula" />
            <ActionButton icon={IconPresentation} onClick={() => openMaterial(lesson.slideUrl)} tooltip="Abrir Slides" isAvailable={!!lesson.slideUrl} />
            <ActionButton icon={IconBook} onClick={() => openMaterial(lesson.summaryUrl)} tooltip="Abrir Resumo" isAvailable={!!lesson.summaryUrl} />
            
            {/* Divisória Vertical (Imagem 2) */}
-           <div className="h-8 w-px bg-gray-100 mx-2"></div>
+           <div className="h-6 sm:h-8 w-px bg-gray-100 mx-1 sm:mx-2"></div>
 
            <button 
              onClick={(e) => { e.stopPropagation(); onToggleComplete(); }} 
-             className={`p-2 rounded-xl transition-all ${isCompleted ? 'text-emerald-500 bg-emerald-50/50' : 'text-gray-200 hover:text-emerald-400 hover:bg-emerald-50/30'}`}
+             className={`p-1.5 sm:p-2 flex-shrink-0 rounded-xl transition-all ${isCompleted ? 'text-emerald-500 bg-emerald-50/50' : 'text-gray-200 hover:text-emerald-400 hover:bg-emerald-50/30'}`}
              title={isCompleted ? "Concluída" : "Marcar como Concluída"}
            >
-             {isCompleted ? <IconCheckFilled className="w-8 h-8" /> : <IconCheck className="w-8 h-8" />}
+             {isCompleted ? <IconCheckFilled className="w-6 h-6 sm:w-8 sm:h-8" /> : <IconCheck className="w-6 h-6 sm:w-8 sm:h-8" />}
            </button>
         </div>
       </div>

@@ -63,7 +63,7 @@ export interface Lesson {
   isContinuation?: boolean;
   
   // Identifies if the lesson is for N1 or N2 exams
-  examPeriod?: 'N1' | 'N2';
+  examPeriod?: 'N1' | 'N2' | 'Práticas';
 }
 
 export interface Exercise {

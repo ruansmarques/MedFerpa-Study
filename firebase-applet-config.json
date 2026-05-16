@@ -1,0 +1,10 @@
+{
+  "projectId": "ub-medcenter",
+  "appId": "1:436879223866:web:a0a69ebba822e6836b1903",
+  "apiKey": "AIzaSyCanmNOiLa85M6PZz-AVISLW6kEnr_4JVo",
+  "authDomain": "ub-medcenter.firebaseapp.com",
+  "firestoreDatabaseId": "medferpa-db-v2",
+  "storageBucket": "ub-medcenter.firebasestorage.app",
+  "messagingSenderId": "436879223866",
+  "measurementId": ""
+}

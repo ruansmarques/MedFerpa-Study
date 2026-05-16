@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { User } from '../types';
 
 interface LoginProps {
@@ -11,6 +11,47 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [ra, setRa] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleRestore = async () => {
+    try {
+      setLoading(true);
+      const users = [
+        { name: "Amanda Rodrigues", ra: "24151424-9" },
+        { name: "Ana Clara Cacciari", ra: "24149473-1" },
+        { name: "Ana Júlia Bonnaneti", ra: "24151346-4" },
+        { name: "Angelo Noventa", ra: "24151426-4" },
+        { name: "Eduardo", ra: "24151048-6" },
+        { name: "Emanuel Schwamback", ra: "24151429-8" },
+        { name: "Geovanna Carvalho", ra: "24151586-5" },
+        { name: "Karine Lobo", ra: "25154540-6" },
+        { name: "Kauã Novaes ", ra: "24151587-3" },
+        { name: "Ruan Marques", ra: "24151433-0" }
+      ];
+
+      for (const u of users) {
+        await setDoc(doc(db, "users", u.ra), {
+          name: u.name,
+          ra: u.ra,
+          totalXP: 0,
+          completedLessons: [],
+          listProgress: {},
+          exerciseProgress: {}
+        });
+      }
+
+      await setDoc(doc(db, "admins", "Ruan"), {
+        accessKey: "batdoc"
+      });
+
+      alert("Banco de dados restaurado (Usuários e Admin).");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao restaurar: " + err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const formatRA = (value: string) => {
     const digits = value.replace(/\D/g, '');

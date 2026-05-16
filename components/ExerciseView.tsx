@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SUBJECTS } from '../constants';
 import { User, Exercise, QuestionList } from '../types';
-import { GoogleGenAI, Type } from "@google/genai";
 import { BookOpen, Brain, Target, CheckCircle, XCircle, Loader2, Filter, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
@@ -185,100 +184,14 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
           });
         }
         
-        let finalQuestions = [...dbQuestions];
-        
-        // If we don't have enough questions from the DB, generate the rest
-        if (finalQuestions.length < quantity) {
-          const remainingQuantity = quantity - finalQuestions.length;
-          
-          let prompt = `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha sobre o assunto "${subjectTitle}" para estudantes de medicina. 
-              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado). 
-              As questões devem ser em Português do Brasil.
-              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`;
-              
-          let tools: any[] = [];
-          
-          if (selectedLessonId) {
-            const lesson = subjectLessons.find(l => l.id === selectedLessonId);
-            if (lesson && (lesson.slideUrl || lesson.summaryUrl)) {
-              const fileUrl = lesson.slideUrl || lesson.summaryUrl;
-              
-              if (fileUrl && fileUrl.includes('drive.google.com')) {
-                throw new Error("O documento desta aula está hospedado no Google Drive e é restrito. A IA não consegue acessá-lo. Por favor, acesse o Painel Administrativo e faça o upload do arquivo diretamente no sistema (Firebase) para permitir a geração de questões.");
-              }
-
-              prompt = `Você é um professor de medicina. Gere ${remainingQuantity} questões de múltipla escolha baseadas EXCLUSIVAMENTE no conteúdo do documento fornecido na URL: ${fileUrl}.
-              Nível de dificuldade: ${difficultyLevel} de 6 (1 é básico, 6 é avançado/especializado).
-              As questões devem ser em Português do Brasil.
-              NÃO use conhecimentos externos que não estejam no documento. Se o documento não tiver informações suficientes para gerar ${remainingQuantity} questões, gere o máximo que conseguir com base apenas no documento.
-              Retorne um array JSON de objetos com as propriedades: "question" (string), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro 0-3) e "explanation" (string com a resolução/explicação da resposta correta).`;
-              
-              tools = [{ urlContext: {} }];
-            } else {
-              throw new Error("A aula selecionada não possui material (slide ou resumo) cadastrado para gerar questões.");
-            }
-          }
-          
-          console.log("Iniciando geração com IA. Chave definida?", !!process.env.GEMINI_API_KEY);
-          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-          const response = await ai.models.generateContent({
-              model: 'gemini-3.1-pro-preview',
-              contents: prompt,
-              config: {
-                  tools: tools.length > 0 ? tools : undefined,
-                  responseMimeType: "application/json",
-                  responseSchema: {
-                      type: Type.ARRAY,
-                      items: {
-                          type: Type.OBJECT,
-                          properties: {
-                              question: { type: Type.STRING },
-                              options: { type: Type.ARRAY, items: { type: Type.STRING } },
-                              correctOptionIndex: { type: Type.INTEGER },
-                              explanation: { type: Type.STRING }
-                          },
-                          required: ["question", "options", "correctOptionIndex", "explanation"]
-                      }
-                  }
-              }
-          });
-
-          console.log("Resposta bruta da IA:", response.text);
-          let text = response.text || '[]';
-          const match = text.match(/\[[\s\S]*\]/);
-          if (match) {
-            text = match[0];
-          }
-          let generatedData;
-          try {
-            generatedData = JSON.parse(text);
-          } catch (parseError) {
-            console.error("Erro ao fazer parse do JSON:", text);
-            throw new Error("A IA retornou um formato inválido ou recusou-se a responder. Isso pode acontecer devido a filtros de segurança ou erro na formatação. Tente novamente.");
-          }
-          
-          if (!Array.isArray(generatedData)) {
-            throw new Error("A resposta da IA não é um array válido.");
-          }
-          if (generatedData.length === 0) {
-            throw new Error("A IA não conseguiu gerar nenhuma questão. Se você selecionou uma aula específica, é possível que a IA não tenha conseguido ler o conteúdo do arquivo (ex: PDFs complexos ou imagens). Tente gerar questões gerais da disciplina.");
-          }
-          const newQuestions: Exercise[] = generatedData.map((q: any, i: number) => ({
-              id: `ai-gen-${Date.now()}-${i}`,
-              subjectId: selectedSubjectId || 'enamed',
-              lessonId: selectedLessonId || 'ai-generated',
-              question: q.question || "Questão sem enunciado",
-              options: Array.isArray(q.options) ? q.options : ["Opção A", "Opção B", "Opção C", "Opção D"],
-              correctOptionIndex: typeof q.correctOptionIndex === 'number' ? q.correctOptionIndex : parseInt(q.correctOptionIndex) || 0,
-              explanation: q.explanation || "Resolução não fornecida pela IA."
-          }));
-          
-          finalQuestions = [...finalQuestions, ...newQuestions];
+        // Remove Gemini part completely as AI is disabled
+        if (dbQuestions.length === 0) {
+          throw new Error("Não foi possível gerar mais questões no momento, as funcionalidades de inteligência artificial foram desativadas.");
         }
 
-        setQuestions(finalQuestions.slice(0, quantity));
+        setQuestions(dbQuestions.slice(0, quantity));
         // Simulate total available questions based on filters
-        setTotalAvailable(quantity + Math.floor(Math.random() * 50) + 20);
+        setTotalAvailable(dbQuestions.length);
     } catch (error: any) {
         console.error("Erro ao gerar questões com AI:", error);
         setErrorMessage(error instanceof Error ? error.message : String(error));
@@ -752,10 +665,10 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
               {isGenerating ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  Gerando...
+                  Buscando...
                 </>
               ) : (
-                'Gerar Questões'
+                'Buscar Questões'
               )}
             </button>
           )}
@@ -764,13 +677,13 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
           <div className="mt-8 text-center">
             {errorMessage ? (
               <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 max-w-md mx-auto text-sm">
-                <p className="font-bold mb-1">Erro na geração</p>
+                <p className="font-bold mb-1">Erro na busca</p>
                 <p>{errorMessage}</p>
               </div>
             ) : isGenerating ? (
               <div className="text-gray-500 flex flex-col items-center gap-2">
                 <Loader2 size={32} className="animate-spin text-blue-500" />
-                <p>Nossa IA está elaborando as questões...</p>
+                <p>Buscando questões disponíveis no banco de dados...</p>
               </div>
             ) : questions.length > 0 ? (
               <div className="text-gray-600 space-y-1">
@@ -786,9 +699,9 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
                   <BookOpen size={28} className="text-blue-300" />
                 </div>
-                <h3 className="font-bold text-gray-800 mb-2">Nenhuma questão gerada ainda.</h3>
+                <h3 className="font-bold text-gray-800 mb-2">Nenhuma questão encontrada ainda.</h3>
                 <p className="text-sm leading-relaxed">
-                  Selecione o período, a disciplina, a dificuldade e a quantidade nos filtros acima, e clique em "Gerar Questões" para iniciar seu treinamento personalizado.
+                  Selecione o período, a disciplina, a dificuldade e a quantidade nos filtros acima, e clique em "Buscar Questões" para iniciar seu treinamento.
                 </p>
               </div>
             )}

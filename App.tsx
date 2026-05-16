@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
+import Register from './components/Register';
 import Sidebar from './components/Sidebar';
 import ClassList from './components/ClassList';
 import ExerciseView from './components/ExerciseView';
@@ -98,6 +99,9 @@ const App: React.FC = () => {
   }, [currentUser?.ra]);
 
   const [currentView, setCurrentView] = useState<ViewState>(() => {
+    if (window.location.pathname === '/admin' || new URLSearchParams(window.location.search).get('view') === 'admin') {
+      return 'admin';
+    }
     try {
       const savedView = sessionStorage.getItem('medferpa_view_state');
       return (savedView as ViewState) || 'classes';
@@ -147,29 +151,12 @@ const App: React.FC = () => {
   // Check URL for admin access on load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('view') === 'admin') {
+    if (params.get('view') === 'admin' || window.location.pathname === '/admin') {
       setCurrentView('admin');
     }
   }, []);
 
-  // Efeito para carregar o Favicon do Firebase Storage
-  useEffect(() => {
-    const setFavicon = async () => {
-      try {
-        const url = await getDownloadURL(ref(storage, 'assets/fav-icon.png'));
-        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-        if (!link) {
-          link = document.createElement('link');
-          link.rel = 'icon';
-          document.getElementsByTagName('head')[0].appendChild(link);
-        }
-        link.href = url;
-      } catch (error) {
-        console.error("Erro ao carregar favicon do Storage:", error);
-      }
-    };
-    setFavicon();
-  }, []);
+
 
   // --- LOGICA DE AUTO-CORREÇÃO DE XP ---
   // Recalcula o XP total baseado nas aulas e exercícios reais para garantir consistência
@@ -368,10 +355,14 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
+    if (window.location.pathname === '/cadastrar') {
+      return <Register />;
+    }
+
     // Admin bypasses login check
-    if (currentView === 'admin') {
+    if (currentView === 'admin' || window.location.pathname === '/admin') {
       return <AdminDashboard onExit={() => {
-        window.history.pushState({}, '', window.location.pathname); // Clear URL param
+        window.history.pushState({}, '', '/'); // Reset URL
         setCurrentView(currentUser ? 'classes' : 'login');
       }} />;
     }

@@ -60,7 +60,12 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
           const d = doc.data();
           lessons.push({ id: doc.id, ...d } as Lesson);
         });
+        console.log("Fetched lessons:", lessons.length);
+        if (lessons.length > 0) { console.log(lessons[0]); }
         setDbLessons(lessons);
+      } catch (err: any) {
+        console.error("Error fetching lessons: ", err);
+        alert("Error fetching database: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -111,7 +116,9 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     l.subjectId === selectedSubject?.id && 
     (l.type === 'class' || !l.type) &&
     !l.isContinuation
-  ).sort((a, b) => String(a.title || '').localeCompare(String(b.title || '')));
+  ).sort((a, b) => {
+    return String(a.title || '').localeCompare(String(b.title || ''));
+  });
 
   // Logic for Processos Patológicos categories
   const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol';
@@ -245,6 +252,19 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'N2').map(l => (
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                ))}
+              </div>
+            )}
+
+            {displayLessons.filter(l => l.examPeriod === 'Práticas').length > 0 && (
+              <div className="space-y-4 mt-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-4 py-1 rounded-full border border-gray-100">Aulas Práticas</h3>
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                </div>
+                {displayLessons.filter(l => l.examPeriod === 'Práticas').map(l => (
                   <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
                 ))}
               </div>

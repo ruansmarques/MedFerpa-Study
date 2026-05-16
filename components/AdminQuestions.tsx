@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { GoogleGenAI, Type } from '@google/genai';
 import { SUBJECTS } from '../constants';
 
 export const AdminQuestions: React.FC = () => {
@@ -50,110 +49,10 @@ export const AdminQuestions: React.FC = () => {
       return;
     }
 
-    setIsProcessing(true);
-    setProcessingStatus('Lendo arquivo PDF...');
+    alert('Funcionalidade temporariamente desativada. As integrações com IA (Gemini) foram pausadas para evitar cobranças indevidas ao projeto.');
+    return;
 
-    try {
-      const base64Data = await fileToBase64(pdfFile);
-      
-      setProcessingStatus('Enviando para a IA para extração de questões...');
-      
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      
-      const prompt = `Você é um professor de medicina responsável por criar um simulado.
-      O documento fornecido contém uma prova, lista de exercícios ou roteiro de estudos com várias perguntas.
-      IDENTIFIQUE TODAS as perguntas presentes no documento e para cada uma, gere uma questão de múltipla escolha coerente.
-      Se a pergunta for aberta, transforme-a em uma questão de múltipla escolha elaborando 4 opções de resposta (sendo apenas 1 correta) e adicionando a explicação da alternativa correta.
-      Você DEVE gerar uma questão de múltipla escolha para CADA questão encontrada no documento (ex: se o documento tiver 57 questões, gere 57 questões).
-      Retorne os dados ESTRITAMENTE como um array JSON de objetos, com as chaves: "question" (string com o enunciado), "options" (array de exatas 4 strings), "correctOptionIndex" (inteiro de 0 a 3) e "explanation" (string com a resolução detalhada). Não retorne mais nenhum texto além do JSON.`;
-
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: 'application/pdf',
-              },
-            },
-            {
-              text: prompt,
-            },
-          ],
-        },
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                question: { type: Type.STRING },
-                options: { type: Type.ARRAY, items: { type: Type.STRING } },
-                correctOptionIndex: { type: Type.INTEGER },
-                explanation: { type: Type.STRING }
-              },
-              required: ["question", "options", "correctOptionIndex", "explanation"]
-            }
-          }
-        }
-      });
-
-      setProcessingStatus('Processando resposta da IA...');
-      
-      let text = response.text;
-      if (!text) {
-        throw new Error('A IA não retornou nenhum texto.');
-      }
-      const match = text.match(/\[[\s\S]*\]/);
-      if (match) {
-        text = match[0];
-      }
-
-      const extractedQuestions = JSON.parse(text);
-      
-      if (!Array.isArray(extractedQuestions) || extractedQuestions.length === 0) {
-        throw new Error('Nenhuma questão foi extraída ou o formato é inválido.');
-      }
-
-      setProcessingStatus(`Salvando a Lista "${title}" com ${extractedQuestions.length} questões no banco de dados...`);
-      
-      // Ensure all IDs are uniquely generated for the list items
-      const formattedQuestions = extractedQuestions.map((q, idx) => ({
-          id: `list-q-${Date.now()}-${idx}`,
-          subjectId,
-          question: q.question,
-          options: q.options,
-          correctOptionIndex: q.correctOptionIndex,
-          explanation: q.explanation || ''
-      }));
-
-      const listPayload = {
-          title,
-          description,
-          period,
-          subjectId,
-          questions: formattedQuestions,
-          createdAt: new Date().toISOString()
-      };
-
-      await addDoc(collection(db, 'question_lists'), listPayload);
-
-      alert(`Lista de questões "${title}" com ${extractedQuestions.length} questões salva com sucesso!`);
-      setPdfFile(null);
-      setTitle('');
-      setDescription('');
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    } catch (error) {
-      console.error('Erro ao processar PDF:', error);
-      alert(`Erro ao processar PDF: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setIsProcessing(false);
-      setProcessingStatus('');
-    }
+    // IsProcessing etc. logic skipped...
   };
 
   return (

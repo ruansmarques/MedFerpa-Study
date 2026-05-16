@@ -2,16 +2,16 @@
 import { initializeApp } from "firebase/app";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
-// Configuração do Firebase do projeto "ub-medcenter"
 const firebaseConfig = {
-  apiKey: "AIzaSyDnma4IDMFzM7TmPwY1HLULk2cwUaHPhxg",
-  authDomain: "ub-medcenter.firebaseapp.com",
-  projectId: "ub-medcenter",
-  storageBucket: "ub-medcenter.firebasestorage.app",
-  messagingSenderId: "436879223866",
-  appId: "1:436879223866:web:c50058d8af0bc48d6b1903",
-  measurementId: "G-60GVEZQ57M"
+  apiKey: "AIzaSyCAgQfNO2wevnhRgEr6hTPBvJAHdOX0pJc",
+  authDomain: "sp-medcenter.firebaseapp.com",
+  projectId: "sp-medcenter",
+  storageBucket: "sp-medcenter.firebasestorage.app",
+  messagingSenderId: "101407635328",
+  appId: "1:101407635328:web:03b85490c6a0edaf3a3365",
+  measurementId: "G-3LW1184G83"
 };
 
 // Initialize the Firebase app instance
@@ -26,4 +26,7 @@ const db = initializeFirestore(app, {
 // Inicializa e exporta o Storage (Arquivos)
 const storage = getStorage(app);
 
-export { db, storage };
+// Inicializa e exporta a Autenticação
+const auth = getAuth(app);
+
+export { db, storage, auth };

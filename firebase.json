@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "medferpa-db-v2",
+      "rules": "firestore.rules"
+    }
+  ]
+}

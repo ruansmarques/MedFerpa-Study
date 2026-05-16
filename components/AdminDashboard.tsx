@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
-import { db, storage } from '../firebase';
+import { db, storage, auth } from '../firebase';
 import { collection, query, orderBy, where, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { IconCheck, IconX, IconEdit, IconPresentation, IconBook } from './Icons';
@@ -29,16 +29,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isContinuation, setIsContinuation] = useState(false);
-  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2'>('N2');
+  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Práticas'>('N2');
   
-  const [slideFile, setSlideFile] = useState<File | null>(null);
-  const [summaryFile, setSummaryFile] = useState<File | null>(null);
-  const [deleteSlide, setDeleteSlide] = useState(false);
-  const [deleteSummary, setDeleteSummary] = useState(false);
+  const [slideUrlInput, setSlideUrlInput] = useState('');
+  const [summaryUrlInput, setSummaryUrlInput] = useState('');
+  const [uploadingSlide, setUploadingSlide] = useState(false);
+  const [uploadingSummary, setUploadingSummary] = useState(false);
   
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
 
   // Helper to get current lesson being edited
   const editingLesson = editingId ? dbLessons.find(l => l.id === editingId) : null;
@@ -58,11 +59,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   }, [subjectId, editingId]);
 
   const fetchLessons = async () => {
-    const q = query(collection(db, "lessons"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    const list: Lesson[] = [];
-    snap.forEach(d => list.push({ id: d.id, ...d.data() } as Lesson));
-    setDbLessons(list);
+    try {
+      const q = query(collection(db, "lessons"));
+      const snap = await getDocs(q);
+      const list: Lesson[] = [];
+      snap.forEach(d => list.push({ id: d.id, ...d.data() } as Lesson));
+      // Sort in memory to avoid needing Firestore index
+      list.sort((a, b) => {
+          const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bTime - aTime;
+      });
+      setDbLessons(list);
+    } catch (err: any) {
+      console.error("Error fetching admin lessons: ", err);
+    }
   };
 
   useEffect(() => { if (isAuthenticated) fetchLessons(); }, [isAuthenticated]);
@@ -80,17 +91,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const clearForm = () => {
     setEditingId(null);
     setTitle('');
-    setSubjectId('');
-    setCategory('');
     setDate('');
     setNoticeMessage('');
     setSelectedSlots([]);
     setYoutubeLink('');
-    setSlideFile(null);
-    setSummaryFile(null);
-    setDeleteSlide(false);
-    setDeleteSummary(false);
-    setEntryType('class');
+    setSlideUrlInput('');
+    setSummaryUrlInput('');
     setIsContinuation(false);
     setExamPeriod('N2');
     // Don't reset period to 5, keep user context or let it update via subject
@@ -110,10 +116,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setPeriod(lesson.period);
     setIsContinuation(lesson.isContinuation || false);
     setExamPeriod(lesson.examPeriod || 'N2');
-    setSlideFile(null);
-    setSummaryFile(null);
-    setDeleteSlide(false);
-    setDeleteSummary(false);
+    setSlideUrlInput(lesson.slideUrl || '');
+    setSummaryUrlInput(lesson.summaryUrl || '');
   };
 
   // Fix: Handle Delete
@@ -131,42 +135,92 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     }
   };
 
+  const handleToggleSelectAll = (filteredSubset: Lesson[]) => {
+      if (selectedLessonIds.length === filteredSubset.length && filteredSubset.length > 0) {
+          setSelectedLessonIds([]);
+      } else {
+          setSelectedLessonIds(filteredSubset.map(l => l.id));
+      }
+  };
+
+  const handleToggleSelectRow = (id: string) => {
+      setSelectedLessonIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'slide' | 'summary') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (type === 'slide') setUploadingSlide(true);
+    else setUploadingSummary(true);
+
+    try {
+      const extension = file.name.split('.').pop();
+      const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`;
+      const storageRef = ref(storage, `uploads/${type}s/${uniqueFileName}`);
+      
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      if (type === 'slide') {
+        setSlideUrlInput(downloadURL);
+      } else {
+        setSummaryUrlInput(downloadURL);
+      }
+    } catch (err: any) {
+      alert("Erro ao fazer upload: " + err.message);
+    } finally {
+      if (type === 'slide') setUploadingSlide(false);
+      else setUploadingSummary(false);
+    }
+  };
+
+  const handleMassEdit = async (action: string) => {
+      if (selectedLessonIds.length === 0) return;
+      
+      setLoading(true);
+      try {
+          const batch = writeBatch(db);
+          selectedLessonIds.forEach(id => {
+              const docRef = doc(db, "lessons", id);
+              let updatePayload: any = {};
+              if (action === 'continuation-true') updatePayload.isContinuation = true;
+              if (action === 'continuation-false') updatePayload.isContinuation = false;
+              if (action === 'exam-n1') updatePayload.examPeriod = 'N1';
+              if (action === 'exam-n2') updatePayload.examPeriod = 'N2';
+              if (action === 'exam-praticas') updatePayload.examPeriod = 'Práticas';
+              if (action === 'cat-geral') updatePayload.category = 'Geral';
+              if (action === 'cat-micro') updatePayload.category = 'Microbiologia';
+              if (action === 'cat-parasi') updatePayload.category = 'Parasitologia';
+              if (action === 'cat-imuno') updatePayload.category = 'Imunologia';
+              if (action === 'cat-patogeral') updatePayload.category = 'Patologia Geral';
+              
+              batch.update(docRef, updatePayload);
+          });
+          await batch.commit();
+          setSuccessMsg("Edição em massa concluída!");
+          fetchLessons();
+          setSelectedLessonIds([]);
+      } catch (e: any) {
+          alert("Erro na edição em massa: " + e.message);
+      } finally {
+          setTimeout(() => setSuccessMsg(""), 3000);
+          setLoading(false);
+      }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      let slideUrl = null;
-      let summaryUrl = null;
-      
       const currentLesson = dbLessons.find(l => l.id === editingId);
-
-      // Handle Slide
-      if (slideFile) {
-        const sRef = ref(storage, `materials/uploads/slides/${Date.now()}_${slideFile.name}`);
-        await uploadBytes(sRef, slideFile);
-        slideUrl = await getDownloadURL(sRef);
-      } else if (deleteSlide) {
-        slideUrl = null;
-      } else {
-        slideUrl = currentLesson?.slideUrl || null;
-      }
-
-      // Handle Summary
-      if (summaryFile) {
-        const rRef = ref(storage, `materials/uploads/resumos/${Date.now()}_${summaryFile.name}`);
-        await uploadBytes(rRef, summaryFile);
-        summaryUrl = await getDownloadURL(rRef);
-      } else if (deleteSummary) {
-        summaryUrl = null;
-      } else {
-        summaryUrl = currentLesson?.summaryUrl || null;
-      }
 
       const payload: any = {
         subjectId, title, period, date, category, type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
         targetSlots: selectedSlots,
-        slideUrl, summaryUrl,
+        slideUrl: slideUrlInput ? slideUrlInput : null,
+        summaryUrl: summaryUrlInput ? summaryUrlInput : null,
         youtubeIds: youtubeLink ? [youtubeLink.split('v=')[1]?.split('&')[0] || youtubeLink] : (currentLesson?.youtubeIds || []),
         updatedAt: new Date().toISOString(),
         isContinuation,
@@ -208,6 +262,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     if (subjectId && l.subjectId !== subjectId) return false;
     if (category && l.category !== category) return false;
     return true;
+  }).sort((a, b) => {
+    const dateA = a.date || '';
+    const dateB = b.date || '';
+    if (dateA > dateB) return -1;
+    if (dateA < dateB) return 1;
+    const ca = a.createdAt || '';
+    const cb = b.createdAt || '';
+    if (ca > cb) return -1;
+    if (ca < cb) return 1;
+    return 0;
   });
 
   return (
@@ -290,9 +354,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
                 <div className="flex flex-col gap-1">
                     <label className="text-xs font-bold text-gray-400 uppercase">Período de Prova *</label>
-                    <select value={examPeriod} onChange={e => setExamPeriod(e.target.value as 'N1' | 'N2')} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                    <select value={examPeriod} onChange={e => setExamPeriod(e.target.value as 'N1' | 'N2' | 'Práticas')} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
                         <option value="N1">N1 (1º Bimestre)</option>
                         <option value="N2">N2 (2º Bimestre)</option>
+                        <option value="Práticas">Aulas Práticas</option>
                     </select>
                 </div>
 
@@ -338,35 +403,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                             <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col gap-2">
-                                <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${slideFile ? 'bg-blue-50 border-blue-400 text-blue-600' : 'bg-gray-50 border-gray-200'}`}>
-                                    <input type="file" className="hidden" onChange={e => { setSlideFile(e.target.files?.[0] || null); setDeleteSlide(false); }} />
-                                    <div className="flex flex-col items-center"><IconPresentation className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{slideFile ? 'Slide Selecionado' : 'Carregar Slide'}</span></div>
-                                </label>
-                                {editingLesson?.slideUrl && !slideFile && !deleteSlide && (
-                                    <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-100">
-                                        <a href={editingLesson.slideUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:underline truncate max-w-[120px]">Ver Slide Atual</a>
-                                        <button type="button" onClick={() => setDeleteSlide(true)} className="text-red-500 hover:bg-red-100 p-1 rounded"><IconX className="w-4 h-4" /></button>
-                                    </div>
-                                )}
-                                {deleteSlide && (
-                                    <div className="text-xs text-red-500 font-bold text-center">Slide será removido ao salvar</div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold text-gray-400 uppercase">Link do Slide</label>
+                                <div className="flex bg-white border rounded-xl overflow-hidden focus-within:ring-2 ring-blue-500 relative">
+                                  <input type="url" value={slideUrlInput} onChange={e => setSlideUrlInput(e.target.value)} placeholder="URL do Google Drive (Slide)" className="w-full p-3 outline-none" />
+                                  <label className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 flex items-center justify-center font-bold text-sm cursor-pointer border-l transition">
+                                    {uploadingSlide ? '...' : 'Upload'}
+                                    <input type="file" className="hidden" accept=".pdf,.ppt,.pptx" onChange={e => handleFileUpload(e, 'slide')} disabled={uploadingSlide} />
+                                  </label>
+                                </div>
+                                {editingLesson?.slideUrl && !slideUrlInput && (
+                                    <span className="text-xs text-blue-500 truncate mt-1">Atual: {editingLesson.slideUrl}</span>
                                 )}
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <label className={`flex-1 p-4 border-2 border-dashed rounded-xl text-center cursor-pointer transition ${summaryFile ? 'bg-emerald-50 border-emerald-400 text-emerald-600' : 'bg-gray-50 border-gray-200'}`}>
-                                    <input type="file" className="hidden" onChange={e => { setSummaryFile(e.target.files?.[0] || null); setDeleteSummary(false); }} />
-                                    <div className="flex flex-col items-center"><IconBook className="w-6 h-6 mb-1" /> <span className="text-[10px] font-bold uppercase">{summaryFile ? 'Resumo Selecionado' : 'Carregar Resumo'}</span></div>
-                                </label>
-                                {editingLesson?.summaryUrl && !summaryFile && !deleteSummary && (
-                                    <div className="flex items-center justify-between p-2 bg-emerald-50 rounded-lg border border-emerald-100">
-                                        <a href={editingLesson.summaryUrl} target="_blank" rel="noreferrer" className="text-xs font-bold text-emerald-600 hover:underline truncate max-w-[120px]">Ver Resumo Atual</a>
-                                        <button type="button" onClick={() => setDeleteSummary(true)} className="text-red-500 hover:bg-red-100 p-1 rounded"><IconX className="w-4 h-4" /></button>
-                                    </div>
-                                )}
-                                {deleteSummary && (
-                                    <div className="text-xs text-red-500 font-bold text-center">Resumo será removido ao salvar</div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold text-gray-400 uppercase">Link do Resumo</label>
+                                <div className="flex bg-white border rounded-xl overflow-hidden focus-within:ring-2 ring-blue-500 relative">
+                                  <input type="url" value={summaryUrlInput} onChange={e => setSummaryUrlInput(e.target.value)} placeholder="URL do Google Drive (Resumo)" className="w-full p-3 outline-none" />
+                                  <label className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 flex items-center justify-center font-bold text-sm cursor-pointer border-l transition">
+                                    {uploadingSummary ? '...' : 'Upload'}
+                                    <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={e => handleFileUpload(e, 'summary')} disabled={uploadingSummary} />
+                                  </label>
+                                </div>
+                                {editingLesson?.summaryUrl && !summaryUrlInput && (
+                                    <span className="text-xs text-blue-500 truncate mt-1">Atual: {editingLesson.summaryUrl}</span>
                                 )}
                             </div>
                         </div>
@@ -384,9 +445,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
         {/* Tabela de aulas */}
         <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden h-fit">
+            {selectedLessonIds.length > 0 && (
+               <div className="bg-blue-50 p-4 border-b border-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                   <div className="text-sm font-bold text-blue-700 whitespace-nowrap">
+                       <span className="text-xl md:text-sm">{selectedLessonIds.length} selecionados</span>
+                   </div>
+                   <div className="grid grid-cols-2 lg:flex lg:flex-wrap gap-2 w-full md:w-auto md:justify-end">
+                       <button type="button" onClick={() => handleMassEdit('continuation-true')} className="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 w-full sm:w-auto leading-tight">Marcar como Continuação</button>
+                       <button type="button" onClick={() => handleMassEdit('continuation-false')} className="px-3 py-2 bg-gray-600 text-white text-xs font-bold rounded-lg hover:bg-gray-700 w-full sm:w-auto leading-tight">Desmarcar Continuação</button>
+                       <button type="button" onClick={() => handleMassEdit('exam-n1')} className="px-3 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 w-full sm:w-auto leading-tight">Mudar para N1</button>
+                       <button type="button" onClick={() => handleMassEdit('exam-n2')} className="px-3 py-2 bg-pink-600 text-white text-xs font-bold rounded-lg hover:bg-pink-700 w-full sm:w-auto leading-tight">Mudar para N2</button>
+                       <button type="button" onClick={() => handleMassEdit('exam-praticas')} className="px-3 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 w-full sm:w-auto leading-tight">Aulas Práticas</button>
+                       
+                       {(subjectId === 'anat-patol' || subjectId === 'proc-patol') && (
+                          <>
+                             <div className="col-span-2 w-full h-px bg-blue-100 my-1 lg:hidden"></div>
+                             <span className="hidden lg:flex items-center text-blue-200 mx-1">|</span>
+                             <button type="button" onClick={() => handleMassEdit(subjectId === 'proc-patol' ? 'cat-patogeral' : 'cat-geral')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: {subjectId === 'proc-patol' ? 'Patologia Geral' : 'Geral'}</button>
+                             <button type="button" onClick={() => handleMassEdit('cat-parasi')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Parasitologia</button>
+                             <button type="button" onClick={() => handleMassEdit('cat-micro')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Microbiologia</button>
+                             {subjectId === 'proc-patol' && <button type="button" onClick={() => handleMassEdit('cat-imuno')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Imunologia</button>}
+                          </>
+                       )}
+                   </div>
+               </div>
+            )}
             <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-50 border-b">
                     <tr>
+                        <th className="p-4 w-10">
+                            <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                checked={selectedLessonIds.length === filteredLessons.length && filteredLessons.length > 0}
+                                onChange={() => handleToggleSelectAll(filteredLessons)} />
+                        </th>
                         <th className="p-4 text-xs font-bold text-gray-400 uppercase">Data / Título ({filteredLessons.length})</th>
                         <th className="p-4 text-xs font-bold text-gray-400 uppercase text-right">Ações</th>
                     </tr>
@@ -395,14 +486,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                     {filteredLessons.map(l => (
                         <tr key={l.id} className="hover:bg-gray-50">
                             <td className="p-4">
-                                <div className="text-[10px] font-bold text-blue-500 mb-1">{l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'}</div>
+                                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                    checked={selectedLessonIds.includes(l.id)} 
+                                    onChange={() => handleToggleSelectRow(l.id)} />
+                            </td>
+                            <td className="p-4">
+                                <div className="text-[10px] font-bold text-blue-500 mb-1">
+                                    {l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'} | {l.examPeriod || 'N2'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
+                                </div>
                                 <div className="text-sm font-bold text-slate-800 line-clamp-1">
                                     {l.title}
-                                    {(l.slideUrl?.includes('drive.google.com') || l.summaryUrl?.includes('drive.google.com')) && (
-                                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800" title="Link do Google Drive detectado. Atualize para o Firebase para permitir a leitura pela IA.">
-                                            ⚠️ Drive Link
-                                        </span>
-                                    )}
                                 </div>
                                 <div className="text-[10px] text-gray-400 uppercase">{SUBJECTS.find(s => s.id === l.subjectId)?.title}</div>
                             </td>

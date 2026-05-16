@@ -18,6 +18,19 @@ const RankView: React.FC<RankViewProps> = ({ currentUser, onToggleVisibility }) 
 
   const isVisible = currentUser.isRankVisible !== false;
 
+  const getAvatarColor = (name: string) => {
+    const bgColors = [
+      'bg-red-500', 'bg-blue-500', 'bg-emerald-500', 
+      'bg-amber-500', 'bg-purple-500', 'bg-pink-500', 
+      'bg-indigo-500', 'bg-teal-500', 'bg-orange-500', 'bg-cyan-500'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return bgColors[Math.abs(hash) % bgColors.length];
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,6 +116,7 @@ const RankView: React.FC<RankViewProps> = ({ currentUser, onToggleVisibility }) 
             else rankBadge = `#${index + 1}`;
 
             const isCurrentUser = user.ra === currentUser.ra;
+            const avatarBg = user.avatarColor || getAvatarColor(user.name);
 
             return (
               <div key={user.ra} className={`grid grid-cols-12 gap-2 lg:gap-4 p-4 lg:p-5 items-center transition-colors ${isCurrentUser ? 'bg-blue-50/50 hover:bg-blue-50' : 'hover:bg-slate-50'}`}>
@@ -111,7 +125,7 @@ const RankView: React.FC<RankViewProps> = ({ currentUser, onToggleVisibility }) 
                 </div>
                 
                 <div className="col-span-8 flex items-center gap-2 lg:gap-4 pl-2">
-                  <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs lg:text-sm flex-shrink-0 ${user.avatarColor} ring-2 ring-white shadow-md`}>
+                  <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs lg:text-sm flex-shrink-0 ${avatarBg} ring-2 ring-white shadow-md uppercase`}>
                     {user.name.charAt(0)}
                   </div>
                   <div className="overflow-hidden">

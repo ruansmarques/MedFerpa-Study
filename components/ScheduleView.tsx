@@ -229,10 +229,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                   const events = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === dayIndex + 1);
 
                   return (
-                      <div key={`normal-${idx}`} className="w-full p-1 sm:p-2 space-y-2 col-span-1">
+                      <div 
+                          key={`normal-${idx}`} 
+                          className="w-full p-1 sm:p-2 grid gap-1 sm:gap-2 col-span-1 h-full min-h-[400px]"
+                          style={{ gridTemplateRows: `repeat(${Math.max(3, events.length)}, minmax(0, 1fr))` }}
+                      >
                           {isWithinSemester ? (
                               isBlankDay ? (
-                                  <div className="w-full rounded-xl h-full min-h-[400px] bg-gray-50/50 border-2 border-dashed border-gray-200 flex items-center justify-center opacity-60">
+                                  <div className="w-full h-full rounded-xl bg-gray-50/50 border-2 border-dashed border-gray-200 flex items-center justify-center opacity-60" style={{ gridRow: `span ${Math.max(3, events.length)}` }}>
                                       <span className="text-gray-400 text-xs sm:text-sm font-medium">Sem atividades</span>
                                   </div>
                               ) : events.map((event, eventIdx) => {
@@ -245,7 +249,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
                                   if (foundLesson && foundLesson.type === 'notice') {
                                       return (
-                                          <div key={eventIdx} className="w-full text-center rounded-xl h-36 sm:h-48 bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-2 sm:p-4 gap-1 sm:gap-2 shadow-sm animate-fade-in">
+                                          <div key={eventIdx} className="w-full h-full text-center rounded-xl bg-white border-2 border-dashed border-blue-200 flex flex-col items-center justify-center p-2 sm:p-4 gap-1 sm:gap-2 shadow-sm animate-fade-in">
                                               <IconVideoOff className="w-6 h-6 sm:w-8 sm:h-8 text-blue-300 opacity-50" />
                                               <p className="text-[10px] sm:text-sm font-bold text-slate-500 leading-tight">{foundLesson.title}</p>
                                               {foundLesson.description && <p className="text-[9px] sm:text-[11px] text-gray-400 leading-snug">{foundLesson.description}</p>}
@@ -257,7 +261,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                                       <button
                                           key={eventIdx}
                                           onClick={() => onNavigateToClass(subject?.id || '', foundLesson?.category)}
-                                          className={`w-full text-center rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all flex flex-col h-32 sm:h-48 overflow-hidden animate-fade-in ${getSubjectColor(event.subjectId)}`}
+                                          className={`w-full h-full text-center rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all flex flex-col overflow-hidden animate-fade-in ${getSubjectColor(event.subjectId)}`}
                                       >
                                           <div className="text-white w-full h-full flex flex-col">
                                               <div className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 gap-0.5 sm:gap-1">

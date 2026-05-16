@@ -174,15 +174,15 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto h-full flex flex-col">
-      <div className="flex flex-row justify-between items-center mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
-        <h2 className="text-base sm:text-xl lg:text-2xl font-bold text-slate-800 whitespace-nowrap mr-4 flex items-center gap-2">
-          Cronograma 5° Período <span className="text-xs sm:text-sm font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Semana {Math.ceil((((currentWeekStart.getTime() - SEMESTER_START.getTime()) / 86400000) + SEMESTER_START.getDay() + 1) / 7)}</span>
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 gap-3">
+        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 flex items-center justify-center gap-2 w-full sm:w-auto">
+          Cronograma 5° Período
         </h2>
-        <div className="flex items-center gap-1 sm:gap-2">
-           <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, -1))} disabled={currentWeekStart <= getWeekStart(SEMESTER_START)} className="p-1 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 rotate-90" /></button>
-           <div className="px-1 sm:px-4 font-medium text-slate-700 w-24 sm:w-32 text-center text-xs sm:text-sm whitespace-nowrap">{currentWeekStart.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</div>
-           <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, 1))} disabled={currentWeekStart >= getWeekStart(SEMESTER_END)} className="p-1 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 -rotate-90" /></button>
-           <button onClick={() => setCurrentDate(new Date())} className="ml-1 sm:ml-2 px-2 py-1 sm:px-3 sm:py-1.5 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:bg-gray-50 flex-shrink-0">Hoje</button>
+        <div className="flex items-center justify-center gap-1 sm:gap-2 w-full sm:w-auto">
+           <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, -1))} disabled={currentWeekStart <= getWeekStart(SEMESTER_START)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 rotate-90" /></button>
+           <div className="px-2 sm:px-4 font-medium text-slate-700 min-w-[80px] sm:w-32 text-center text-xs sm:text-sm whitespace-nowrap">Semana {Math.ceil((((currentWeekStart.getTime() - SEMESTER_START.getTime()) / 86400000) + SEMESTER_START.getDay() + 1) / 7)}</div>
+           <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, 1))} disabled={currentWeekStart >= getWeekStart(SEMESTER_END)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 -rotate-90" /></button>
+           <button onClick={() => setCurrentDate(new Date())} className="ml-2 px-3 py-1.5 sm:px-3 sm:py-1.5 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:bg-gray-50 flex-shrink-0">Hoje</button>
         </div>
       </div>
 

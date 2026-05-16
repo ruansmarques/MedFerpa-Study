@@ -99,7 +99,6 @@ const Register: React.FC = () => {
               id="ra"
               type="text"
               inputMode="numeric"
-              pattern="[0-9]*"
               value={ra}
               onChange={handleRaChange}
               disabled={loading}

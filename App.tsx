@@ -420,7 +420,7 @@ const App: React.FC = () => {
   const showSidebar = currentUser && currentView !== 'admin' && currentView !== 'exercises';
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-[100dvh] bg-gray-50">
       {/* Renderiza Sidebar apenas se as condições forem atendidas */}
       {showSidebar && (
         <>
@@ -446,7 +446,7 @@ const App: React.FC = () => {
       )}
       
       {/* Ajusta a margem e padding baseado na presença da Sidebar */}
-      <main className={`flex-1 min-h-screen transition-all duration-300 w-full ${showSidebar ? 'pt-16 lg:pt-0 lg:ml-64 lg:w-auto' : ''} overflow-x-hidden relative`}>
+      <main className={`flex-1 min-h-[100dvh] transition-all duration-300 w-full ${showSidebar ? 'pt-16 lg:pt-0 lg:ml-64 lg:w-auto' : ''} overflow-x-hidden relative`}>
         {renderContent()}
       </main>
     </div>

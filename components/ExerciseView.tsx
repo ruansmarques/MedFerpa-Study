@@ -264,7 +264,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     const currentQuestion = questions[currentQuestionIndex];
     
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+      <div className="min-h-[100dvh] bg-gray-50 flex flex-col font-sans">
         <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => setResolutionStarted(false)} className="text-gray-500 hover:text-gray-800 transition-colors">
@@ -543,7 +543,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                   <select 
                     value={selectedSubjectId}
                     onChange={(e) => setSelectedSubjectId(e.target.value)}
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-base sm:text-sm"
                   >
                     <option value="">Selecione uma disciplina...</option>
                     {SUBJECTS.filter(s => !selectedPeriod || s.period === selectedPeriod).map(s => (
@@ -557,7 +557,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                     <select 
                       value={selectedLessonId}
                       onChange={(e) => setSelectedLessonId(e.target.value)}
-                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-base sm:text-sm"
                     >
                       <option value="">Todas as aulas (Geral)</option>
                       {subjectLessons.map(l => (
@@ -618,7 +618,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                   type="number" 
                   value={quantity} 
                   onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="w-full text-center p-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
+                  className="w-full text-center p-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-base sm:text-sm font-medium"
                 />
                 <button onClick={() => setQuantity(quantity + 1)} className="p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 text-gray-600 font-bold">+</button>
               </div>

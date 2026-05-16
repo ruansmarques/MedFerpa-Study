@@ -240,7 +240,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   };
 
   if (!isAuthenticated) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-slate-900 flex items-center justify-center p-4">
       <form onSubmit={handleLogin} className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full">
         <h1 className="text-2xl font-black mb-6 text-center">Admin Access</h1>
         <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Access Key" className="w-full p-4 border rounded-xl mb-4 text-center tracking-widest outline-none focus:ring-2 ring-blue-500" />

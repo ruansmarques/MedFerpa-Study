@@ -124,7 +124,7 @@ const Register: React.FC = () => {
 
         <div className="mt-8 text-center">
            <button onClick={() => window.location.href = '/'} className="text-sm text-gray-500 underline hover:text-gray-900 transition-colors">
-              Voltar ao Início
+              Fazer login
            </button>
         </div>
       </div>

@@ -140,11 +140,9 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
   const N2_EXAM_SCHEDULE: Record<string, ScheduleEvent[]> = {
     '2026-06-08': [{ dayOfWeek: 1, startTime: "15:40", endTime: "17:00", subjectId: 'anat-patol', slot: "1", defaultTitle: 'Avaliação N2' }],
-    '2026-06-09': [{ dayOfWeek: 2, startTime: "10:30", endTime: "12:00", subjectId: 'semio-sist', slot: "1", defaultTitle: 'Avaliação N2' }],
-    '2026-06-10': [
-      { dayOfWeek: 3, startTime: "11:10", endTime: "12:10", subjectId: 'pna', slot: "1", defaultTitle: 'Avaliação N2' },
-      { dayOfWeek: 3, startTime: "15:10", endTime: "16:30", subjectId: 'farma-med', slot: "2", defaultTitle: 'Avaliação N2' }
-    ],
+    '2026-06-09': [{ dayOfWeek: 2, startTime: "14:00", endTime: "15:20", subjectId: 'farma-med', slot: "1", defaultTitle: 'Avaliação N2' }],
+    '2026-06-10': [{ dayOfWeek: 3, startTime: "11:30", endTime: "13:00", subjectId: 'semio-sist', slot: "1", defaultTitle: 'Avaliação N2' }],
+    '2026-06-11': [{ dayOfWeek: 4, startTime: "10:30", endTime: "11:30", subjectId: 'pna', slot: "1", defaultTitle: 'Avaliação N2' }],
     '2026-06-12': [{ dayOfWeek: 5, startTime: "13:00", endTime: "14:00", subjectId: 'mbe', slot: "1", defaultTitle: 'Avaliação N2' }]
   };
 
@@ -155,7 +153,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     const isoDate = formatDateToISO(day);
     const fullDayEvent = FULL_DAY_EVENTS[isoDate];
     const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
-    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21' || isoDate === '2026-06-11';
+    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21';
 
     if (!isWithinSemester || isBlankDay || !fullDayEvent) {
       if (currentSegment) {

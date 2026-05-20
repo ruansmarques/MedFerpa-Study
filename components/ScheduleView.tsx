@@ -12,6 +12,7 @@ interface ScheduleEvent {
   endTime: string;
   subjectId: string;
   slot: string; // "1", "2" or "3"
+  defaultTitle?: string;
 }
 
 const SCHEDULE_TEMPLATE: ScheduleEvent[] = [
@@ -135,11 +136,16 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-04-24': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-05-01': { title: 'Dia não letivo', description: 'Dia do Trabalhador' },
     '2026-05-22': { title: 'Dia não letivo', description: 'Aniversário de Fernandópolis' },
-    '2026-06-08': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
-    '2026-06-09': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
-    '2026-06-10': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
-    '2026-06-11': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
-    '2026-06-12': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+  };
+
+  const N2_EXAM_SCHEDULE: Record<string, ScheduleEvent[]> = {
+    '2026-06-08': [{ dayOfWeek: 1, startTime: "15:40", endTime: "17:00", subjectId: 'anat-patol', slot: "1", defaultTitle: 'Avaliação N2' }],
+    '2026-06-09': [{ dayOfWeek: 2, startTime: "10:30", endTime: "12:00", subjectId: 'semio-sist', slot: "1", defaultTitle: 'Avaliação N2' }],
+    '2026-06-10': [
+      { dayOfWeek: 3, startTime: "11:10", endTime: "12:10", subjectId: 'pna', slot: "1", defaultTitle: 'Avaliação N2' },
+      { dayOfWeek: 3, startTime: "15:10", endTime: "16:30", subjectId: 'farma-med', slot: "2", defaultTitle: 'Avaliação N2' }
+    ],
+    '2026-06-12': [{ dayOfWeek: 5, startTime: "13:00", endTime: "14:00", subjectId: 'mbe', slot: "1", defaultTitle: 'Avaliação N2' }]
   };
 
   const segments: any[] = [];
@@ -149,7 +155,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     const isoDate = formatDateToISO(day);
     const fullDayEvent = FULL_DAY_EVENTS[isoDate];
     const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
-    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21';
+    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21' || isoDate === '2026-06-11';
 
     if (!isWithinSemester || isBlankDay || !fullDayEvent) {
       if (currentSegment) {
@@ -226,13 +232,19 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
                   // Normal day
                   const { dayIndex, isWithinSemester, isBlankDay, isoDate } = segment;
-                  const events = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === dayIndex + 1);
+                  let events = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === dayIndex + 1);
+                  let minRows = 3;
+
+                  if (N2_EXAM_SCHEDULE[isoDate]) {
+                    events = N2_EXAM_SCHEDULE[isoDate];
+                    minRows = events.length;
+                  }
 
                   return (
                       <div 
                           key={`normal-${idx}`} 
                           className="w-full p-1 sm:p-2 grid gap-1 sm:gap-2 col-span-1 h-full min-h-[400px]"
-                          style={{ gridTemplateRows: `repeat(${Math.max(3, events.length)}, minmax(0, 1fr))` }}
+                          style={{ gridTemplateRows: `repeat(${Math.max(minRows, events.length)}, minmax(0, 1fr))` }}
                       >
                           {isWithinSemester ? (
                               isBlankDay ? (
@@ -271,7 +283,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                                               <div className="w-10/12 mx-auto border-t border-white/20"></div>
                                               <div className="flex-1 flex items-center justify-center p-1 sm:p-2 bg-black/10">
                                                   <p className="text-[9px] sm:text-xs leading-snug font-medium text-white/90 line-clamp-3">
-                                                      {foundLesson ? foundLesson.title : "Conteúdo a definir"}
+                                                      {foundLesson ? foundLesson.title : (event.defaultTitle || "Conteúdo a definir")}
                                                   </p>
                                               </div>
                                           </div>

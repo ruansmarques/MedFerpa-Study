@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { db } from '../firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { supabase } from '../supabase';
 
 const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -38,16 +37,24 @@ const Register: React.FC = () => {
 
     try {
       // Check if user already exists
-      const userRef = doc(db, 'users', ra);
-      const userSnap = await getDoc(userRef);
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('ra')
+        .eq('ra', ra)
+        .limit(1);
 
-      if (userSnap.exists()) {
+      if (checkError) {
+         throw checkError;
+      }
+
+      if (existingUser && existingUser.length > 0) {
         setMessage({ type: 'error', text: `Já existe um usuário cadastrado com o RA ${ra}.` });
         setLoading(false);
         return;
       }
 
-      await setDoc(userRef, {
+      const { error: insertError } = await supabase.from('users').insert({
+        id: crypto.randomUUID(),
         name: name.trim(),
         ra: ra,
         totalXP: 0,
@@ -55,6 +62,10 @@ const Register: React.FC = () => {
         listProgress: {},
         exerciseProgress: {}
       });
+
+      if (insertError) {
+          throw insertError;
+      }
 
       setMessage({ type: 'success', text: 'Usuário cadastrado com sucesso!' });
       setName('');

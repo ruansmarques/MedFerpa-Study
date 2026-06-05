@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
+import { supabase } from '../supabase';
 import { User } from '../types';
 
 interface LoginProps {
@@ -11,47 +10,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [ra, setRa] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleRestore = async () => {
-    try {
-      setLoading(true);
-      const users = [
-        { name: "Amanda Rodrigues", ra: "24151424-9" },
-        { name: "Ana Clara Cacciari", ra: "24149473-1" },
-        { name: "Ana Júlia Bonnaneti", ra: "24151346-4" },
-        { name: "Angelo Noventa", ra: "24151426-4" },
-        { name: "Eduardo", ra: "24151048-6" },
-        { name: "Emanuel Schwamback", ra: "24151429-8" },
-        { name: "Geovanna Carvalho", ra: "24151586-5" },
-        { name: "Karine Lobo", ra: "25154540-6" },
-        { name: "Kauã Novaes ", ra: "24151587-3" },
-        { name: "Ruan Marques", ra: "24151433-0" }
-      ];
-
-      for (const u of users) {
-        await setDoc(doc(db, "users", u.ra), {
-          name: u.name,
-          ra: u.ra,
-          totalXP: 0,
-          completedLessons: [],
-          listProgress: {},
-          exerciseProgress: {}
-        });
-      }
-
-      await setDoc(doc(db, "admins", "Ruan"), {
-        accessKey: "batdoc"
-      });
-
-      alert("Banco de dados restaurado (Usuários e Admin).");
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao restaurar: " + err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   const formatRA = (value: string) => {
     const digits = value.replace(/\D/g, '');
@@ -74,24 +32,28 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       if (ra.length === 10) {
         setLoading(true);
         try {
-          const usersRef = collection(db, "users");
-          // Busca exata pelo RA (string) na sintaxe modular
-          const q = query(usersRef, where("ra", "==", ra));
-          const querySnapshot = await getDocs(q);
+          const { data, error: supaError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('ra', ra)
+            .limit(1);
 
-          if (!querySnapshot.empty) {
+          if (supaError) {
+             throw supaError;
+          }
+
+          if (data && data.length > 0) {
             // Usuário encontrado
-            const userDoc = querySnapshot.docs[0];
-            const data = userDoc.data();
+            const userDoc = data[0];
             
             // Tratamento de segurança:
             const userData: User = {
-              ra: data.ra,
-              name: data.name,
-              completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
-              avatarColor: data.avatarColor || 'bg-blue-600',
-              totalXP: typeof data.totalXP === 'number' ? data.totalXP : parseInt(data.totalXP) || 0,
-              exerciseProgress: data.exerciseProgress || {} 
+              ra: userDoc.ra,
+              name: userDoc.name,
+              completedLessons: Array.isArray(userDoc.completedLessons) ? userDoc.completedLessons : [],
+              avatarColor: userDoc.avatarColor || 'bg-blue-600',
+              totalXP: typeof userDoc.totalXP === 'number' ? userDoc.totalXP : parseInt(userDoc.totalXP) || 0,
+              exerciseProgress: userDoc.exerciseProgress || {} 
             };
             
             onLogin(userData);

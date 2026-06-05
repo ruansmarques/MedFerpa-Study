@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SUBJECTS } from '../constants';
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { supabase } from '../supabase';
 import { Lesson } from '../types';
 import { IconChevronDown, IconVideoOff } from './Icons';
 
@@ -56,12 +55,15 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "lessons"));
+        const { data: snapshot, error } = await supabase.from('lessons').select('*');
+        if (error) {
+           throw error;
+        }
+
         const fetched: Lesson[] = [];
-        snapshot.forEach((doc) => {
-          const d = doc.data();
+        (snapshot || []).forEach((d: any) => {
           fetched.push({
-            id: doc.id,
+            id: d.id,
             subjectId: d.subjectId,
             title: d.title,
             date: d.date,

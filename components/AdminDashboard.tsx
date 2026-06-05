@@ -1,9 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
-import { db, storage } from '../firebase';
-import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { supabase } from '../supabase';
 import { IconCheck, IconX, IconEdit, IconPresentation, IconBook } from './Icons';
 import { Lesson } from '../types';
 
@@ -58,10 +56,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   const fetchLessons = async () => {
     try {
-      const q = query(collection(db, "lessons"));
-      const snap = await getDocs(q);
-      const list: Lesson[] = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() } as Lesson));
+      const { data: snap, error } = await supabase.from('lessons').select('*');
+      if (error) throw error;
+      
+      const list: Lesson[] = (snap || []).map((d: any) => ({ ...d }));
       // Sort in memory to avoid needing Firestore index
       list.sort((a, b) => {
           const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -78,9 +76,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const q = query(collection(db, "admins"), where("accessKey", "==", password.trim()));
-    const snap = await getDocs(q);
-    if (!snap.empty) setIsAuthenticated(true); else alert("Senha incorreta");
+    const { data, error } = await supabase.from('admins').select('*').eq('accessKey', password.trim());
+    if (!error && data && data.length > 0) setIsAuthenticated(true); 
+    else alert("Senha incorreta");
   };
 
 
@@ -123,7 +121,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     if (window.confirm("Deseja realmente excluir este registro?")) {
         setLoading(true);
         try {
-            await deleteDoc(doc(db, "lessons", id));
+            const { error } = await supabase.from('lessons').delete().eq('id', id);
+            if (error) throw error;
             fetchLessons();
         } catch (e: any) {
             alert("Erro ao excluir: " + e.message);
@@ -155,15 +154,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     try {
       const extension = file.name.split('.').pop();
       const uniqueFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${extension}`;
-      const storageRef = ref(storage, `uploads/${type}s/${uniqueFileName}`);
       
-      const snapshot = await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      const { data, error } = await supabase.storage
+        .from('materials')
+        .upload(`uploads/${type}s/${uniqueFileName}`, file);
+        
+      if (error) throw error;
+
+      const { data: urlData } = supabase.storage
+        .from('materials')
+        .getPublicUrl(`uploads/${type}s/${uniqueFileName}`);
 
       if (type === 'slide') {
-        setSlideUrlInput(downloadURL);
+        setSlideUrlInput(urlData.publicUrl);
       } else {
-        setSummaryUrlInput(downloadURL);
+        setSummaryUrlInput(urlData.publicUrl);
       }
     } catch (err: any) {
       alert("Erro ao fazer upload: " + err.message);
@@ -178,9 +183,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       
       setLoading(true);
       try {
-          const batch = writeBatch(db);
-          selectedLessonIds.forEach(id => {
-              const docRef = doc(db, "lessons", id);
+          const promises = selectedLessonIds.map(id => {
               let updatePayload: any = {};
               if (action === 'continuation-true') updatePayload.isContinuation = true;
               if (action === 'continuation-false') updatePayload.isContinuation = false;
@@ -193,9 +196,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               if (action === 'cat-imuno') updatePayload.category = 'Imunologia';
               if (action === 'cat-patogeral') updatePayload.category = 'Patologia Geral';
               
-              batch.update(docRef, updatePayload);
+              return supabase.from('lessons').update(updatePayload).eq('id', id);
           });
-          await batch.commit();
+          
+          await Promise.all(promises);
+          
           setSuccessMsg("Edição em massa concluída!");
           fetchLessons();
           setSelectedLessonIds([]);
@@ -226,14 +231,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       };
 
       if (editingId) {
-        await updateDoc(doc(db, "lessons", editingId), payload);
+        const { error } = await supabase.from('lessons').update(payload).eq('id', editingId);
+        if (error) throw error;
       } else {
+        payload.id = crypto.randomUUID();
         payload.createdAt = new Date().toISOString();
-        await addDoc(collection(db, "lessons"), payload);
+        const { error } = await supabase.from('lessons').insert(payload);
+        if (error) throw error;
       }
       setSuccessMsg("Salvo com sucesso!");
       fetchLessons();
       clearForm();
+    } catch(err: any) {
+        alert("Erro: " + err.message);
     } finally { setLoading(false); }
   };
 

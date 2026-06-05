@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
 import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
-import { db, storage } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
-import { ref, getBlob } from 'firebase/storage';
+import { supabase } from '../supabase';
 
 interface ClassListProps {
   currentUser: User;
@@ -54,12 +52,13 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     const fetchLessons = async () => {
       setLoading(true);
       try {
-        const snap = await getDocs(collection(db, "lessons"));
-        const lessons: Lesson[] = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          lessons.push({ id: doc.id, ...d } as Lesson);
-        });
+        const { data, error } = await supabase.from('lessons').select('*');
+        if (error) {
+            throw error;
+        }
+        
+        const lessons = (data || []).map((d: any) => ({ ...d } as Lesson));
+        
         console.log("Fetched lessons:", lessons.length);
         if (lessons.length > 0) { console.log(lessons[0]); }
         setDbLessons(lessons);

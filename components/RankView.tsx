@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { supabase } from '../supabase';
 import { User } from '../types';
 
 interface RankedUser extends User {
@@ -34,14 +33,19 @@ const RankView: React.FC<RankViewProps> = ({ currentUser, onToggleVisibility }) 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Ordena diretamente pelo XP Total no banco
-        const q = query(collection(db, "users"), orderBy("totalXP", "desc"));
-        const querySnapshot = await getDocs(q);
+        const { data: users, error } = await supabase
+          .from('users')
+          .select('*')
+          .order('totalXP', { ascending: false });
+
+        if (error) {
+            throw error;
+        }
         
         const usersList: RankedUser[] = [];
         
-        querySnapshot.forEach((doc) => {
-          const data = doc.data() as User;
+        (users || []).forEach((doc: any) => {
+          const data = doc as User;
           
           // Filter out users who have opted out of the rank
           if (data.isRankVisible === false) return;

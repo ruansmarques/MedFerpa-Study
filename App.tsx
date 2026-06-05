@@ -11,9 +11,7 @@ import { ScheduleView } from './components/ScheduleView';
 import AdminDashboard from './components/AdminDashboard';
 import { User, ViewState, LevelProgress } from './types';
 import { IconMenu } from './components/Icons';
-import { db, storage } from './firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
+import { supabase } from './supabase';
 
 const App: React.FC = () => {
   // Inicializa o estado buscando do LocalStorage para persistir sessão no F5
@@ -26,7 +24,7 @@ const App: React.FC = () => {
           return {
             ...savedUser,
             completedLessons: Array.isArray(savedUser.completedLessons) ? savedUser.completedLessons : [],
-            totalXP: typeof savedUser.totalXP === 'number' ? savedUser.totalXP : parseInt(savedUser.totalXP) || 0,
+            totalXP: typeof savedUser.totalXP === 'number' ? savedUser.totalXP : parseInt(savedUser.totalXP as any) || 0,
             exerciseProgress: savedUser.exerciseProgress || {}
           };
         }
@@ -38,64 +36,68 @@ const App: React.FC = () => {
     }
   });
 
-  // --- REAL-TIME SYNC: Listen for user changes in Firestore ---
+  // --- REAL-TIME SYNC: Listen for user changes in Supabase ---
   useEffect(() => {
     if (!currentUser?.ra) return;
 
     // Set up a real-time listener for the current user's document
-    const unsubscribe = onSnapshot(doc(db, "users", currentUser.ra), (docSnap) => {
-      if (docSnap.exists()) {
-        const userData = docSnap.data() as User;
-        
-        // Only update state if there are actual changes to avoid loops
-        // We compare key fields that might change from other devices
-        setCurrentUser(prevUser => {
-          const safeUserData: User = {
-            ...userData,
-            completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
-            totalXP: typeof userData.totalXP === 'number' ? userData.totalXP : parseInt(userData.totalXP) || 0,
-            exerciseProgress: userData.exerciseProgress || {}
-          };
+    const userChannel = supabase.channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'users',
+          filter: `ra=eq.${currentUser.ra}`
+        },
+        (payload) => {
+          const userData = payload.new as User;
           
-          if (!prevUser) return safeUserData;
-          
-          // Check if completedLessons changed (most common sync issue)
-          const prevLessonsArr = Array.isArray(prevUser.completedLessons) ? [...prevUser.completedLessons].sort() : [];
-          const newLessonsArr = [...safeUserData.completedLessons].sort();
-          const prevLessons = prevLessonsArr.join(',');
-          const newLessons = newLessonsArr.join(',');
-          
-          // Check if totalXP changed
-          const prevXP = prevUser.totalXP || 0;
-          const newXP = safeUserData.totalXP;
-
-          // Check if exerciseProgress changed
-          // Simple check: compare number of keys and total XP
-          const prevExKeys = Object.keys(prevUser.exerciseProgress || {}).join(',');
-          const newExKeys = Object.keys(safeUserData.exerciseProgress || {}).join(',');
-          
-          let prevExXP = 0;
-          Object.values(prevUser.exerciseProgress || {}).forEach(p => prevExXP += (p.xp || 0));
-          
-          let newExXP = 0;
-          Object.values(safeUserData.exerciseProgress || {}).forEach(p => newExXP += (p.xp || 0));
-
-          if (prevLessons !== newLessons || prevXP !== newXP || prevExKeys !== newExKeys || prevExXP !== newExXP) {
-            console.log("Syncing user data from Firestore...");
+          setCurrentUser(prevUser => {
+            const safeUserData: User = {
+              ...userData,
+              completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
+              totalXP: typeof userData.totalXP === 'number' ? userData.totalXP : parseInt(userData.totalXP as any) || 0,
+              exerciseProgress: userData.exerciseProgress || {}
+            };
             
-            // Update local storage to keep it in sync
-            return safeUserData;
-          }
-          
-          return prevUser;
-        });
-      }
-    }, (error) => {
-      console.error("Error listening to user updates:", error);
-    });
+            if (!prevUser) return safeUserData;
+            
+            // Check if completedLessons changed (most common sync issue)
+            const prevLessonsArr = Array.isArray(prevUser.completedLessons) ? [...prevUser.completedLessons].sort() : [];
+            const newLessonsArr = [...safeUserData.completedLessons].sort();
+            const prevLessons = prevLessonsArr.join(',');
+            const newLessons = newLessonsArr.join(',');
+            
+            // Check if totalXP changed
+            const prevXP = prevUser.totalXP || 0;
+            const newXP = safeUserData.totalXP;
+
+            // Check if exerciseProgress changed
+            const prevExKeys = Object.keys(prevUser.exerciseProgress || {}).join(',');
+            const newExKeys = Object.keys(safeUserData.exerciseProgress || {}).join(',');
+            
+            let prevExXP = 0;
+            Object.values(prevUser.exerciseProgress || {}).forEach(p => prevExXP += (p.xp || 0));
+            
+            let newExXP = 0;
+            Object.values(safeUserData.exerciseProgress || {}).forEach(p => newExXP += (p.xp || 0));
+
+            if (prevLessons !== newLessons || prevXP !== newXP || prevExKeys !== newExKeys || prevExXP !== newExXP) {
+              console.log("Syncing user data from Supabase...");
+              return safeUserData;
+            }
+            
+            return prevUser;
+          });
+        }
+      )
+      .subscribe();
 
     // Cleanup subscription on unmount or user change
-    return () => unsubscribe();
+    return () => {
+      supabase.removeChannel(userChannel);
+    };
   }, [currentUser?.ra]);
 
   const [currentView, setCurrentView] = useState<ViewState>(() => {
@@ -190,8 +192,7 @@ const App: React.FC = () => {
         setCurrentUser(updatedUser);
 
         try {
-          const userRef = doc(db, "users", currentUser.ra);
-          await updateDoc(userRef, { totalXP: calculatedXP });
+          await supabase.from("users").update({ totalXP: calculatedXP }).eq('ra', currentUser.ra);
         } catch (error) {
           console.error("Erro ao sincronizar XP:", error);
         }
@@ -199,8 +200,6 @@ const App: React.FC = () => {
     };
 
     syncXP();
-    // Executa apenas quando completedLessons length muda ou referência do exerciseProgress muda
-    // Removido JSON.stringify para evitar erro de referência circular e melhorar performance
   }, [currentUser?.completedLessons?.length, currentUser?.exerciseProgress, currentUser?.ra]);
 
 
@@ -238,10 +237,9 @@ const App: React.FC = () => {
     const updatedUser = { ...currentUser, totalXP: finalXP };
     setCurrentUser(updatedUser);
 
-    // Atualiza Firestore
+    // Atualiza Supabase
     try {
-      const userRef = doc(db, "users", currentUser.ra);
-      await updateDoc(userRef, { totalXP: finalXP });
+      await supabase.from("users").update({ totalXP: finalXP }).eq('ra', currentUser.ra);
     } catch (error) {
       console.error("Erro ao atualizar XP no banco:", error);
     }
@@ -277,18 +275,10 @@ const App: React.FC = () => {
     setCurrentUser(updatedUser);
 
     try {
-      const userRef = doc(db, "users", currentUser.ra);
-      if (isCompleted) {
-        await updateDoc(userRef, { 
-            completedLessons: arrayRemove(lessonId),
-            totalXP: newTotalXP
-        });
-      } else {
-        await updateDoc(userRef, { 
-            completedLessons: arrayUnion(lessonId),
-            totalXP: newTotalXP
-        });
-      }
+      await supabase.from("users").update({ 
+        completedLessons: newCompletedList,
+        totalXP: newTotalXP
+      }).eq('ra', currentUser.ra);
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
     }
@@ -299,8 +289,7 @@ const App: React.FC = () => {
     const updatedUser = { ...currentUser, name: newName };
     setCurrentUser(updatedUser);
     try {
-      const userRef = doc(db, "users", currentUser.ra);
-      await updateDoc(userRef, { name: newName });
+      await supabase.from("users").update({ name: newName }).eq('ra', currentUser.ra);
     } catch (error) {
        console.error("Erro ao salvar nome:", error);
     }
@@ -311,13 +300,11 @@ const App: React.FC = () => {
       setCurrentUser(updatedUser);
       if (updatedUser && updatedUser.ra) {
         try {
-          const userRef = doc(db, "users", updatedUser.ra);
-          // Atualiza dados inteiros para garantir que os campos novos sejam criados/modificados no Firestore
-          await updateDoc(userRef, { 
+          await supabase.from("users").update({ 
             listProgress: updatedUser.listProgress || {},
             exerciseProgress: updatedUser.exerciseProgress || {},
             totalXP: updatedUser.totalXP || 0
-          });
+          }).eq('ra', updatedUser.ra);
         } catch (error) {
           console.error("Erro ao atualizar o usuário no banco:", error);
         }
@@ -346,8 +333,7 @@ const App: React.FC = () => {
     setCurrentUser(updatedUser);
 
     try {
-      const userRef = doc(db, "users", currentUser.ra);
-      await updateDoc(userRef, { isRankVisible: newVisibility });
+      await supabase.from("users").update({ isRankVisible: newVisibility }).eq('ra', currentUser.ra);
     } catch (error) {
       console.error("Erro ao atualizar visibilidade no rank:", error);
       // Revert on error? For now, just log.

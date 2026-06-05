@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { SUBJECTS } from '../constants';
 import { User, Exercise, QuestionList } from '../types';
 import { BookOpen, Brain, Target, CheckCircle, XCircle, Loader2, Filter, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
-import { db } from '../firebase';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { supabase } from '../supabase';
 
 interface ExerciseViewProps {
   currentUser: User;
@@ -104,20 +103,22 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
     const fetchLessonsAndLists = async () => {
       if (selectedSubjectId) {
         try {
-          const qLessons = query(collection(db, 'lessons'), where('subjectId', '==', selectedSubjectId));
-          const snapLessons = await getDocs(qLessons);
-          const lessonsList: any[] = [];
-          snapLessons.forEach(doc => {
-            lessonsList.push({ id: doc.id, ...doc.data() });
-          });
+          const { data: snapLessons, error: lessonsError } = await supabase
+            .from('lessons')
+            .select('*')
+            .eq('subjectId', selectedSubjectId);
+          if (lessonsError) throw lessonsError;
+
+          const lessonsList = (snapLessons || []).map((doc: any) => ({ ...doc }));
           setSubjectLessons(lessonsList);
 
-          const qLists = query(collection(db, 'question_lists'), where('subjectId', '==', selectedSubjectId));
-          const snapLists = await getDocs(qLists);
-          const listsArray: any[] = [];
-          snapLists.forEach(doc => {
-            listsArray.push({ id: doc.id, ...doc.data() });
-          });
+          const { data: snapLists, error: listsError } = await supabase
+            .from('question_lists')
+            .select('*')
+            .eq('subjectId', selectedSubjectId);
+          if (listsError) throw listsError;
+
+          const listsArray = (snapLists || []).map((doc: any) => ({ ...doc }));
           setAvailableLists(listsArray);
         } catch (error) {
           console.error("Erro ao buscar dados:", error);
@@ -173,14 +174,16 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
         
         // Try to fetch from database first
         if (activeTab === 'internas' && selectedSubjectId && !selectedLessonId) {
-          const q = query(
-            collection(db, 'questions'), 
-            where('subjectId', '==', selectedSubjectId),
-            limit(quantity)
-          );
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            dbQuestions.push({ id: doc.id, ...doc.data() });
+          const { data, error } = await supabase
+            .from('questions')
+            .select('*')
+            .eq('subjectId', selectedSubjectId)
+            .limit(quantity);
+            
+          if (error) throw error;
+          
+          (data || []).forEach((doc: any) => {
+            dbQuestions.push({ ...doc });
           });
         }
         

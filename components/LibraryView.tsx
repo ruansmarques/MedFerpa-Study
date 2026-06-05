@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { LIBRARY_BOOKS } from '../constants';
 import { IconBook } from './Icons';
-import { storage } from '../firebase';
-import { ref, getDownloadURL } from 'firebase/storage';
+import { supabase } from '../supabase';
 
 const LibraryView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,15 +30,25 @@ const LibraryView: React.FC = () => {
   const handleDownload = async (bookId: string, fileName: string) => {
     setLoadingBookId(bookId);
     
-    // Structure: materials/books/FileName.pdf
-    const storagePath = `materials/books/${fileName}`;
-
+    // Structure: materials/books/FileName.pdf -> Supabase structure
+    // We assume the bucket is 'materials' and the path is 'books/fileName'
+    
     try {
-      const url = await getDownloadURL(ref(storage, storagePath));
-      window.open(url, '_blank');
+      const { data, error } = await supabase
+        .storage
+        .from('materials')
+        .createSignedUrl(`books/${fileName}`, 60);
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
+      }
     } catch (error) {
       console.error("Erro ao buscar livro:", error);
-      alert(`Livro não encontrado no servidor.\nCaminho procurado: ${storagePath}\n\nVerifique se o arquivo foi enviado para o Storage.`);
+      alert(`Livro não encontrado no servidor.\nCaminho procurado: materials/books/${fileName}\n\nVerifique se o arquivo foi enviado para o Storage do Supabase.`);
     } finally {
       setLoadingBookId(null);
     }

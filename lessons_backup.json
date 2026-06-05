@@ -1,0 +1,3412 @@
+[
+  {
+    "id": "0MSpY1Q5DgtFRJlAWBuK",
+    "category": "Microbiologia",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:58:39.185Z",
+    "date": "2026-02-19",
+    "type": "class",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "title": "AULA 01 - Doenças Infeciosas da Pele",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929110564_ge3p5f.pdf?alt=media&token=fc1f341a-278a-4250-b8da-98f2a0a398b4"
+  },
+  {
+    "id": "0WtZ6GmpvoXgNrbqUnvy",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 09 - Parasitologia do Sistema Linfático",
+    "createdAt": "2026-05-28T12:07:55.698Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "updatedAt": "2026-05-28T12:08:47.876Z",
+    "date": "2026-05-28",
+    "type": "class",
+    "category": "Parasitologia",
+    "examPeriod": "N2",
+    "period": 5
+  },
+  {
+    "id": "1L3HAu3XwRdeQDqBP1N9",
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:10.425Z",
+    "type": "notice",
+    "date": "2026-02-17",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "Não haverá aula neste dia letivo.",
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-16T01:31:10.425Z",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Dia não letivo"
+  },
+  {
+    "id": "1OHML5TvoMfaKzMVgtnA",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929361502_ee1pwm.pdf?alt=media&token=bdf43016-de7a-41bc-92d4-285c8e06dc21",
+    "title": "AULA 09.1 - Eventos Atribuíveis à Vacinação (ESAVI)",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T11:02:51.625Z",
+    "type": "class",
+    "date": "2026-03-27"
+  },
+  {
+    "id": "28uJoCan3bzPY2VwlaVD",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula Prática em escolas",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-05-11",
+    "examPeriod": "Práticas",
+    "period": 5
+  },
+  {
+    "id": "2X7HdmTuazEVeMUICsXd",
+    "youtubeIds": [],
+    "title": "AULA 23 - Casos Dermatológicos (Sala)",
+    "slideUrl": null,
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-20T10:36:00.054Z",
+    "type": "class",
+    "date": "2026-04-27",
+    "category": "",
+    "examPeriod": "Práticas",
+    "period": 5
+  },
+  {
+    "id": "3H7oI2UgDUuE74SwhWBD",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929145015_fxw2f6.pdf?alt=media&token=920d65d8-20ec-4e1b-9739-5791cbb83abb",
+    "title": "AULA 04 - Infecções da Corrente sanguínea",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "Microbiologia",
+    "type": "class",
+    "date": "2026-03-26",
+    "updatedAt": "2026-05-16T10:59:08.794Z"
+  },
+  {
+    "id": "3PzqgGriM0f3qRw0V9ZT",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929330060_vq4i7f.pdf?alt=media&token=0cb74702-d093-401d-ac47-4f8376f3e876",
+    "title": "AULA 06 - Política Nacional de Atenção Integral à Saúde do Trabalhador",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:02:13.715Z",
+    "date": "2026-03-06",
+    "type": "class"
+  },
+  {
+    "id": "3VslzNSAfqFWM4BOnHII",
+    "isContinuation": false,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "title": "AULA 01 - Exame da pele, mucosas e fâneros",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "period": 5,
+    "examPeriod": "N2",
+    "date": "2026-02-09",
+    "type": "class",
+    "updatedAt": "2026-05-15T22:03:46.980Z"
+  },
+  {
+    "id": "4xtkm2TQE7cHO32RycTo",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 02 - Parasitoses do Coração / Pulmão",
+    "slideUrl": null,
+    "examPeriod": "Práticas",
+    "period": 5,
+    "category": "Parasitologia",
+    "type": "class",
+    "date": "2026-04-02",
+    "updatedAt": "2026-05-16T12:03:19.172Z"
+  },
+  {
+    "id": "5IJuMPWajTOnmISkRn7o",
+    "type": "class",
+    "date": "2026-04-09",
+    "updatedAt": "2026-05-16T10:57:48.557Z",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "Parasitologia",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929057500_jd780s.pdf?alt=media&token=113664fd-f28c-4e1e-b1b3-b37ad7988aa6",
+    "title": "AULA 07 - Parasitologia Intestinal",
+    "isContinuation": true,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z"
+  },
+  {
+    "id": "64LPLn6ZCnRgYVFmqutG",
+    "isContinuation": false,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929648699_ts7xt8.pdf?alt=media&token=d8965649-973a-47b7-a9b3-a3dcec8a1025",
+    "title": "AULA 06 - Diabetes Mellitus",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "",
+    "date": "2026-02-25",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:07:33.596Z"
+  },
+  {
+    "id": "6VWMOMV1BiDCo2ROVZt4",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928737918_5l0ykw.pdf?alt=media&token=6b6ce4a8-4644-4af0-a4db-1fbd0a47a836",
+    "title": "AULA 04 - Fármacos antidepressivos e Estabilizadores de humor",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:52:22.486Z",
+    "date": "2026-03-19",
+    "type": "class"
+  },
+  {
+    "id": "6XMONkl1GxZRneyIdGsj",
+    "date": "2026-03-27",
+    "type": "notice",
+    "updatedAt": "2026-05-16T01:31:09.686Z",
+    "period": 5,
+    "category": "",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula não ministrada",
+    "isContinuation": false,
+    "createdAt": "2026-05-16T01:31:09.686Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": "A aula prevista não foi ministrada.",
+    "targetSlots": [
+      "2"
+    ]
+  },
+  {
+    "id": "85haJELYsYu7PDJfsuQH",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Geral",
+    "type": "class",
+    "date": "2026-03-03",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 02 - Patologias do Sistema Nervoso Central"
+  },
+  {
+    "id": "87WHDOAek6zItNTLTOKl",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-24T13:28:35.631Z",
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 03 - Microbiologia",
+    "category": "Microbiologia",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-28T11:33:12.571Z",
+    "date": "2026-05-21",
+    "type": "class"
+  },
+  {
+    "id": "8DBUkELuXE00nmJ1dXmA",
+    "title": "AULA 13 - Patologia do Sistema urinário",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-19T12:36:10.210Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-19T12:36:10.210Z",
+    "type": "class",
+    "date": "2026-05-19",
+    "category": "Geral",
+    "period": 5,
+    "examPeriod": "N2"
+  },
+  {
+    "id": "8EsDQHC0dvvjT6Et6Pe0",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929613275_g7j7vi.pdf?alt=media&token=2ec89867-5db2-471c-ba01-38a38a098171",
+    "title": "AULA 04 - Sinais e sintomas das afecções do RN",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:06:58.811Z",
+    "date": "2026-02-20",
+    "type": "class"
+  },
+  {
+    "id": "8w6adliGleaYgqP6y6Kd",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-28T03:13:18.536Z",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Relatório de Artigo em Sala de aula",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-28T03:13:37.448Z",
+    "type": "class",
+    "date": "2026-05-29"
+  },
+  {
+    "id": "94cgs920whpMU0FJZPav",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929287444_zwd8j.pdf?alt=media&token=f8f4a4ed-ab93-4a31-bead-5d5a80b1188e",
+    "title": "AULA 05 - Política Nacional de Atenção Integral à Saúde do Idoso…",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "",
+    "date": "2026-03-02",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:01:31.849Z"
+  },
+  {
+    "id": "9MQRiIyCaRT5kpdS00vI",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "category": "",
+    "type": "class",
+    "date": "2026-05-29",
+    "updatedAt": "2026-05-20T11:00:28.496Z",
+    "isContinuation": true,
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-20T10:41:38.495Z",
+    "title": "AULA 37 - Ortopedia",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "9jT89TWgnerOQIC1yRYa",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "Microbiologia",
+    "type": "class",
+    "date": "2026-04-30",
+    "updatedAt": "2026-05-16T10:59:21.074Z",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929155443_o79n8.pdf?alt=media&token=c3e0609b-2298-4774-80d2-96af23a0d70d",
+    "title": "AULA 05 - Infecções do Sistema respiratório"
+  },
+  {
+    "id": "9vw70ud2BGA81PSRrWga",
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:10.816Z",
+    "type": "notice",
+    "date": "2026-02-16",
+    "description": "Não haverá aula neste dia letivo.",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-16T01:31:10.816Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Dia não letivo"
+  },
+  {
+    "id": "AJHR6mpdjyIVvsUU1xkv",
+    "updatedAt": "2026-05-20T10:59:44.866Z",
+    "date": "2026-05-20",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "title": "AULA 32 - Prática de Respiratório (Pôr do Sol)",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-20T10:29:55.603Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false
+  },
+  {
+    "id": "AOsmYRsWVsuQXj03PYxe",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Revisão de Pediatria",
+    "isContinuation": true,
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "date": "2026-04-10",
+    "type": "class",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "BommOpNjhlEhdOg38WPm",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "",
+    "date": "2026-05-21",
+    "type": "notice",
+    "updatedAt": "2026-05-21T16:25:38.822Z",
+    "isContinuation": false,
+    "createdAt": "2026-05-21T16:25:24.663Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": "Horário dispensado pelo professor.",
+    "targetSlots": [
+      "3"
+    ],
+    "title": "A aula prevista não foi ministrada",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "C12PrxcDIX1cb4nEPAFF",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-16T10:53:11.666Z",
+    "date": "2026-04-28",
+    "type": "class",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928785234_2upbmm.pdf?alt=media&token=18fe430b-cac0-4eee-8ba5-a8da637f6429",
+    "title": "AULA 08 - Anti-inflamatórios"
+  },
+  {
+    "id": "COmWw3PYcYmUacvElRZN",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928761912_9379mb.pdf?alt=media&token=e1c537a7-7687-45b8-8c7a-412141923b2f",
+    "title": "AULA 06 - IRSN (Inibidores da Recaptação da Serotonina e Norepinefrina)",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "",
+    "date": "2026-04-07",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:52:45.078Z"
+  },
+  {
+    "id": "CeJKoQFiS9OKdTsqPb7P",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula não ministrada",
+    "description": "A aula prevista não foi ministrada.",
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-16T01:31:09.464Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T01:31:09.464Z",
+    "type": "notice",
+    "date": "2026-04-27",
+    "category": "",
+    "period": 5
+  },
+  {
+    "id": "Cm1ReusJYedVlx2AWThq",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-20T10:31:30.943Z",
+    "date": "2026-05-18",
+    "type": "notice",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-19T12:34:50.767Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "Horário livre em Semiologia.",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "A aula prevista não foi ministrada",
+    "slideUrl": null
+  },
+  {
+    "id": "CmiQd22pqaxjdheBC27P",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "title": "AULA 01 - Patologias da Pele",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928849489_jrxfoj.pdf?alt=media&token=979321ed-b919-4dd1-acb2-bca6ad98054b",
+    "category": "Geral",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:54:14.083Z",
+    "date": "2026-02-24",
+    "type": "class"
+  },
+  {
+    "id": "CvqtglJT6LUoO06Nkeu3",
+    "updatedAt": "2026-05-16T11:00:38.889Z",
+    "type": "class",
+    "date": "2026-02-13",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929232053_4atmh7.pdf?alt=media&token=4696d4cb-acf8-4593-a770-1c454890c303",
+    "title": "AULA 01 - Política Nacional de Atenção Integral à Saúde da Criança…",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "isContinuation": false
+  },
+  {
+    "id": "DSjWkh1ZnlAORDEvELW9",
+    "date": "2026-03-09",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:08:34.192Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929708115_j78wbv.pdf?alt=media&token=06a251a9-d978-4590-ba4f-62ba5219cdce",
+    "title": "AULA 10 - Semiologia do Idoso",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ]
+  },
+  {
+    "id": "DXSoSX2HlHce4MFqYnZg",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Vista de Prova",
+    "isContinuation": false,
+    "createdAt": "2026-05-16T01:31:09.298Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": "Vista de prova disponível para os alunos.",
+    "targetSlots": [
+      "3"
+    ],
+    "date": "2026-04-28",
+    "type": "notice",
+    "updatedAt": "2026-05-16T01:31:09.298Z",
+    "period": 5,
+    "category": ""
+  },
+  {
+    "id": "DY9yc7jesTQJ4dFEQ4zH",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929557477_asm7sh.pdf?alt=media&token=fe550320-88a6-44b9-adfc-7a9306b9c497",
+    "title": "AULA 05 - Dermatologia das Lesões elementares",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "type": "class",
+    "date": "2026-02-23",
+    "updatedAt": "2026-05-16T11:06:03.244Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": ""
+  },
+  {
+    "id": "DlAmpQaneCX5Y5mgEjXv",
+    "date": "2026-05-21",
+    "type": "class",
+    "updatedAt": "2026-05-28T11:33:34.767Z",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "category": "Parasitologia",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 04 - Parasitoses Gastrointestinais II",
+    "isContinuation": true,
+    "createdAt": "2026-05-16T11:42:56.845Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ]
+  },
+  {
+    "id": "DvgZvxrkVi5z6Exdrw4d",
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:09.774Z",
+    "date": "2026-03-02",
+    "type": "notice",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-16T01:31:09.774Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": "A aula prevista não foi ministrada.",
+    "isContinuation": false,
+    "title": "Aula não ministrada",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "Elg2XZW9YAANyNPVuVUH",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 09.2 - Eventos Atribuíveis à Vacinação (ESAVI)",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-04-06",
+    "type": "class",
+    "period": 5,
+    "examPeriod": "N2"
+  },
+  {
+    "id": "F0XJFwTtnsNxzbjBW44k",
+    "updatedAt": "2026-05-20T10:36:58.988Z",
+    "date": "2026-05-15",
+    "type": "class",
+    "category": "",
+    "examPeriod": "Práticas",
+    "period": 5,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 30 - Casos Pediátricos (Sala)",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false
+  },
+  {
+    "id": "F6SHnRpx3yVCpKAlria7",
+    "category": "Geral",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:56:12.014Z",
+    "type": "class",
+    "date": "2026-05-12",
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "title": "AULA 12 - Patologia das Mamas",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928966873_tw4d4e.pdf?alt=media&token=ef92a7f8-19da-41e4-96fe-48c09d3629a7"
+  },
+  {
+    "id": "FfHm5kcrucjG2pWM7fQh",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929135481_2ft0rb.pdf?alt=media&token=90688534-fc3a-41a9-bc94-0d7ff493511b",
+    "title": "AULA 03 - Infecções articulares e dos ossos",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "date": "2026-03-19",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:58:59.069Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Microbiologia"
+  },
+  {
+    "id": "FibEiBmFjXWwRmAAN3PR",
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:10.263Z",
+    "date": "2026-02-17",
+    "type": "notice",
+    "createdAt": "2026-05-16T01:31:10.263Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": "Não haverá aula neste dia letivo.",
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Dia não letivo"
+  },
+  {
+    "id": "Fj8cmCUnaglZgHJQY9gb",
+    "category": "",
+    "examPeriod": "Práticas",
+    "period": 5,
+    "updatedAt": "2026-05-15T23:24:58.683Z",
+    "type": "class",
+    "date": "2026-05-06",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "AULA 26 - Prática de Endocrinologia (Pôr do Sol)",
+    "slideUrl": null
+  },
+  {
+    "id": "Fx4YWK7OnxnnqOJzQzud",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Relatório de Artigo em Sala de aula",
+    "isContinuation": true,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-28T03:13:49.235Z",
+    "type": "class",
+    "date": "2026-06-01",
+    "updatedAt": "2026-05-28T03:13:49.235Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": ""
+  },
+  {
+    "id": "GCGnA3o1BHzqSsjrc9Cl",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928800927_f9gsn.pdf?alt=media&token=56806086-0be1-4f1d-8757-fdd0b97a6fc6",
+    "title": "AULA 09 - Farmacologia dos Anti-microbianos",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T10:53:24.694Z",
+    "date": "2026-05-14",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2"
+  },
+  {
+    "id": "Gm89S4YcxR7qQQ6xuEfc",
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "isContinuation": false,
+    "title": "AULA 15 - Semiologia de Otorrinolaringologia",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929795552_d9thue.pdf?alt=media&token=a4b9c21a-1b14-4a50-968f-c48db841c516",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T11:09:59.752Z",
+    "type": "class",
+    "date": "2026-03-20"
+  },
+  {
+    "id": "HxksAzwaEbDUb3tyEJZM",
+    "title": "AULA 05 - ISRS (Inibidores Seletivos de Recaptação de Serotonina)",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-04-07",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "INOU6n6oTazDNDbUWiLO",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "category": "",
+    "date": "2026-05-27",
+    "type": "class",
+    "updatedAt": "2026-05-20T11:00:09.525Z",
+    "isContinuation": false,
+    "createdAt": "2026-05-20T10:38:36.107Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "youtubeIds": [],
+    "title": "AULA 35 - Cardiologia",
+    "slideUrl": null
+  },
+  {
+    "id": "IOtlWOp9ECeevyaHMAGS",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-04-08",
+    "period": 5,
+    "examPeriod": "N2",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Atividade Prática em Aula",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true
+  },
+  {
+    "id": "IU0XmC78wGHXWMmrkj5s",
+    "type": "class",
+    "date": "2026-03-30",
+    "updatedAt": "2026-05-16T11:03:00.481Z",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "",
+    "title": "AULA 09.2 - Eventos Atribuíveis à Vacinação (ESAVI)",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929375785_d6pbju.pdf?alt=media&token=b04460ba-3835-4a1f-beee-c0b6d240fe28",
+    "isContinuation": false,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z"
+  },
+  {
+    "id": "IrcdM7qgoomACxXD6imI",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-03-12",
+    "type": "class",
+    "period": 5,
+    "examPeriod": "N1",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 03 - Farmacologia da Insuficiência Cardíaca",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": true
+  },
+  {
+    "id": "Iuk33sTuZSkxsl2oG172",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "",
+    "type": "class",
+    "date": "2026-03-09",
+    "updatedAt": "2026-05-16T11:02:26.473Z",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929342341_d8skv9.pdf?alt=media&token=f661fc5e-2fc5-4ce6-b072-fe962faf2462",
+    "title": "AULA 07 - Programa Nacional de Imunização"
+  },
+  {
+    "id": "IyHJDBhXRNNTj2tkh7e4",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-28T12:10:26.756Z",
+    "type": "notice",
+    "date": "2026-05-25",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "AULA 34 - Dermatologia dispensada pelo professor.",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-28T12:10:26.756Z",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "A aula prevista não foi ministrada"
+  },
+  {
+    "id": "J7uKeQ48tsjZy2cFt8uA",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:09:49.056Z",
+    "type": "class",
+    "date": "2026-03-18",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929784890_d38de9.pdf?alt=media&token=e1992ebe-2d7a-4463-9ae2-0c8f23a0cd7e",
+    "title": "AULA 14 - Insuficiência Cardíaca Congestiva e Dor Torácica"
+  },
+  {
+    "id": "JEPqsX7rGRIYI4IDtQ56",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929839178_dso7xd.pdf?alt=media&token=23bc2999-c10c-4110-9902-400719d69dae",
+    "title": "AULA 21 - Distúrbios de movimento",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "type": "class",
+    "date": "2026-04-13",
+    "updatedAt": "2026-05-16T11:10:42.808Z"
+  },
+  {
+    "id": "KFQXP7nUIGErTNXuIN4a",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929165508_mnhbc.pdf?alt=media&token=c471a7f6-9549-44b9-8641-1f72dfe15167",
+    "title": "AULA 06 - Infecções do Sistema Genito urinario",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "Microbiologia",
+    "date": "2026-05-14",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:59:31.942Z"
+  },
+  {
+    "id": "L4I2lFrH2sCwEmmijncE",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929660887_mcthnl.pdf?alt=media&token=0fe6c0b7-120f-4d77-90f2-374c8f784fe6",
+    "title": "AULA 07 - Exame Clínico em Ortopedia",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T11:07:45.980Z",
+    "type": "class",
+    "date": "2026-02-27",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "L8Z8OKvrxhI82xRZhAuq",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929091114_cxrqfj.pdf?alt=media&token=b05c3588-5797-4971-8aa6-5e37edbf7ab2",
+    "title": "AULA 08 - Parasitologia do Sistema Genito urinario",
+    "category": "Parasitologia",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:58:15.290Z",
+    "date": "2026-05-14",
+    "type": "class"
+  },
+  {
+    "id": "LMcxgCRp6wyZa2zcrKlH",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 11 - Semiologia Endócrina",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-11"
+  },
+  {
+    "id": "LYtjNylYZQ9sLJmIAY4V",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": false,
+    "title": "AULA 07 - Inibidores Atipicos",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928771462_a8x8co.pdf?alt=media&token=b0160d1d-98e3-4ce8-8697-afd1e45ca7f1",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:52:54.954Z",
+    "date": "2026-04-09",
+    "type": "class"
+  },
+  {
+    "id": "LgF4LqHXcRcujOfvVNDy",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929260136_tjy8md.pdf?alt=media&token=a72ab670-fc75-4d5a-9b49-df4ebfde4eb8",
+    "title": "AULA 03 - Política Nacional de Atenção Integral à Saúde do Homem…",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:01:03.529Z",
+    "type": "class",
+    "date": "2026-02-23"
+  },
+  {
+    "id": "MNVQvqkBHipIksvIDIEa",
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:10.899Z",
+    "date": "2026-02-16",
+    "type": "notice",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-16T01:31:10.899Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": "Não haverá aula neste dia letivo.",
+    "isContinuation": false,
+    "title": "Dia não letivo",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "MpQjgzAnfucaJxMEacX1",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "title": "AULA 06 - Hepatoparasitose",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929047863_er86sl.pdf?alt=media&token=1227691e-5bec-4b74-8d74-9a07248c2898",
+    "category": "Parasitologia",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-16T10:57:32.074Z",
+    "date": "2026-03-26",
+    "type": "class"
+  },
+  {
+    "id": "MxuWe3EN0r6KSaRu2X78",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929270630_ma7j7r.pdf?alt=media&token=b10873f6-ef18-4621-852a-6eeaf42f560e",
+    "title": "AULA 04 - Política Nacional de Atenção Integral à Saúde da Mulher…",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "date": "2026-02-27",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:01:20.809Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": ""
+  },
+  {
+    "id": "N0sSU9tRZgkh6ab8c89A",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929767935_ox54tg.pdf?alt=media&token=a6bf279a-b29f-48c0-83af-676a6ba41f6f",
+    "title": "AULA 13.1 - Semiologia do Sistema Respiratório",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "type": "class",
+    "date": "2026-03-16",
+    "updatedAt": "2026-05-16T11:09:33.568Z",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": ""
+  },
+  {
+    "id": "N3snVUfCCOYbZKNUxnOC",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "title": "AULA 13.2 - Semiologia do Sistema Respiratório",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-30"
+  },
+  {
+    "id": "NL0X2bipv1BdEUgn5gQL",
+    "period": 5,
+    "examPeriod": "N1",
+    "type": "class",
+    "date": "2026-03-18",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "title": "AULA 04, 05, 06 - Bioestatística de população",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "NRtfP0OKsbPGRgzNXNnV",
+    "youtubeIds": [],
+    "title": "A aula prevista não foi ministrada",
+    "slideUrl": null,
+    "targetSlots": [
+      "2"
+    ],
+    "description": "Horário livre em Semiologia.",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-20T10:30:30.259Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-20T10:31:14.977Z",
+    "type": "notice",
+    "date": "2026-05-20",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5
+  },
+  {
+    "id": "NVzwA0LQddcoPgiWdOcJ",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929353302_kxrpzf.pdf?alt=media&token=85b43424-d81c-4cf5-838b-f6fd178768a2",
+    "title": "AULA 08 - Calendário Vacinal do PNI",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:02:36.873Z",
+    "type": "class",
+    "date": "2026-03-13"
+  },
+  {
+    "id": "O9dih25eoYDLuYspkCOy",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-03-26",
+    "type": "class",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 04 - Fármacos antidepressivos e Estabilizadores de humor"
+  },
+  {
+    "id": "PMGtjVlWNZBetEcGKN42",
+    "updatedAt": "2026-05-16T01:31:10.181Z",
+    "type": "notice",
+    "date": "2026-02-19",
+    "category": "",
+    "period": 5,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula não ministrada",
+    "description": "A aula prevista não foi ministrada.",
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-16T01:31:10.181Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "isContinuation": false
+  },
+  {
+    "id": "ParaL0jaPaJy7cie1BbZ",
+    "youtubeIds": [],
+    "title": "A aula prevista não foi ministrada",
+    "slideUrl": null,
+    "createdAt": "2026-05-20T10:42:05.597Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "description": "AULA 38 - Pediatria dispensada pelo professor.",
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": true,
+    "updatedAt": "2026-05-31T02:50:10.971Z",
+    "date": "2026-05-29",
+    "type": "notice",
+    "category": "",
+    "examPeriod": "Práticas",
+    "period": 5
+  },
+  {
+    "id": "QWnpIsKZJfqro1uMO6JX",
+    "title": "AULA 08 - Bioestatística - Hipóteses e Tipos de erros",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892516501_vqoil.pdf?alt=media&token=7d8d9784-4983-4b95-8f39-ae80a1d39f4f",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "date": "2026-04-01",
+    "type": "class",
+    "updatedAt": "2026-05-16T00:48:41.042Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": ""
+  },
+  {
+    "id": "QxeS9eXzwbQ70yvnW5ky",
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 03 - Farmacologia da Insuficiência Cardíaca",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-17"
+  },
+  {
+    "id": "RBjFACjeHFV07jfL48kK",
+    "category": "Parasitologia",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T10:56:54.253Z",
+    "date": "2026-02-26",
+    "type": "class",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929009156_gqckwt.pdf?alt=media&token=2924f0bf-d0ed-415c-b198-df663a898523",
+    "title": "AULA 03 - Neuroparasitoses"
+  },
+  {
+    "id": "RCHS0RImgRfXFgb5iya2",
+    "type": "class",
+    "date": "2026-05-13",
+    "updatedAt": "2026-05-16T00:31:10.449Z",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "",
+    "title": "AULA 10 - Prática de Uso do Bioestast (Laboratório)",
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778891464553_jqfr8a.pdf?alt=media&token=b71bd4ab-7e2d-4b0c-87e1-b88c0a7587b0",
+    "youtubeIds": [],
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "mbe",
+    "summaryUrl": null
+  },
+  {
+    "id": "RETh3Ge3tNaoJjhqDacy",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 01 - Doenças Infeciosas da Pele",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-02-26",
+    "category": "Microbiologia",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "RUjQ9EUDhC9I602Sp2lM",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 19 - Alterações corticais e Síndromes neurológicas",
+    "isContinuation": false,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "date": "2026-04-06",
+    "type": "class",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "N2"
+  },
+  {
+    "id": "SCbdU1NgeOUxlspXxaqc",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928927881_wbckza.pdf?alt=media&token=469ec291-f764-4b38-89cf-28105ccb60d7",
+    "title": "AULA 08 - Patologia do Estômago",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "date": "2026-04-28",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:55:32.486Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "Geral"
+  },
+  {
+    "id": "URAbgoHsXl44TVSgvgDq",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928882101_jgaq4v.pdf?alt=media&token=365e11f5-6f2f-4e45-ae04-6352fe9761ed",
+    "title": "AULA 04 - Patologia do Sistema Endócrino",
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T10:54:45.577Z",
+    "type": "class",
+    "date": "2026-03-10",
+    "category": "Geral",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "UTOCg6iTJy2wlSKUhZDk",
+    "title": "AULA 08 - Exame Clínico Vascular",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T11:07:55.580Z",
+    "date": "2026-03-04",
+    "type": "class",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "Utpk1X9G226B1GeHWhtk",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 08 - Anti-inflamatórios",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-05-12",
+    "type": "class"
+  },
+  {
+    "id": "VoW9DA6Ly5KRSGnwfhpD",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928859129_yp57iv.pdf?alt=media&token=2ec1b7a9-3465-46d7-b819-5e1ed31778d3",
+    "title": "AULA 02 - Patologias do Sistema Nervoso Central",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "date": "2026-02-24",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:54:23.122Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Geral"
+  },
+  {
+    "id": "WdfwpmCb5CbAW3FWbUnk",
+    "description": null,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "createdAt": "2026-05-27T21:00:00.487Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 02 - Patologias Gastrointestinais e Pulmonares",
+    "category": "Geral",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-27T21:00:00.486Z",
+    "type": "class",
+    "date": "2026-05-26"
+  },
+  {
+    "id": "Wwpbl06cTeL7FceQhc8H",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "Parasitologia",
+    "type": "class",
+    "date": "2026-02-12",
+    "updatedAt": "2026-05-16T10:56:35.646Z",
+    "isContinuation": false,
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928991142_yap57xm.pdf?alt=media&token=247143b9-3f5e-4952-8530-f2319325d0ac",
+    "title": "AULA 01 - Dermaparasitose da Leishmaniose"
+  },
+  {
+    "id": "X9UepCTQqkYVLwe1rR92",
+    "title": "Aula Prática em escolas",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "isContinuation": true,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "type": "class",
+    "date": "2026-05-08",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "Práticas"
+  },
+  {
+    "id": "XGvFrdB52cO4jydiKWoo",
+    "updatedAt": "2026-05-16T10:39:30.105Z",
+    "date": "2026-02-10",
+    "type": "class",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778927961329_06fcb6.pdf?alt=media&token=57e5c958-8416-4149-a189-ecd0b732d824",
+    "title": "AULA 01 - Fundamentos Farmacodinâmicos",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": false
+  },
+  {
+    "id": "XMwkY39gxlv9Rkylfjdc",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929125846_7jup46.pdf?alt=media&token=23ec54ea-8c6f-464f-bce4-a6e46ca97196",
+    "title": "AULA 02 - Infecção do Sistema Nervoso Central",
+    "category": "Microbiologia",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:58:49.342Z",
+    "type": "class",
+    "date": "2026-03-12"
+  },
+  {
+    "id": "XcwibWJWemAFYMqKZTiW",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-20T11:00:16.456Z",
+    "date": "2026-05-27",
+    "type": "class",
+    "createdAt": "2026-05-20T10:39:38.652Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "AULA 36 - Respiratório",
+    "slideUrl": null
+  },
+  {
+    "id": "XtxrNv7EMcepHFuKhPIv",
+    "date": "2026-03-17",
+    "type": "class",
+    "updatedAt": "2026-05-16T10:54:55.742Z",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "Geral",
+    "title": "AULA 05 - Patologia do Sistema Respiratório",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928890392_ioc6zs.pdf?alt=media&token=40a294e9-3668-49fa-95dd-160d67d88ddb",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": null,
+    "targetSlots": [
+      "1",
+      "2"
+    ]
+  },
+  {
+    "id": "XuaMTjaIpAKKbSSWIy57",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 05 - Infecções do Sistema respiratório",
+    "category": "Microbiologia",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-05-07"
+  },
+  {
+    "id": "Y3JgxDIwcAVZ6lsqccE3",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-03-05",
+    "type": "class",
+    "period": 5,
+    "examPeriod": "N1",
+    "title": "AULA 02 - Insuficiência cardíaca",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": true
+  },
+  {
+    "id": "YjzzXkE27Sfl6lxzngQI",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929806256_3b0kn.pdf?alt=media&token=4045c26e-da74-4fa0-8301-f68c6a11bbaa",
+    "title": "AULA 16 - Alteração dos níveis de consciência",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T11:10:10.688Z",
+    "type": "class",
+    "date": "2026-03-23"
+  },
+  {
+    "id": "Z1xVojJZk0DmvxcFJR9s",
+    "createdAt": "2026-05-19T14:12:55.993Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 09 - Farmacologia dos Anti-microbianos",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-19T14:12:55.993Z",
+    "date": "2026-05-19",
+    "type": "class"
+  },
+  {
+    "id": "ZFFgXIrO1naB3Oq7ze6T",
+    "category": "Geral",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-16T12:02:18.076Z",
+    "type": "class",
+    "date": "2026-03-24",
+    "description": null,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "PRÁTICA 01 - Carcinomas, Melanoma e AVC",
+    "slideUrl": null
+  },
+  {
+    "id": "Zv7XIHeoxiBmKCNklGT9",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "A aula prevista não foi ministrada.",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-16T01:31:09.380Z",
+    "isContinuation": false,
+    "title": "Aula não ministrada",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:09.380Z",
+    "type": "notice",
+    "date": "2026-04-29"
+  },
+  {
+    "id": "a3863sen4sDVd6Gj5Efe",
+    "youtubeIds": [],
+    "title": "AULA 12 - Pesquisa em Base de Dados",
+    "slideUrl": null,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-27T21:01:02.052Z",
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "isContinuation": false,
+    "updatedAt": "2026-05-27T21:01:18.456Z",
+    "type": "class",
+    "date": "2026-05-27",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5
+  },
+  {
+    "id": "a5bQbsQuf2Kon9ZZFRTx",
+    "category": "Geral",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:55:42.490Z",
+    "type": "class",
+    "date": "2026-05-05",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928938048_nejy6r.pdf?alt=media&token=941848f3-4006-4310-b127-c8d8c9c53f3a",
+    "title": "AULA 09 - Patologia do Intestino"
+  },
+  {
+    "id": "aAvUZo8NuzWG3xYo7bTV",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "isContinuation": true,
+    "title": "Aula Prática em escolas",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-05-04",
+    "type": "class"
+  },
+  {
+    "id": "b3Vm129dHHa1UFo4zVqe",
+    "isContinuation": false,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "youtubeIds": [],
+    "title": "AULA 25 - Prática de Neurologia (Simulação)",
+    "slideUrl": null,
+    "period": 5,
+    "examPeriod": "Práticas",
+    "category": "",
+    "type": "class",
+    "date": "2026-05-04",
+    "updatedAt": "2026-05-15T23:24:50.571Z"
+  },
+  {
+    "id": "b9MB8zOtqK0hVFCkCe6g",
+    "date": "2026-03-18",
+    "type": "class",
+    "updatedAt": "2026-05-16T00:47:58.367Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892473197_uset2r.pdf?alt=media&token=6b8bd976-6fb7-443c-bfaa-32044bbc69eb",
+    "title": "AULA 06 - Bioestatística - Distribuição Normal",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null
+  },
+  {
+    "id": "blW3UU4x7Yshc4BBp1R4",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 02 - Sinais e sintomas das afecções da Hipófise",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-02-11"
+  },
+  {
+    "id": "bvgxBlCM33jrkg6MbF9k",
+    "isContinuation": false,
+    "createdAt": "2026-05-16T01:31:09.597Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": "Atividades referentes ao período avaliativo.",
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Período Avaliativo",
+    "period": 5,
+    "category": "",
+    "date": "2026-04-07",
+    "type": "notice",
+    "updatedAt": "2026-05-16T01:31:09.597Z"
+  },
+  {
+    "id": "bya7b0vXH50dy06FNTFh",
+    "updatedAt": "2026-05-15T23:25:18.215Z",
+    "date": "2026-05-13",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "youtubeIds": [],
+    "title": "AULA 29 - Prática de Cardiologia (Simulação)",
+    "slideUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false
+  },
+  {
+    "id": "bzhB3fOBEKtmUa7EQjxp",
+    "title": "AULA 24 - Prática dos Pulsos (Simulação)",
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929872738_9bxfu.pdf?alt=media&token=972a6ce5-755f-432a-81fd-90c2505d4f98",
+    "youtubeIds": [],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T11:11:17.541Z",
+    "date": "2026-04-29",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas"
+  },
+  {
+    "id": "deg48QD2wBZn5n68WPsj",
+    "title": "Vista de Prova",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "isContinuation": false,
+    "targetSlots": [
+      "1"
+    ],
+    "description": "Vista de prova disponível para os alunos.",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-16T01:31:09.543Z",
+    "type": "notice",
+    "date": "2026-04-27",
+    "updatedAt": "2026-05-16T01:31:09.543Z",
+    "period": 5,
+    "category": ""
+  },
+  {
+    "id": "dvq2oX5Ez704mlzQ11TR",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929739721_aov31g.pdf?alt=media&token=9bbe0c75-9dd8-48da-9792-af25af94f3e9",
+    "title": "AULA 12 - Síndromes Respiratórias na criança",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "type": "class",
+    "date": "2026-03-13",
+    "updatedAt": "2026-05-16T11:09:04.326Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": ""
+  },
+  {
+    "id": "eOTliT0iKDnaP5BttQyB",
+    "type": "class",
+    "date": "2026-05-07",
+    "updatedAt": "2026-05-16T10:57:54.809Z",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "Parasitologia",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929057500_jd780s.pdf?alt=media&token=113664fd-f28c-4e1e-b1b3-b37ad7988aa6",
+    "title": "AULA 07 - Parasitologia Intestinal - Parte 1",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null
+  },
+  {
+    "id": "eZcaoSLhsLiBuW7SuZlN",
+    "title": "AULA 08 - Anti-inflamatórios",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-05-05",
+    "type": "class",
+    "period": 5,
+    "examPeriod": "N2"
+  },
+  {
+    "id": "elDAfO3SGb2xtkSxeiD5",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929000349_9wnasc.pdf?alt=media&token=3f25502d-f031-4ac1-9bc7-27fb1dddf010",
+    "title": "AULA 02 - Dermaparasitose dos Helmintos",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "type": "class",
+    "date": "2026-02-19",
+    "updatedAt": "2026-05-16T10:56:43.742Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Parasitologia"
+  },
+  {
+    "id": "fDEUnZkklcZEpmLJw6x3",
+    "updatedAt": "2026-05-16T10:52:08.371Z",
+    "date": "2026-03-10",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928722718_07zpap.pdf?alt=media&token=2514788a-c541-4ef6-b0e2-337f220906c7",
+    "title": "AULA 03 - Farmacologia da Insuficiência Cardíaca",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false
+  },
+  {
+    "id": "fJCUJPzzXkv0QIT9moZw",
+    "type": "class",
+    "date": "2026-02-26",
+    "updatedAt": "2026-05-16T10:40:36.591Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928030971_833xx7.pdf?alt=media&token=6f84a93f-665b-40da-987a-e1ce7a1d0e20",
+    "title": "AULA 02 - Insuficiência cardíaca",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null
+  },
+  {
+    "id": "fMbXEpGNkXmSpveeY8XR",
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928869892_pvv1vo.pdf?alt=media&token=466ca915-7de1-45ff-bd53-e093d7a6f1c7",
+    "title": "AULA 03 - Patologias do Sistema Circulatório",
+    "category": "Geral",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-16T10:54:36.502Z",
+    "type": "class",
+    "date": "2026-03-03"
+  },
+  {
+    "id": "fnIlPBKBYcTRzhASE7Sd",
+    "title": "AULA 02 - Insuficiência cardíaca",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-03-03",
+    "type": "class",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "g6cSpkfptO9aHZYa36Vv",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892452828_1f4e89.pdf?alt=media&token=feb33fe0-84ae-4a63-8637-4b7674e95f49",
+    "title": "AULA 05 - Bioestatística - Tendência Central e Dispersão",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T00:47:37.776Z",
+    "type": "class",
+    "date": "2026-03-18",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "gdQZXvmGg95BXnkvdOXC",
+    "type": "class",
+    "date": "2026-05-28",
+    "updatedAt": "2026-05-28T19:59:24.959Z",
+    "examPeriod": "N2",
+    "period": 5,
+    "category": "",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 10 - Anticonvulsivantes e Antiepilépticos",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-28T19:59:24.959Z",
+    "summaryUrl": null,
+    "subjectId": "farma-med"
+  },
+  {
+    "id": "glfXFV0W6kVHeLoZlxWx",
+    "date": "2026-04-30",
+    "type": "notice",
+    "updatedAt": "2026-05-16T01:31:09.130Z",
+    "period": 5,
+    "category": "",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula não ministrada",
+    "isContinuation": false,
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-16T01:31:09.130Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "A aula prevista não foi ministrada."
+  },
+  {
+    "id": "gwLmUBKO7OkcS9WvchAw",
+    "createdAt": "2026-05-19T12:35:17.789Z",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula Prática em UBS",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-19T12:35:29.684Z",
+    "date": "2026-05-18",
+    "type": "class"
+  },
+  {
+    "id": "hFcVGBPv5WvnvSy89xIM",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 04 - Fármacos antidepressivos e Estabilizadores de humor",
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-24",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "hRDB5O0RmqWsTpoxYunw",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929021895_nnlslj.pdf?alt=media&token=4db66959-184a-4fce-b962-3bb48b6f12fd",
+    "title": "AULA 04 - Parasitose Pulmonar",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T10:57:06.410Z",
+    "type": "class",
+    "date": "2026-03-12",
+    "category": "Parasitologia",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "hsKFZzaHToOZGkAwBn9H",
+    "type": "class",
+    "date": "2026-03-27",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "examPeriod": "N1",
+    "period": 5,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 07 - Exame Clínico em Ortopedia",
+    "isContinuation": true,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist"
+  },
+  {
+    "id": "hycKeuKAIwSG5uHq9xHj",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929080913_ug8b93.pdf?alt=media&token=8c16e952-42f9-4ea8-81c6-6f47ddcf37ac",
+    "title": "AULA 07 - Parasitologia Intestinal - Parte 2",
+    "isContinuation": false,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-05-07",
+    "updatedAt": "2026-05-16T10:58:05.421Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "Parasitologia"
+  },
+  {
+    "id": "i3GBPQeWBXRHqr9pSWTq",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928916894_d4odq.pdf?alt=media&token=baf8662c-afaf-464a-9526-a8d8e8bdc697",
+    "title": "AULA 07 - Cardiopatias e Cardiopatias isquêmicas",
+    "category": "Geral",
+    "examPeriod": "N1",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:55:21.461Z",
+    "type": "class",
+    "date": "2026-03-31"
+  },
+  {
+    "id": "iD3VaqCAdQhtVVpxp9v0",
+    "date": "2026-04-13",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:10:53.949Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929850084_eoj9z9.pdf?alt=media&token=be5bc5f8-5f32-48d0-a98a-a6b9465c4677",
+    "title": "AULA 22 - Neuropatias periféricas",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ]
+  },
+  {
+    "id": "ivoYwWe7r5AwSyP32Ugw",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": true,
+    "title": "Planejamento de Extensão",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "date": "2026-03-20",
+    "type": "class"
+  },
+  {
+    "id": "iwAvTaAfbsKi8G8Olqly",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-24T13:32:20.786Z",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula Prática em UBS",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-24T13:32:20.786Z",
+    "type": "class",
+    "date": "2026-05-25"
+  },
+  {
+    "id": "jaVmc5tSGICeekJlQN2Y",
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 03 - Parasitoses Gastrointestinais I",
+    "category": "Parasitologia",
+    "examPeriod": "Práticas",
+    "period": 5,
+    "updatedAt": "2026-05-16T11:59:29.536Z",
+    "type": "class",
+    "date": "2026-04-30"
+  },
+  {
+    "id": "k7byu9BU4OhWJAB50WBg",
+    "updatedAt": "2026-05-16T01:31:10.341Z",
+    "type": "notice",
+    "date": "2026-02-18",
+    "category": "",
+    "period": 5,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Dia não letivo",
+    "description": "Não haverá aula neste dia letivo.",
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-16T01:31:10.341Z",
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "isContinuation": false
+  },
+  {
+    "id": "kRn3qpKlUJNV2lIAudQV",
+    "period": 5,
+    "examPeriod": "N1",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-11",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 03 - Estudos de Caso controle"
+  },
+  {
+    "id": "kqrbDUv2sQF4Szkx0SDe",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Dia não letivo",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-16T01:31:10.764Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": "Não haverá aula neste dia letivo.",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T01:31:10.764Z",
+    "date": "2026-02-18",
+    "type": "notice",
+    "category": "",
+    "period": 5
+  },
+  {
+    "id": "l1SSAqYsZ70xI0qTg7Zb",
+    "updatedAt": "2026-05-16T00:46:53.344Z",
+    "type": "class",
+    "date": "2026-03-18",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892406787_4r73h.pdf?alt=media&token=c3cd0de2-6d59-419e-9f50-b09b02e15515",
+    "title": "AULA 04 - Bioestatística - População e Amostra",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false
+  },
+  {
+    "id": "lzvWoC0dqCQpyfdlGryB",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892429336_e2rpds.pdf?alt=media&token=ac5586bd-a58f-4e0e-82f3-fb1ca3fd854c",
+    "title": "AULA 03 - Estudos de Caso controle",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T00:47:18.006Z",
+    "date": "2026-03-04",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "mFnFlhTAlGrh4FzGIHXk",
+    "title": "Exercícios de Metodologia Ativa",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "isContinuation": true,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-23",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "mqKGdH1IZP5D8NGanJje",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-03-16",
+    "period": 5,
+    "examPeriod": "N1",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Visita à UBS Rio Grande",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true
+  },
+  {
+    "id": "n6qqsTJBhXTOqiO1XAnB",
+    "createdAt": "2026-05-15T22:53:58.257Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928947601_oue4k9.pdf?alt=media&token=d2de6b13-401a-4fdc-b0c1-f88a59ea943d",
+    "title": "AULA 10 - Patologia dos Órgãos Anexos",
+    "category": "Geral",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-16T10:55:52.694Z",
+    "date": "2026-05-05",
+    "type": "class"
+  },
+  {
+    "id": "oMDDjyalJ33G1Pt5KUF5",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Parasitologia",
+    "type": "class",
+    "date": "2026-03-19",
+    "updatedAt": "2026-05-16T10:57:16.893Z",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929031139_y6vnu8.pdf?alt=media&token=75282294-5c25-464b-aabd-62be3578a5ec",
+    "title": "AULA 05 - Cardioparasitoses"
+  },
+  {
+    "id": "oc8ClixyBTnKnIxeMpyC",
+    "title": "AULA 01 - Introdução e Estudo transversal",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892278874_v8mofw.pdf?alt=media&token=0d03b976-957d-4426-a8c8-7f16b1473341",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-15T23:09:55.982Z",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T00:44:44.480Z",
+    "type": "class",
+    "date": "2026-02-11",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "ot0W3SaLOnHXp05BqwB0",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929398892_lkly8y.pdf?alt=media&token=9cddd0d1-7df3-4466-a042-dd9457e36179",
+    "title": "AULA 11 - Profilaxia Raiva Humana",
+    "isContinuation": false,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "date": "2026-04-13",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:03:22.397Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": ""
+  },
+  {
+    "id": "p8jQfi0xIj0FvbpSgKD3",
+    "category": "Geral",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T10:56:01.830Z",
+    "type": "class",
+    "date": "2026-05-12",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928958192_sl12faj.pdf?alt=media&token=74fe4ebb-884e-437f-9be6-148bef1a51c0",
+    "title": "AULA 11 - Patologia do Sistema Reprodutor Feminino"
+  },
+  {
+    "id": "pB5yEhqsyn6eSLeBhKOu",
+    "updatedAt": "2026-05-15T23:25:35.942Z",
+    "date": "2026-05-08",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "youtubeIds": [],
+    "title": "AULA 27 - Prática de Ortopedia (Sala)",
+    "slideUrl": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "isContinuation": false
+  },
+  {
+    "id": "pszOSpo9cviXdCikJNwp",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Vista de Prova",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-16T01:31:09.210Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": "Vista de prova disponível para os alunos.",
+    "date": "2026-04-29",
+    "type": "notice",
+    "updatedAt": "2026-05-16T01:31:09.210Z",
+    "period": 5,
+    "category": ""
+  },
+  {
+    "id": "qFkx7smo9nGLmipUUFf8",
+    "date": "2026-03-05",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:57:07.820Z",
+    "examPeriod": "Práticas",
+    "period": 5,
+    "category": "Microbiologia",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 01 - Bacterioses da Pele",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ]
+  },
+  {
+    "id": "qMGVlA51zaJzVHjlkhHn",
+    "isContinuation": false,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-19T12:36:33.888Z",
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 14 - Patologia do Sistema Reprodutor Masculino",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "Geral",
+    "date": "2026-05-19",
+    "type": "class",
+    "updatedAt": "2026-05-19T12:40:06.495Z"
+  },
+  {
+    "id": "qMwU9cARCypuAj1yJfqs",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "updatedAt": "2026-05-16T11:08:18.852Z",
+    "type": "class",
+    "date": "2026-03-06",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929687571_1s251p.pdf?alt=media&token=ba18f096-708d-4b6f-ba60-209cf4be48ac",
+    "title": "AULA 09 - Diarréia em Pediatria"
+  },
+  {
+    "id": "qXUtfY5Oj9YhigUAOW2F",
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "title": "AULA 17 - Hipertensão Arterial Aguda e Coronariopatias",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929818579_jjju6h.pdf?alt=media&token=dfae6de4-4271-4d2b-af33-3a9b91ecb817",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-16T11:10:21.965Z",
+    "type": "class",
+    "date": "2026-03-25"
+  },
+  {
+    "id": "qdfg7uU1POxPdTYZfPgv",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-20T10:37:54.331Z",
+    "targetSlots": [
+      "2"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "AULA 33 - Neurologia",
+    "slideUrl": null,
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-20T10:59:52.885Z",
+    "date": "2026-05-25",
+    "type": "class"
+  },
+  {
+    "id": "rF5MUbGsr2nYQJ0tuXbo",
+    "examPeriod": "N1",
+    "period": 5,
+    "category": "",
+    "type": "class",
+    "date": "2026-02-25",
+    "updatedAt": "2026-05-16T00:45:35.330Z",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892328462_3r7upg.pdf?alt=media&token=28087dce-1397-46f3-9800-48484ca553e4",
+    "title": "AULA 02 - Estudos de Coorte"
+  },
+  {
+    "id": "rNk1ZjqxA23h6v3KksUl",
+    "type": "class",
+    "date": "2026-05-07",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "title": "AULA 08 - Anti-inflamatórios",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "isContinuation": true,
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "farma-med",
+    "createdAt": "2026-05-15T22:03:46.980Z"
+  },
+  {
+    "id": "rSstMMe4RC6F47V3sho2",
+    "isContinuation": true,
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-27T20:51:35.473Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": null,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 09 - Farmacologia dos Anti-microbianos",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "date": "2026-05-26",
+    "type": "class",
+    "updatedAt": "2026-05-27T20:51:35.473Z"
+  },
+  {
+    "id": "rihrdukfv4rIP0moE7Hn",
+    "updatedAt": "2026-05-16T00:49:03.975Z",
+    "date": "2026-05-06",
+    "type": "class",
+    "category": "",
+    "examPeriod": "N2",
+    "period": 5,
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892537168_hu37te.pdf?alt=media&token=2b3e3105-c7d7-4ca7-a761-6e4945a455d9",
+    "title": "AULA 09 - Revisão Sistemática",
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": false
+  },
+  {
+    "id": "rwvc2EMtfb6IATubFPYW",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778892490640_045vcq.pdf?alt=media&token=7f3bc317-85b7-4df8-9ac7-3bbb5479cb21",
+    "title": "AULA 07 - Erro padrão e intervalo de confiança",
+    "summaryUrl": null,
+    "subjectId": "mbe",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T00:48:17.244Z",
+    "date": "2026-03-25",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "sTcu0ILvGMufatSJ6XRM",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "isContinuation": false,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "PRÁTICA 01 - Parasitoses da Pele",
+    "category": "Parasitologia",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-16T12:03:09.309Z",
+    "date": "2026-03-05",
+    "type": "class"
+  },
+  {
+    "id": "tmbEG15inreshbEx3oZj",
+    "category": "Microbiologia",
+    "period": 5,
+    "examPeriod": "N2",
+    "updatedAt": "2026-05-28T11:32:34.166Z",
+    "type": "class",
+    "date": "2026-05-28",
+    "description": null,
+    "targetSlots": [
+      "1",
+      "2"
+    ],
+    "createdAt": "2026-05-28T11:32:34.166Z",
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "isContinuation": true,
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 06 - Infecções do Sistema Genito urinário"
+  },
+  {
+    "id": "tplreE4LaZ15DRGKjWD8",
+    "category": "",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-19T12:39:50.234Z",
+    "type": "class",
+    "date": "2026-05-18",
+    "description": null,
+    "targetSlots": [
+      "2"
+    ],
+    "createdAt": "2026-05-19T12:34:25.074Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "isContinuation": false,
+    "title": "AULA 31 - Prática de Neurologia II (Simulação)",
+    "slideUrl": null,
+    "youtubeIds": []
+  },
+  {
+    "id": "uEZu9v2pWW8owUaDTTeE",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 20 - Semiologia do Sistema digestório",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "type": "class",
+    "date": "2026-04-08",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "N1"
+  },
+  {
+    "id": "ubJHJxSK0rCuBMcYLwRG",
+    "category": "Microbiologia",
+    "period": 5,
+    "examPeriod": "Práticas",
+    "updatedAt": "2026-05-16T11:57:56.480Z",
+    "type": "class",
+    "date": "2026-04-02",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "anat-patol",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": false,
+    "youtubeIds": [],
+    "title": "PRÁTICA 02 - Bacterioses Inflamatórias",
+    "slideUrl": null
+  },
+  {
+    "id": "ufsZGYwh13sORby05PrQ",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula optativa",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "createdAt": "2026-05-16T01:31:09.850Z",
+    "targetSlots": [
+      "3"
+    ],
+    "description": "Aula optativa da disciplina.",
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T01:31:09.850Z",
+    "date": "2026-02-24",
+    "type": "notice",
+    "category": "",
+    "period": 5
+  },
+  {
+    "id": "ulvQ68eEgudwsQPZ29PE",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "AULA 05 - Inibidores Seletivos de Recaptação de Serotonina",
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "isContinuation": true,
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "type": "class",
+    "date": "2026-04-02",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "v1W0I22KzYkNKK9mxIcK",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928751349_32xs6.pdf?alt=media&token=a32aabf4-3867-4e09-9cac-aeff0ac45d4d",
+    "title": "AULA 05 - ISRS (Inibidores Seletivos de Recaptação de Serotonina)",
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "isContinuation": false,
+    "updatedAt": "2026-05-16T10:52:35.046Z",
+    "type": "class",
+    "date": "2026-03-31",
+    "category": "",
+    "examPeriod": "N1",
+    "period": 5
+  },
+  {
+    "id": "vrTqbkKGZnyEODP2hyek",
+    "examPeriod": "N1",
+    "period": 5,
+    "type": "class",
+    "date": "2026-02-09",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "isContinuation": true,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Acolhimento de Políticas Nacionais"
+  },
+  {
+    "id": "vwW8seNJFiL8BTkSTGYG",
+    "isContinuation": true,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "farma-med",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "3"
+    ],
+    "title": "AULA 01 - Fundamentos Farmacodinâmicos",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "period": 5,
+    "examPeriod": "N1",
+    "date": "2026-02-12",
+    "type": "class",
+    "updatedAt": "2026-05-15T22:03:46.980Z"
+  },
+  {
+    "id": "w4LUO5KSFzvOzl93UTId",
+    "isContinuation": false,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929573101_t71sjl.pdf?alt=media&token=ccc00fba-29b0-4d1e-8fe4-ce8343fc2d27",
+    "title": "AULA 03 - Anamnese Pediátrica",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "",
+    "date": "2026-02-13",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:06:17.769Z"
+  },
+  {
+    "id": "xSMY62BzmnjPyf9BnVZZ",
+    "type": "class",
+    "date": "2026-04-01",
+    "updatedAt": "2026-05-16T11:10:32.025Z",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "title": "AULA 18 - Alterações de Bulhas Cardíacas",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929828389_4uglsf.pdf?alt=media&token=2d15ae89-7c61-4ccf-9e88-ad0cd42c3102",
+    "isContinuation": false,
+    "description": null,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist"
+  },
+  {
+    "id": "xVXQtCK3aqItfZm0pHHL",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "createdAt": "2026-05-16T01:31:07.981Z",
+    "targetSlots": [
+      "2"
+    ],
+    "description": "A aula prevista não foi ministrada.",
+    "isContinuation": false,
+    "title": "Aula não ministrada",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "category": "",
+    "period": 5,
+    "updatedAt": "2026-05-16T01:31:07.981Z",
+    "date": "2026-05-15",
+    "type": "notice"
+  },
+  {
+    "id": "xZNa1iV6VDkw5d4Etqou",
+    "isContinuation": false,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "subjectId": "mbe",
+    "summaryUrl": null,
+    "createdAt": "2026-05-20T10:29:22.433Z",
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1779272953283_5gk60o.pdf?alt=media&token=8b77c85f-c331-415b-8552-13b2daddd6ed",
+    "youtubeIds": [],
+    "title": "AULA 11 - Estudo de Validação diagnóstica",
+    "period": 5,
+    "examPeriod": "N2",
+    "category": "",
+    "type": "class",
+    "date": "2026-05-20",
+    "updatedAt": "2026-05-20T10:29:22.432Z"
+  },
+  {
+    "id": "yOljdoky78vD4dvDvqy5",
+    "title": "AULA 02 - Política Nacional de Atenção Integral à Saúde do Adolescente…",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929248532_7o5amk.pdf?alt=media&token=005e315f-1d9f-44dc-87ff-3f98dc68a1fc",
+    "isContinuation": false,
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "date": "2026-02-20",
+    "type": "class",
+    "updatedAt": "2026-05-16T11:00:53.065Z",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": ""
+  },
+  {
+    "id": "yQAcnw7XcjR0DRrtRslb",
+    "isContinuation": false,
+    "targetSlots": [
+      "2",
+      "3"
+    ],
+    "description": null,
+    "subjectId": "semio-sist",
+    "summaryUrl": null,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "youtubeIds": [],
+    "title": "AULA 28 - Casos Dermatológicos (Sala)",
+    "slideUrl": null,
+    "period": 5,
+    "examPeriod": "Práticas",
+    "category": "",
+    "type": "class",
+    "date": "2026-05-11",
+    "updatedAt": "2026-05-20T10:36:40.729Z"
+  },
+  {
+    "id": "yUnzQANL3dplqhCrbjEj",
+    "updatedAt": "2026-05-16T01:31:09.039Z",
+    "type": "notice",
+    "date": "2026-05-13",
+    "category": "",
+    "period": 5,
+    "title": "Aula não ministrada",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "description": "A aula prevista não foi ministrada.",
+    "targetSlots": [
+      "3"
+    ],
+    "createdAt": "2026-05-16T01:31:09.039Z",
+    "summaryUrl": null,
+    "subjectId": "semio-sist",
+    "isContinuation": false
+  },
+  {
+    "id": "yi0Gv9pJCov5LsHMRhKB",
+    "updatedAt": "2026-05-16T11:03:11.704Z",
+    "date": "2026-04-10",
+    "type": "class",
+    "category": "",
+    "period": 5,
+    "examPeriod": "N2",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778929388619_9v0iw.pdf?alt=media&token=dc80041d-3e53-4134-af51-e3b0e23cbd93",
+    "title": "AULA 10 - Profilaxia Tétano",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "subjectId": "pna",
+    "summaryUrl": null,
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "isContinuation": false
+  },
+  {
+    "id": "yyPIiYICcukeA09jc0G9",
+    "period": 5,
+    "examPeriod": "N1",
+    "category": "Geral",
+    "type": "class",
+    "date": "2026-03-31",
+    "updatedAt": "2026-05-16T10:55:08.282Z",
+    "isContinuation": false,
+    "targetSlots": [
+      "1"
+    ],
+    "description": null,
+    "summaryUrl": null,
+    "subjectId": "anat-patol",
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "youtubeIds": [],
+    "slideUrl": "https://firebasestorage.googleapis.com/v0/b/sp-medcenter.firebasestorage.app/o/uploads%2Fslides%2F1778928904207_a44upk.pdf?alt=media&token=6e2794c2-75b5-4a9d-9b05-89d84ae8745d",
+    "title": "AULA 06 - Doenças do Sistema Locomotor"
+  },
+  {
+    "id": "zRmi6V0NW1KO8bJWaDZe",
+    "slideUrl": null,
+    "youtubeIds": [],
+    "title": "Aula Prática em escolas",
+    "isContinuation": true,
+    "createdAt": "2026-05-15T22:03:46.980Z",
+    "summaryUrl": null,
+    "subjectId": "pna",
+    "description": null,
+    "targetSlots": [
+      "1"
+    ],
+    "date": "2026-05-15",
+    "type": "class",
+    "updatedAt": "2026-05-15T22:03:46.980Z",
+    "period": 5,
+    "examPeriod": "Práticas"
+  }
+]

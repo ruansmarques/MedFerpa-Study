@@ -138,6 +138,8 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-04-24': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-05-01': { title: 'Dia não letivo', description: 'Dia do Trabalhador' },
     '2026-05-22': { title: 'Dia não letivo', description: 'Aniversário de Fernandópolis' },
+    '2026-06-04': { title: 'Dia não letivo', description: 'Corpus Christi' },
+    '2026-06-05': { title: 'Dia não letivo', description: 'Prolongamento de Feriado' },
   };
 
   const N2_EXAM_SCHEDULE: Record<string, ScheduleEvent[]> = {

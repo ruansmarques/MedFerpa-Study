@@ -10,6 +10,7 @@ interface ClassListProps {
   initialSubjectId?: string;
   initialCategory?: string;
   onNavigateToSchedule?: (date?: Date) => void;
+  onNavigateToExercises?: (subjectId?: string) => void;
 }
 
 interface ActionButtonProps {
@@ -30,7 +31,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ icon: Icon, onClick, toolti
   </button>
 );
 
-const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, initialCategory, onNavigateToSchedule }) => {
+const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, initialSubjectId, initialCategory, onNavigateToSchedule, onNavigateToExercises }) => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(() => {
     try {
@@ -238,7 +239,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'N1' || !l.examPeriod).map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
                 ))}
               </div>
             )}
@@ -251,7 +252,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'N2').map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
                 ))}
               </div>
             )}
@@ -264,7 +265,7 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'Práticas').map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} />
+                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
                 ))}
               </div>
             )}
@@ -277,13 +278,43 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   );
 };
 
-const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComplete: () => void; onNavigateToSchedule?: (date?: Date) => void; }> = ({ lesson, isCompleted, onToggleComplete, onNavigateToSchedule }) => {
+const getSubjectColor = (subjectId: string): string => {
+  switch (subjectId) {
+    // 5º Período
+    case 'semio-sist': return '#2563eb'; // blue-600
+    case 'pna': return '#4338ca'; // indigo-700
+    case 'anat-patol': return '#e11d48'; // rose-600
+    case 'farma-med': return '#047857'; // emerald-700
+    case 'mbe': return '#ca8a04'; // yellow-600
+
+    // 6º Período
+    case 'p6-bioetica': return '#4f46e5'; // indigo-600
+    case 'p6-cardiopulmonar': return '#059669'; // emerald-600
+    case 'p6-neuroendo': return '#9333ea'; // purple-600
+    case 'p6-pratica-adulto-1': return '#db2777'; // pink-600
+    case 'p6-psiquiatria-1': return '#d97706'; // amber-500
+    case 'p6-linhas-cuidado': return '#3b82f6'; // blue-500
+    case 'p6-tecnica-cirurgica': return '#ea580c'; // orange-600
+    case 'p6-gestao-saude': return '#0d9488'; // teal-600
+    default: return '#2563eb'; // default blue-600
+  }
+};
+
+const LessonRow: React.FC<{ 
+  lesson: Lesson; 
+  isCompleted: boolean; 
+  onToggleComplete: () => void; 
+  onNavigateToSchedule?: (date?: Date) => void; 
+  onNavigateToExercises?: (subjectId?: string) => void;
+}> = ({ lesson, isCompleted, onToggleComplete, onNavigateToSchedule, onNavigateToExercises }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const openMaterial = (url: string | undefined) => {
     if (!url) return;
     window.open(url, '_blank');
   };
+
+  const subjectColor = getSubjectColor(lesson.subjectId);
 
   return (
     <div className={`rounded-3xl border transition-all duration-300 ${isOpen ? 'bg-white border-blue-100 shadow-md ring-4 ring-blue-50/50' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'}`}>
@@ -313,26 +344,102 @@ const LessonRow: React.FC<{ lesson: Lesson; isCompleted: boolean; onToggleComple
       </div>
       {isOpen && (
         <div className="p-4 lg:p-8 bg-blue-50/5 border-t border-blue-50/50 animate-fade-in">
-          {Array.isArray(lesson.youtubeIds) && lesson.youtubeIds.length > 0 ? (
-            <div className="space-y-6">
-              {lesson.youtubeIds.map(id => (
-                <div key={id} className="aspect-video w-full rounded-2xl overflow-hidden shadow-2xl bg-black border-4 border-white">
-                  <iframe width="100%" height="100%" src={`https://www.youtube-nocookie.com/embed/${id}?modestbranding=1&rel=0&hd=1`} frameBorder="0" allowFullScreen></iframe>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
+            
+            {/* Coluna Esquerda: Slot de Vídeo-aula (reduzido em 50%) */}
+            <div className="w-full">
+              {Array.isArray(lesson.youtubeIds) && lesson.youtubeIds.length > 0 ? (
+                <div className="space-y-4">
+                  {lesson.youtubeIds.map(id => (
+                    <div key={id} className="aspect-video w-full rounded-2xl overflow-hidden shadow-lg bg-black border-4 border-white">
+                      <iframe width="100%" height="100%" src={`https://www.youtube-nocookie.com/embed/${id}?modestbranding=1&rel=0&hd=1`} frameBorder="0" allowFullScreen></iframe>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                /* Placeholder de Vídeo Restaurado */
+                <div className="aspect-video w-full rounded-2xl border-2 border-dashed border-blue-100 flex flex-col items-center justify-center bg-white text-center p-6">
+                  <div className="w-12 h-12 bg-blue-50/50 rounded-full flex items-center justify-center mb-4 ring-4 ring-blue-50/30">
+                    <IconVideoOff className="w-6 h-6 text-blue-200" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-700 mb-1">Vídeo não disponível</h3>
+                  <p className="text-xs text-gray-400 max-w-xs leading-relaxed">
+                    Esta aula não possui gravação. Por favor, utilize os slides e resumos disponíveis ao lado para seus estudos.
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            /* Placeholder de Vídeo Restaurado (Imagem 2) */
-            <div className="aspect-video w-full rounded-3xl border-2 border-dashed border-blue-100 flex flex-col items-center justify-center bg-white text-center p-8 lg:p-12">
-              <div className="w-20 h-20 bg-blue-50/50 rounded-full flex items-center justify-center mb-6 ring-8 ring-blue-50/30">
-                <IconVideoOff className="w-10 h-10 text-blue-200" />
-              </div>
-              <h3 className="text-xl font-black text-slate-700 mb-2">Vídeo não disponível</h3>
-              <p className="text-base text-gray-400 max-w-md leading-relaxed">
-                Esta aula não possui gravação. Por favor, utilize os slides e resumos disponíveis acima para seus estudos.
-              </p>
+
+            {/* Coluna Direita: 3 Botões de Ação com efeito hover animado */}
+            <div className="flex flex-col gap-4 w-full">
+              {/* Botão 1: Baixar Slide */}
+              <button 
+                onClick={() => openMaterial(lesson.slideUrl)} 
+                disabled={!lesson.slideUrl}
+                className="blob-btn" 
+                style={{ '--blob-color': '#ea580c' } as React.CSSProperties}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                  <IconPresentation className="w-4 h-4" />
+                  {lesson.slideUrl ? 'Baixar Slide' : 'Slide Indisponível'}
+                </span>
+                <span className="blob-btn__inner">
+                  <span className="blob-btn__blobs">
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                  </span>
+                </span>
+              </button>
+
+              {/* Botão 2: Baixar Resumo */}
+              <button 
+                onClick={() => openMaterial(lesson.summaryUrl)} 
+                disabled={!lesson.summaryUrl}
+                className="blob-btn" 
+                style={{ '--blob-color': '#2563eb' } as React.CSSProperties}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                  <IconBook className="w-4 h-4" />
+                  {lesson.summaryUrl ? 'Baixar Resumo' : 'Resumo Indisponível'}
+                </span>
+                <span className="blob-btn__inner">
+                  <span className="blob-btn__blobs">
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                  </span>
+                </span>
+              </button>
+
+              {/* Botão 3: Resolver Questões */}
+              <button 
+                onClick={() => {
+                  if (onNavigateToExercises) {
+                    onNavigateToExercises(lesson.subjectId);
+                  }
+                }}
+                className="blob-btn" 
+                style={{ '--blob-color': '#7c3aed' } as React.CSSProperties}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                  <IconPlay className="w-4 h-4 rotate-0" />
+                  Resolver Questões
+                </span>
+                <span className="blob-btn__inner">
+                  <span className="blob-btn__blobs">
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                  </span>
+                </span>
+              </button>
             </div>
-          )}
+
+          </div>
           
           <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
              <div className="flex items-center gap-2 text-sm text-gray-400 font-bold">

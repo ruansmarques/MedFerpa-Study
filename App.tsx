@@ -321,6 +321,11 @@ const App: React.FC = () => {
       setCurrentView('schedule');
   };
 
+  const navigateToExercises = (subjectId?: string) => {
+      setViewParams({ targetSubjectId: subjectId });
+      setCurrentView('exercises');
+  };
+
   const handleToggleRankVisibility = async () => {
     if (!currentUser) return;
     
@@ -364,6 +369,7 @@ const App: React.FC = () => {
             initialSubjectId={viewParams.targetSubjectId}
             initialCategory={viewParams.targetCategory}
             onNavigateToSchedule={navigateToSchedule}
+            onNavigateToExercises={navigateToExercises}
           />
         );
       case 'schedule':
@@ -381,6 +387,7 @@ const App: React.FC = () => {
             onUpdateUser={handleUpdateUser} 
             onExit={() => setCurrentView('classes')}
             onAddXP={handleAddXP}
+            initialSubjectId={viewParams.targetSubjectId}
           />
         );
       case 'library':

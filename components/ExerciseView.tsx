@@ -9,6 +9,7 @@ interface ExerciseViewProps {
   onUpdateUser: (user: User) => void;
   onExit: () => void;
   onAddXP: (amount: number) => void; 
+  initialSubjectId?: string;
 }
 
 const MultiSelect = ({ options, selected, onChange, placeholder }: { options: string[], selected: string[], onChange: (val: string[]) => void, placeholder: string }) => {
@@ -63,10 +64,16 @@ const MultiSelect = ({ options, selected, onChange, placeholder }: { options: st
   );
 };
 
-const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP }) => {
+const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP, initialSubjectId }) => {
   const [activeTab, setActiveTab] = useState<'internas' | 'enamed'>('internas');
-  const [selectedPeriod, setSelectedPeriod] = useState<number | null>(null);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubjectId || '');
+  const [selectedPeriod, setSelectedPeriod] = useState<number | null>(() => {
+    if (initialSubjectId) {
+      const subj = SUBJECTS.find(s => s.id === initialSubjectId);
+      return subj ? subj.period : null;
+    }
+    return null;
+  });
   const [selectedBancas, setSelectedBancas] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEnamedSubjects, setSelectedEnamedSubjects] = useState<string[]>([]);

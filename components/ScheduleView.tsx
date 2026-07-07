@@ -14,22 +14,50 @@ interface ScheduleEvent {
   defaultTitle?: string;
 }
 
-const SCHEDULE_TEMPLATE: ScheduleEvent[] = [
+const SCHEDULE_TEMPLATE_5: ScheduleEvent[] = [
+  // Segunda
   { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
   { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
   { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+  // Terça
   { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
   { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
   { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
+  // Quarta
   { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'mbe', slot: "1" },
   { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
   { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+  // Quinta
   { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
   { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
   { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
+  // Sexta
   { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
   { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
   { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+];
+
+const SCHEDULE_TEMPLATE_6: ScheduleEvent[] = [
+  // Segunda
+  { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
+  { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'p6-bioetica', slot: "3" },
+  // Terça
+  { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'p6-tecnica-cirurgica', slot: "1" },
+  { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'p6-tecnica-cirurgica', slot: "2" },
+  { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Quarta
+  { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'p6-gestao-saude', slot: "1" },
+  { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Quinta
+  { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'p6-psiquiatria-1', slot: "1" },
+  { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'p6-psiquiatria-1', slot: "2" },
+  { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Sexta
+  { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
+  { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'p6-linhas-cuidado', slot: "3" },
 ];
 
 interface ScheduleViewProps {
@@ -38,8 +66,37 @@ interface ScheduleViewProps {
 }
 
 export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, initialDate }) => {
-  const SEMESTER_START = new Date(2026, 1, 9);
-  const SEMESTER_END = new Date(2026, 5, 12, 23, 59, 59); // June 12, 2026, end of day
+  const SEMESTER_START = new Date(2026, 1, 9); // Feb 9, 2026
+  const SEMESTER_END = new Date(2026, 11, 4, 23, 59, 59); // Dec 4, 2026
+
+  const getPeriodForDate = (date: Date) => {
+    // 5th period is Feb 9, 2026 to June 12, 2026
+    const p5Start = new Date(2026, 1, 9);
+    const p5End = new Date(2026, 5, 12, 23, 59, 59);
+    if (date >= p5Start && date <= p5End) return 5;
+    
+    // 6th period is Aug 3, 2026 to Dec 4, 2026
+    const p6Start = new Date(2026, 7, 3);
+    const p6End = new Date(2026, 11, 4, 23, 59, 59);
+    if (date >= p6Start && date <= p6End) return 6;
+
+    return 0; // Vacation or outside
+  };
+
+  const getWeekLabel = (weekStart: Date) => {
+    const diffTime = weekStart.getTime() - SEMESTER_START.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    const weekNum = Math.floor(diffDays / 7) + 1;
+
+    if (weekNum >= 1 && weekNum <= 18) {
+      return `Semana ${weekNum} (5º Período)`;
+    } else if (weekNum >= 19 && weekNum <= 25) {
+      return `Férias de Inverno`;
+    } else if (weekNum >= 26 && weekNum <= 43) {
+      return `Semana ${weekNum - 25} (6º Período)`;
+    }
+    return `Semana ${weekNum}`;
+  };
 
   const [currentDate, setCurrentDate] = useState<Date>(() => {
     if (initialDate && initialDate >= SEMESTER_START && initialDate <= SEMESTER_END) {
@@ -73,7 +130,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
             description: d.description || '',
             targetSlots: d.targetSlots || [],
             // Fix: Adding missing period property to satisfy Lesson interface requirements
-            period: d.period || 5,
+            period: d.period || 6,
             category: (d.category || d.Category || '').trim()
           });
         });
@@ -121,18 +178,26 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
         case 'anat-patol': return 'bg-rose-600';
         case 'farma-med': return 'bg-emerald-700';
         case 'mbe': return 'bg-yellow-600';
+        case 'p6-bioetica': return 'bg-indigo-600';
+        case 'p6-cardiopulmonar': return 'bg-emerald-600';
+        case 'p6-neuroendo': return 'bg-purple-600';
+        case 'p6-pratica-adulto-1': return 'bg-pink-600';
+        case 'p6-psiquiatria-1': return 'bg-amber-500';
+        case 'p6-linhas-cuidado': return 'bg-blue-500';
+        case 'p6-tecnica-cirurgica': return 'bg-orange-600';
+        case 'p6-gestao-saude': return 'bg-teal-600';
         default: return 'bg-slate-500';
     }
   };
 
   // Define full-day events (holidays, exams, etc.)
   const FULL_DAY_EVENTS: Record<string, { title: string; description: string }> = {
+    // 5º Período
     '2026-04-03': { title: 'Dia não letivo', description: 'Sexta-feira Santa' },
     '2026-04-14': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-04-15': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-04-16': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-04-17': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
-    // 20/04 and 21/04 remain blank as requested
     '2026-04-22': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-04-23': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-04-24': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
@@ -140,9 +205,17 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-05-22': { title: 'Dia não letivo', description: 'Aniversário de Fernandópolis' },
     '2026-06-04': { title: 'Dia não letivo', description: 'Corpus Christi' },
     '2026-06-05': { title: 'Dia não letivo', description: 'Prolongamento de Feriado' },
+
+    // 6º Período
+    '2026-11-30': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
+    '2026-12-01': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
+    '2026-12-02': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
+    '2026-12-03': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
+    '2026-12-04': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
   };
 
   const N2_EXAM_SCHEDULE: Record<string, ScheduleEvent[]> = {
+    // 5º Período N2 Exams
     '2026-06-08': [{ dayOfWeek: 1, startTime: "15:40", endTime: "17:00", subjectId: 'anat-patol', slot: "1", defaultTitle: 'Avaliação N2' }],
     '2026-06-09': [{ dayOfWeek: 2, startTime: "14:00", endTime: "15:20", subjectId: 'farma-med', slot: "1", defaultTitle: 'Avaliação N2' }],
     '2026-06-10': [{ dayOfWeek: 3, startTime: "11:30", endTime: "13:00", subjectId: 'semio-sist', slot: "1", defaultTitle: 'Avaliação N2' }],
@@ -155,9 +228,19 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
   weekDays.forEach((day, dayIndex) => {
     const isoDate = formatDateToISO(day);
-    const fullDayEvent = FULL_DAY_EVENTS[isoDate];
+    
+    // Check for Winter Vacation (June 15 to July 31, 2026)
+    const vacationStart = new Date(2026, 5, 15);
+    const vacationEnd = new Date(2026, 6, 31, 23, 59, 59);
+    const isVacation = day >= vacationStart && day <= vacationEnd;
+    
+    let fullDayEvent = FULL_DAY_EVENTS[isoDate];
+    if (isVacation) {
+      fullDayEvent = { title: 'Férias de Inverno', description: 'Período de recesso acadêmico' };
+    }
+
     const isWithinSemester = day >= SEMESTER_START && day <= SEMESTER_END;
-    const isBlankDay = isoDate === '2026-04-20' || isoDate === '2026-04-21';
+    const isBlankDay = false;
 
     if (!isWithinSemester || isBlankDay || !fullDayEvent) {
       if (currentSegment) {
@@ -184,11 +267,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     <div className="p-4 lg:p-8 max-w-7xl mx-auto h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 gap-3">
         <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 flex items-center justify-center gap-2 w-full sm:w-auto">
-          Cronograma 5° Período
+          Cronograma - Turma TXXX
         </h2>
         <div className="flex items-center justify-center gap-1 sm:gap-2 w-full sm:w-auto">
            <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, -1))} disabled={currentWeekStart <= getWeekStart(SEMESTER_START)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 rotate-90" /></button>
-           <div className="px-2 sm:px-4 font-medium text-slate-700 min-w-[80px] sm:w-32 text-center text-xs sm:text-sm whitespace-nowrap">Semana {Math.ceil((((currentWeekStart.getTime() - SEMESTER_START.getTime()) / 86400000) + SEMESTER_START.getDay() + 1) / 7)}</div>
+           <div className="px-2 sm:px-4 font-medium text-slate-700 min-w-[80px] sm:w-48 text-center text-xs sm:text-sm whitespace-nowrap">{getWeekLabel(currentWeekStart)}</div>
            <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, 1))} disabled={currentWeekStart >= getWeekStart(SEMESTER_END)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 -rotate-90" /></button>
            <button onClick={() => setCurrentDate(new Date())} className="ml-2 px-3 py-1.5 sm:px-3 sm:py-1.5 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:bg-gray-50 flex-shrink-0">Hoje</button>
         </div>
@@ -233,8 +316,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                   }
 
                   // Normal day
-                  const { dayIndex, isWithinSemester, isBlankDay, isoDate } = segment;
-                  let events = SCHEDULE_TEMPLATE.filter(e => e.dayOfWeek === dayIndex + 1);
+                  const { dayIndex, isWithinSemester, isBlankDay, isoDate, day } = segment;
+                  const currentPeriod = getPeriodForDate(day);
+                  let events: ScheduleEvent[] = [];
+                  if (currentPeriod === 5) {
+                    events = SCHEDULE_TEMPLATE_5.filter(e => e.dayOfWeek === dayIndex + 1);
+                  } else if (currentPeriod === 6) {
+                    events = SCHEDULE_TEMPLATE_6.filter(e => e.dayOfWeek === dayIndex + 1);
+                  }
                   let minRows = 3;
 
                   if (N2_EXAM_SCHEDULE[isoDate]) {

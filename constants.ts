@@ -277,13 +277,14 @@ export const SUBJECTS: Subject[] = [
   { id: 'semio-sist', period: 5, title: 'Práticas Médicas: Semiologia dos Sistemas', icon: '🩻', description: 'Exame físico avançado por sistemas.', folderName: 'semiologia-sistemas' },
 
   // --- 6º PERÍODO ---
-  { id: 'p6-bioetica', period: 6, title: 'Bioética e Medicina Legal', icon: '⚖️', description: 'Ética médica e legislação.', folderName: 'bioetica' },
-  { id: 'p6-cardiopulmonar', period: 6, title: 'Clínica Médica: Cardiopulmonar', icon: '🫀', description: 'Cardiologia e Pneumologia clínica.', folderName: 'cardiopulmonar' },
-  { id: 'p6-neuroendo', period: 6, title: 'Clínica Médica: Neuroendocrinologia, Metabologia e Imaginologia', icon: '🧠', description: 'Neuro, Endócrino e Imagem.', folderName: 'neuro-endo' },
-  { id: 'p6-linhas-cuidado', period: 6, title: 'Linhas de Cuidado do Sistema Único de Saúde', icon: '🏥', description: 'Fluxos de atendimento no SUS.', folderName: 'linhas-cuidado' },
-  { id: 'p6-pratica-adulto-1', period: 6, title: 'Prática Clínica: Saúde do Adulto I', icon: '👨', description: 'Atendimento clínico ao adulto.', folderName: 'saude-adulto-1' },
+  { id: 'p6-bioetica', period: 6, title: 'Bioética e Medicina legal', icon: '⚖️', description: 'Ética médica e legislação.', folderName: 'bioetica' },
+  { id: 'p6-cardiopulmonar', period: 6, title: 'Clínica Cardiopulmonar', icon: '🫀', description: 'Cardiologia e Pneumologia clínica.', folderName: 'cardiopulmonar' },
+  { id: 'p6-neuroendo', period: 6, title: 'Clínica Neuroendócrina e Imagem', icon: '🧠', description: 'Neuro, Endócrino e Imagem.', folderName: 'neuro-endo' },
+  { id: 'p6-linhas-cuidado', period: 6, title: 'Linhas de Cuidado do SUS', icon: '🏥', description: 'Fluxos de atendimento no SUS.', folderName: 'linhas-cuidado' },
+  { id: 'p6-pratica-adulto-1', period: 6, title: 'Clínica do Adulto I', icon: '👨', description: 'Atendimento clínico ao adulto.', folderName: 'saude-adulto-1' },
   { id: 'p6-psiquiatria-1', period: 6, title: 'Psiquiatria I', icon: '🧩', description: 'Introdução à psiquiatria clínica.', folderName: 'psiquiatria-1' },
   { id: 'p6-tecnica-cirurgica', period: 6, title: 'Técnica Cirúrgica', icon: '✂️', description: 'Fundamentos e paramentação cirúrgica.', folderName: 'tecnica-cirurgica' },
+  { id: 'p6-gestao-saude', period: 6, title: 'Gestão em Saúde', icon: '📊', description: 'Fundamentos e práticas de gestão em saúde.', folderName: 'gestao-saude' },
 
   // --- 7º PERÍODO ---
   { id: 'p7-cirurgica-1', period: 7, title: 'Clínica Cirúrgica I', icon: '🔪', description: 'Cirurgia geral e especialidades.', folderName: 'clinica-cirurgica-1' },

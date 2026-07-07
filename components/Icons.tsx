@@ -31,6 +31,22 @@ export const IconPlay: React.FC<IconProps> = ({ className, onClick }) => (
   </svg>
 );
 
+export const IconPenNewSquare: React.FC<IconProps> = ({ className, onClick }) => (
+  <svg onClick={onClick} className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 10.5V12C20 15.7712 20 17.6569 18.8284 18.8284C17.6569 20 15.7712 20 12 20C8.22876 20 6.34315 20 5.17157 18.8284C4 17.6569 4 15.7712 4 12C4 8.22876 4 6.34315 5.17157 5.17157C6.34315 4 8.22876 4 12 4H13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M16 2.5L21.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13.4349 15.3529L12.5 18.5L15.647 17.565L22 11.2121V11.212C22.6241 10.588 22.6241 9.57724 22 8.95321L20.0468 7L13.4349 15.3529Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const IconPen: React.FC<IconProps> = ({ className, onClick }) => (
+  <svg onClick={onClick} className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 2.5L21.5 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M13.4349 15.3529L12.5 18.5L15.647 17.565L22 11.2121V11.212C22.6241 10.588 22.6241 9.57724 22 8.95321L20.0468 7L13.4349 15.3529Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 21H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 export const IconCheck: React.FC<IconProps> = ({ className, onClick }) => (
   <svg onClick={onClick} className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>

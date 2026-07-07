@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Subject, Lesson, User } from '../types';
 import { SUBJECTS } from '../constants';
-import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar } from './Icons';
+import { IconChevronDown, IconPlay, IconPresentation, IconBook, IconCheck, IconCheckFilled, IconVideoOff, IconCalendar, IconPen } from './Icons';
 import { supabase } from '../supabase';
 
 interface ClassListProps {
@@ -344,7 +344,7 @@ const LessonRow: React.FC<{
       </div>
       {isOpen && (
         <div className="p-4 lg:p-8 bg-blue-50/5 border-t border-blue-50/50 animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-center">
             
             {/* Coluna Esquerda: Slot de Vídeo-aula (reduzido em 50%) */}
             <div className="w-full">
@@ -379,7 +379,7 @@ const LessonRow: React.FC<{
                 className="blob-btn" 
                 style={{ '--blob-color': '#ea580c' } as React.CSSProperties}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                <span className="relative z-10 flex items-center justify-center gap-2 py-[15px] px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
                   <IconPresentation className="w-4 h-4" />
                   {lesson.slideUrl ? 'Baixar Slide' : 'Slide Indisponível'}
                 </span>
@@ -400,7 +400,7 @@ const LessonRow: React.FC<{
                 className="blob-btn" 
                 style={{ '--blob-color': '#2563eb' } as React.CSSProperties}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                <span className="relative z-10 flex items-center justify-center gap-2 py-[15px] px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
                   <IconBook className="w-4 h-4" />
                   {lesson.summaryUrl ? 'Baixar Resumo' : 'Resumo Indisponível'}
                 </span>
@@ -424,8 +424,8 @@ const LessonRow: React.FC<{
                 className="blob-btn" 
                 style={{ '--blob-color': '#7c3aed' } as React.CSSProperties}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
-                  <IconPlay className="w-4 h-4 rotate-0" />
+                <span className="relative z-10 flex items-center justify-center gap-2 py-[15px] px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
+                  <IconPen className="w-4 h-4" />
                   Resolver Questões
                 </span>
                 <span className="blob-btn__inner">
@@ -449,7 +449,7 @@ const LessonRow: React.FC<{
              {onNavigateToSchedule && (
                <button 
                  onClick={() => onNavigateToSchedule(lesson.date ? new Date(lesson.date) : undefined)} 
-                 className="flex items-center gap-3 text-blue-600 font-black bg-blue-50/80 px-5 py-3 rounded-2xl border border-blue-100 hover:bg-blue-100 transition-all shadow-sm active:scale-95"
+                 className="flex items-center gap-3 text-blue-600 font-black bg-blue-50/80 px-5 py-[9px] rounded-2xl border border-blue-100 hover:bg-blue-100 transition-all shadow-sm active:scale-95"
                >
                  <IconCalendar className="w-5 h-5" />
                  Ver no Cronograma

@@ -892,7 +892,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
             <BookOpen size={24} className="text-blue-600" />
             Banco de Questões
           </h2>
-          <p className="text-xs text-slate-500">Filtre, crie simulados personalizados e estude no seu ritmo</p>
+          <p className="text-xs text-slate-500">Crie sessões personalizadas de Resolução de questões</p>
         </div>
       </div>
 
@@ -905,14 +905,14 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
             className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${activeSubTab === 'config' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'}`}
           >
             <Filter size={14} />
-            Filtros & Estudo
+            Criador de sessão
           </button>
           <button
             onClick={() => setActiveSubTab('history')}
             className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 relative ${activeSubTab === 'history' ? 'bg-white text-slate-800 shadow-xs border border-slate-200/40' : 'text-slate-500 hover:text-slate-800'}`}
           >
             <History size={14} />
-            Histórico & Sessões Ativas
+            Arquivo de sessões
             {sessionHistory.some(s => !s.isCompleted) && (
               <span className="absolute top-2.5 right-2 w-2 h-2 bg-blue-600 rounded-full animate-ping" />
             )}
@@ -933,7 +933,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 </span>
                 <h3 className="text-xl font-black text-slate-800">Filtre questões para estudar</h3>
                 <p className="text-sm text-slate-500 leading-relaxed max-w-xl">
-                  Escolha o período acadêmico, as disciplinas e o nível das questões. A contagem no quadro ao lado atualiza em tempo real.
+                  Escolha o período acadêmico, as disciplinas desejadas e o nível das questões que deseja resolver na sua sessão estudos em resolução de questões
                 </p>
                 {activeFiltersTags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 pt-3 items-center">
@@ -955,7 +955,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
               </div>
               
               <div className="bg-slate-50 border border-slate-150 p-5 rounded-2xl text-center flex flex-col items-center justify-center min-w-[170px] self-stretch md:self-auto shadow-sm">
-                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Questões no Filtro</span>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Questões filtradas</span>
                 <span className="text-4xl font-black text-slate-800 tracking-tight">
                   {filteredQuestions.length}
                 </span>
@@ -972,13 +972,13 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 onClick={() => setActiveTab('internas')}
                 className={`px-6 py-2.5 rounded-lg font-bold text-xs transition-all ${activeTab === 'internas' ? 'bg-green-100 text-green-800 shadow-xs border border-green-200' : 'text-gray-500 hover:text-gray-800'}`}
               >
-                Questões internas
+                Modo CURSO
               </button>
               <button
                 onClick={() => setActiveTab('enamed')}
                 className={`px-6 py-2.5 rounded-lg font-bold text-xs transition-all ${activeTab === 'enamed' ? 'bg-green-100 text-green-800 shadow-xs border border-green-200' : 'text-gray-500 hover:text-gray-800'}`}
               >
-                ENAMED
+                Modo ENAMED
               </button>
             </div>
 
@@ -1002,7 +1002,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
               <div className="flex-1 space-y-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
-                    {activeTab === 'internas' ? 'Selecionar período:' : 'Relacionar com o Período:'}
+                    {activeTab === 'internas' ? 'SELECIONAR PERÍODO:' : 'RELACIONAR COM O PERÍODO:'}
                   </label>
                   <div className="grid grid-cols-4 gap-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(p => (
@@ -1018,39 +1018,18 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 </div>
 
                 {activeTab === 'internas' && (
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">Disciplina disponível no curso:</label>
-                      <select 
-                        value={selectedSubjectId}
-                        onChange={(e) => setSelectedSubjectId(e.target.value)}
-                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold text-slate-700 cursor-pointer"
-                      >
-                        <option value="">Todas as disciplinas...</option>
-                        {SUBJECTS.filter(s => !selectedPeriod || s.period === selectedPeriod).map(s => (
-                          <option key={s.id} value={s.id}>{s.period}º P - {s.title}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {selectedSubjectId && subjectLessons.length > 0 && (
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">Aula específica (Opcional):</label>
-                        <select 
-                          value={selectedLessonId}
-                          onChange={(e) => setSelectedLessonId(e.target.value)}
-                          className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold text-slate-700 cursor-pointer"
-                        >
-                          <option value="">Todas as aulas (Geral)</option>
-                          {subjectLessons.map(l => (
-                            <option key={l.id} value={l.id}>{l.title}</option>
-                          ))}
-                        </select>
-                        <p className="text-[11px] text-slate-400 mt-2">
-                          Selecione uma aula específica para focar seus estudos unicamente em seu escopo de slides e resumos.
-                        </p>
-                      </div>
-                    )}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">DISCIPLINAS DISPONÍVEIS NO CURSO:</label>
+                    <select 
+                      value={selectedSubjectId}
+                      onChange={(e) => setSelectedSubjectId(e.target.value)}
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold text-slate-700 cursor-pointer"
+                    >
+                      <option value="">Todas as disciplinas...</option>
+                      {SUBJECTS.filter(s => !selectedPeriod || s.period === selectedPeriod).map(s => (
+                        <option key={s.id} value={s.id}>{s.period}º P - {s.title}</option>
+                      ))}
+                    </select>
                   </div>
                 )}
 
@@ -1091,18 +1070,18 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                 </div>
               )}
 
-              {/* Column 3: Difficulty block */}
+              {/* Column 3: Difficulty block & Lessons Select */}
               <div className="flex-1 space-y-6 md:border-l md:border-gray-150 md:pl-8">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">Nível das questões:</label>
-                  <div className="flex flex-col gap-2">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">NÍVEL DAS QUESTÕES:</label>
+                  <div className="grid grid-cols-3 gap-2">
                     {['Fácil', 'Médio', 'Difícil'].map(level => {
                       const isSelected = difficulty.includes(level);
                       return (
                         <button
                           key={level}
                           onClick={() => toggleDifficulty(level)}
-                          className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2.5 justify-center border ${
+                          className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 justify-center border ${
                             isSelected 
                               ? (level === 'Fácil' ? 'bg-green-50 text-green-700 border-green-200' : level === 'Médio' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-red-50 text-red-700 border-red-200')
                               : 'bg-gray-50 text-slate-600 border-gray-250/70 hover:bg-slate-100'
@@ -1117,6 +1096,31 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                     })}
                   </div>
                 </div>
+
+                {activeTab === 'internas' && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">AULAS DAS DISCIPLINAS SELECIONADAS:</label>
+                    <select 
+                      value={selectedLessonId}
+                      onChange={(e) => setSelectedLessonId(e.target.value)}
+                      disabled={!selectedSubjectId || subjectLessons.length === 0}
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold text-slate-700 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {!selectedSubjectId ? (
+                        <option value="">Todas as aulas...</option>
+                      ) : subjectLessons.length === 0 ? (
+                        <option value="">Sem aulas registradas...</option>
+                      ) : (
+                        <>
+                          <option value="">Todas as aulas...</option>
+                          {subjectLessons.map(l => (
+                            <option key={l.id} value={l.id}>{l.title}</option>
+                          ))}
+                        </>
+                      )}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 

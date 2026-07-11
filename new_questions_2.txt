@@ -1,0 +1,269 @@
+31. Homem indígena, 32 anos, atendido em UBS, apresenta perda de peso não intencional e febre há 3 semanas, associadas a diarreia intermitente. Ao exame, apresenta candidíase oral. Foi realizado teste rápido para HIV, com resultado reagente. Indique a melhor conduta diagnóstica a ser realizada neste momento.
+A) Repetir o mesmo teste rápido para confirmação.
+B) Solicitar carga viral para confirmação diagnóstica.
+C) Solicitar contagem de linfócitos CD4.
+D) Realizar segundo teste rápido com metodologia diferente.
+Ano: 2026
+Gabarito: D
+Explicação: (D) De acordo com o Manual Técnico para o Diagnóstico da Infecção pelo HIV do Ministério da Saúde, o diagnóstico em serviços como a UBS deve seguir fluxogramas validados. Na estratégia com testes rápidos: Um teste rápido reagente (TR1) não confirma o diagnóstico. É obrigatória a realização de um segundo teste rápido (TR2), com metodologia diferente, para confirmação. Esse fluxo garante maior especificidade e reduz resultados falso- positivos, sendo o padrão recomendado no SUS. Comentários sobre os distratores: (A) A repetição do mesmo teste não é recomendada, pois não aumenta a acurácia diagnóstica. (B) A carga viral não é exame de primeira linha para diagnóstico inicial. É utilizada principalmente para monitoramento da infecção e pode ser empregada em situações específicas (ex.: resultados inconclusivos), mas não substitui o fluxograma com testes rápidos. A contagem de CD4 não tem papel diagnóstico. É (C) utilizada para avaliação imunológica e estadiamento da doença após a confirmação da infecção pelo HIV.
+
+32. A agente comunitária visita a Sra. Maria Alice, 32 anos, que relata nunca ter tido dengue e no momento apresenta-se saudável e sem comorbidades. A moradora pergunta se pode receber a vacina QdengaⓇ contra a dengue, já disponível, e quais orientações de prevenção deve seguir após a vacinação. Considerando as diretrizes mais recentes do Ministério da Saúde e as recomendações para promoção e prevenção em saúde, identifique a conduta adequada.
+A) Receber a vacina Qdenga®, desde que não seja gestante, lactante ou imunossuprimido, devendo manter as medidas de prevenção contra picadas de mosquito mesmo após a vacinação.
+B) Pode ser vacinada, pois está na faixa etária aprovada, e poderá suspender as medidas de proteção, pois estará protegida contra todos os sorotipos da dengue.
+C) Não receber a vacina Qdenga®, pois ela é indicada prioritariamente para pessoas que já tiveram dengue anteriormente (soropositivos), manter medidas de proteção contra o vetor da dengue.
+D) Não receber a vacina Qdenga®, pois a vacinação contra a dengue está indicada para 10 a 14 anos e profissionais de saúde; deverá seguir com medidas de eliminação do criadouro do mosquito.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Está de acordo com as recomendações oficiais e as diretrizes mais recentes do Ministério da Saúde e da Anvisa para a vacina QdengaⓇ no Brasil. A vacina é aprovada para pessoas de 4 a 60 anos, independentemente de infecção prévia por dengue (soropositivos e soronegativos), tanto na rede privada quanto pública, desde que não haja contraindicações como gestação, lactação ou imunossupressão. Além disso, mesmo após a vacinação, é fundamental manter as medidas de prevenção contra picadas do mosquito Aedes aegypti, pois a vacina não confere proteção absoluta a todos os sorotipos, a resposta imunológica pode variar, e a proteção pode diminuir ao longo do tempo. A manutenção dessas medidas é uma orientação central de promoção e prevenção em saúde, reforçada em todas as notas técnicas e documentos oficiais. Comentários sobre os distratores: (B) Porque, embora esteja na faixa etária aprovada para a vacina Qdenga®, a vacinação não elimina a necessidade de medidas de proteção contra o mosquito. A eficácia da vacina, embora alta (cerca de 80% para dengue sintomática e mais de 90% para hospitalizações), não é absoluta e pode variar conforme o sorotipo e o perfil imunológico do indivíduo. Além disso, a proteção pode diminuir ao longo do tempo, e a vacina pode não induzir resposta protetora em todos os vacinados. Portanto, as medidas de prevenção ambiental e proteção individual (uso de repelentes, telas, eliminação de criadouros, etc.) devem ser mantidas mesmo após a vacinação (C) A vacina Qdenga® é indicada para pessoas de 4 a 60 anos, independentemente de infecção prévia por dengue. Diferentemente da vacina Dengvaxia® (Sanofi), que é restrita a soropositivos, a QdengaⓇ pode ser administrada tanto em soropositivos quanto em soronegativos, sem necessidade de testagem prévia. Os estudos de eficácia e segurança demonstraram benefício em ambos os grupos, e a bula, bem como as notas técnicas do Ministério da Saúde e da Anvisa, deixam claro que a vacinação não depende de histórico prévio de dengue. (D) Embora a vacinação gratuita pelo SUS esteja, inicialmente restrita à faixa etária de 10 a 14 anos devido à limitação de doses e à estratégia de priorização epidemiológica, a vacina Qdenga® está aprovada pela Anvisa para pessoas de 4 a 60 anos e pode ser aplicada em adultos dentro dessa faixa etária. Não há proibição para adultos, sendo que existe contraindicações como gestação, lactação ou imunossupressão.
+
+33. Mulher, 19 anos, de etnia amarela, previamente higida, encontra-se em investigação no ambulatório de clínica médica, devido a trombose venosa profunda em membro inferior direito há 4 meses. Há 1 ano, apresentou perda fetal na $26^{a}$ semana gestacional, sem causa definida. Nega tabagismo e uso contínuo de medicações. Exame físico: livedo reticular em membros inferiores. Exames laboratoriais evidenciam plaquetopenia. A alteração mais associada ao quadro é:
+A) Presença do fator V de Leiden em heterozigose.
+B) Deficiência de proteína S.
+C) Deficiência de antitrombina III.
+D) Presença de anticoagulante lúpico.
+Ano: 2026
+Gabarito: D
+Explicação: (D) Com base na apresentação clínica (mulher jovem, trombose venosa profunda, perda fetal tardia na $26^{a}$ semana, livedo reticular e plaquetopenia), a principal hipótese diagnóstica é síndrome do anticorpo antifosfolipide (SAF). A SAF é uma trombofilia adquirida autoimune que atende aos critérios de 2023 - ACR/EULAR Antiphospholipid Syndrome Classification Criteria. Arthritis & Rheumatology com a combinação de um critério clínico (trombose/morbidade gestacional/plaquetopenia) e um critério laboratorial (anticoagulante lúpico, anticardiolipina ou anti- ẞ2-glicoproteína I). Comentários sobre os distratores: (A) Trata-se de trombofilia hereditária com predisposição genética à formação excessiva de coágulos sanguíneos (trombose), especialmente venoso. Frequentemente não cursa com morbidade gestacional tardia, livedo reticular plaquetopenia. e (B) Trata-se de trombofilia hereditária com predisposição genética à formação excessiva de coágulos sanguíneos (trombose), especialmente venoso. Frequentemente não cursa com morbidade gestacional tardia, livedo reticular plaquetopenia. e (C) Trata-se de trombofilia hereditária com predisposição genética à formação excessiva de coágulos sanguíneos (trombose), especialmente venoso. Frequentemente não cursa com morbidade gestacional tardia, livedo reticular plaquetopenia.
+
+34. Um adolescente de 16 anos é levado ao hospital com história de fadiga, febre e sangramentos gengivais há 3 semanas. Ao exame físico apresenta palidez, petéquias e linfadenomegalia cervical. Hemograma: Hb $8g/dL$; Leucocitos $35.000/mm^{3}$; Plaquetas $40.000/mm^{3}$ Presença de blastos no sangue periférico. Qual é o exame diagnóstico confirmatório mais indicado?
+A) Dosagem de ferritina
+B) Mielograma
+C) Biópsia de linfonodo
+D) Eletroforese de hemoglobina
+Ano: 2026
+Gabarito: B
+Explicação: (B) O mielograma confirma leucemia pela análise direta da medula óssea e caracterização dos blastos. Comentários sobre os distratores: (A) (C) (D) Ferritina: avalia ferro. Biópsia de linfonodo: útil para linfomas. Eletroforese: hemoglobinopatias.
+
+35. Homem de 70 anos procura a UBS, pois vem apresentando quadro progressivo de contrações musculares involuntárias, espasmos, câimbras dolorosas principalmente em membros e fraqueza. Refere perda de peso não intencional nos últimos meses e aumento de linfonodos cervicais em investigação. Ao exame físico, encontra-se discretamente desidrata Laboratoriais: Fósforo $6,2mg/dL$ Cálcio total $5,5mg/dL$ Creatinina $2,3mg/dL;$ Hemoglobina $13g/dL$. Considerando a principal hipótese diagnóstica, esperam-se as seguintes alterações laboratoriais adicionais:
+A) Hipouricemia e hipoglicemia
+B) Hipomagnesemia e hipouricemia
+C) Hipercalemia e hiperuricemia
+D) Hipocalemia e hiperuricemia
+Ano: 2026
+Gabarito: C
+Explicação: (C) Trata-se de um paciente com suspeita de sindrome de lise tumoral, pois tem forte suspeita de doença neoplásica e apresenta hiperfosfatemia, hipocalcemia sintomática e alteração da função renal. Segundo os critérios de Cairo-Bishop, as demais alterações laboratoriais esperadas são hipercalemia hiperuricemia Comentários sobre os distratores: (A) e Não há hipoglicemia associada, acido úrico se eleva (B) Não há alteração de magnésio envolvida e o ácido úrico se eleva (D) O potássio se eleva (hipercalemia)
+
+36. Homem de 62 anos, tabagista, com DPOC, chega ao pronto atendimento com dispneia, sonolência, FR 10irpm e uso de musculatura acessória. Gasometria: pH 7,28; $PaCO_{2}$ 62mmHg; $PaO_{2}$ 58mmHg. Após oxigênio suplementar, mantém rebaixamento do nível de consciência. Qual a melhor conduta inicial?
+A) Indicar intubação orotraqueal e ventilação mecânica invasiva.
+B) Iniciar ventilação mecânica não invasiva.
+C) Manter apenas oxigenoterapia de baixo fluxo e reavaliar em 6 horas.
+D) Instalar catéter nasal de alto fluxo.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O paciente apresenta insuficiência respiratória aguda hipercapnica com acidose (pH <7,35) e rebaixamento do nível de consciência, o que indica falência ventilatória e incapacidade de proteção de vias aéreas. Nessa situação, a ventilação não invasiva está contraindicada, sendo mandatória a intubação orotraqueal com ventilação mecânica invasiva. A decisão baseia- se no equilíbrio entre carga ventilatória elevada e falência da bomba respiratória, caracterizando descompensação grave. Comentários sobre os distratores: (B) A ventilação não invasiva é indicada na insuficiência respiratória hipercápnica por DPOC, porém está contraindicada em pacientes com rebaixamento do nível de consciência devido ao risco de aspiração e falha terapêutica. (C) Apenas oxigenoterapia não corrige a hipoventilação alveolar nem a retenção de $CO_{2}$ A manutenção dessa conduta pode agravar a hipercapnia e a acidose. (D) Apenas oxigenoterapia, mesmo em alto fluxo, não corrige a hipoventilação alveolar nem a retenção de $CO_{2}$ A manutenção dessa conduta pode agravar a hipercapnia e a acidose.
+
+37. Paciente de 58 anos, previamente hígido, procura pronto atendimento com história de febre há 2 dias, associada a tosse produtiva e dispneia progressiva. Na admissão, apresenta-se com extremidades frias, sonolento, com os seguintes sinais vitais: Tax 38,7°C, FC 112bpm, FR 26rpm, PA 92/58mmHg, Saturação de $O_{2}$ 91% em ar ambiente. Ao exame físico, observam-se estertores crepitantes em base pulmonar direita. Considerando o quadro clinico, qual a melhor conduta inicial nas primeiras horas de atendimento?
+A) Iniciar antibioticoterapia empírica imediata e monitorização clínica. Coleta de exames complementares e reposição volêmica otimizada após estabilização inicial do paciente.
+B) Coletar exames laboratoriais e hemoculturas, iniciar reposição volêmica e aguardar os resultados para definição da antibioticoterapia direcionada.
+C) Reconhecer quadro sugestivo de sepse de foco pulmonar, coletar exames iniciais e iniciar antibioticoterapia empírica associada a reposição volêmica, com monitorização em ambiente de emergência.
+D) Aplicar critérios de gravidade e iniciar antibioticoterapia empírica, priorizando confirmação do foco infeccioso por exames de imagem antes da reposição volêmica.
+Ano: 2026
+Gabarito: C
+Explicação: (C) O quadro clínico é compatível com sepse de provável foco pulmonar, evidenciado por sinais de infecção associados à disfunção orgânica (hipotensão, taquicardia, taquipneia e rebaixamento do nível de consciência). Nessa situação, a conduta inicial deve ser imediata e inclui reconhecimento precoce, coleta de exames (como lactato e hemoculturas), início de antibioticoterapia empírica de amplo espectro e reposição volêmica, além de monitorização em ambiente adequado. O atraso na instituição dessas medidas está associado a pior prognóstico, sendo fundamental sua implementação nas primeiras horas de atendimento. Comentários sobre os distratores: (A) O início precoce da antibioticoterapia é fundamental, porém deve ser precedido, sempre que possível, pela coleta de exames, especialmente hemoculturas, para identificação do agente etiológico e direcionamento terapêutico posterior. Reposição volêmica deve ser conduta imediata. (B) Embora a coleta de exames e hemoculturas seja recomendada, não se deve postergar o início da antibioticoterapia para aguardar resultados laboratoriais. O atraso no antibiótico em pacientes com sepse está associado a pior desfecho clínico. (D) A aplicação de critérios de gravidade e o início de antibiótico são adequados, porém a reposição volêmica é medida prioritária em pacientes com hipotensão ou sinais de hipoperfusão. A confirmação do foco infeccioso por imagem não deve atrasar a estabilização hemodinâmica.
+
+38. Homem de 58 anos chega ao pronto atendimento com dor torácica há 2 horas. ECG mostra supradesnivelamento do segmento ST em parede anterior. O hospital não possui hemodinâmica e o tempo estimado para transferência é de 150 minutos. Qual a melhor conduta inicial?
+A) Indicar angiografia coronariana eletiva após 72 horas.
+B) Transferir para angioplastia primária.
+C) Manter apenas terapia medicamentosa via oral.
+D) Iniciar terapia fibrinolítica imediatamente, se não houver contraindicações.
+Ano: 2026
+Gabarito: D
+Explicação: (D) No IAM com supradesnivelamento do ST, a reperfusão imediata é a prioridade. Quando a angioplastia primária não pode ser realizada dentro de 120 minutos do primeiro contato médico, a terapia fibrinolítica deve ser instituída prontamente, desde que não haja contraindicações. Essa estratégia reduz mortalidade e deve ser seguida de transferência para centro com capacidade de ICP nas próximas 3-24 horas. Comentários sobre os distratores: (A) A angiografia eletiva não é indicada em fase aguda de IAM com supra. O tratamento deve ser imediato, com estratégia de reperfusão urgente. (B) A angioplastia primária é o método preferencial, porém perde beneficio quando não realizada dentro do tempo recomendado (até 120 minutos). Nesse cenário, atrasar reperfusão piora prognóstico. (C) A ausência de reperfusão em IAM com supra está associada a maior mortalidade e complicações. Terapia exclusivamente medicamentosa não é adequada.
+
+39. Mulher cis, de 52 anos, chega ao pronto-socorro com dispneia súbita e ortopneia. PA 180/100mmHg, $SatO_{2}$ 86%. Radiografia de tórax mostra opacidades alveolares bilaterais peri- hilares simétricas. Gasometria: pH 7,30; $pCO_{2}$ 50mmHg; 60mmHg. Qual a principal hipótese diagnóstica?
+A) Edema agudo de pulmão cardiogênico
+B) Síndrome do desconforto respiratório agudo
+C) Pneumonia adquirida na comunidade
+D) Tromboembolismo pulmonar
+Ano: 2026
+Gabarito: A
+Explicação: (A) O quadro clínico de dispneia súbita, hipertensão arterial, hipoxemia e padrão radiológico em "asa de borboleta" é típico de edema agudo de pulmão cardiogênico. A gasometria evidencia insuficiência respiratória com retenção de $CO_{2}$, sugerindo fadiga ventilatória. A interpretação conjunta da radiografia e da gasometria é fundamental para o diagnóstico. Comentários sobre os distratores: (B) A SDRA cursa com infiltrado bilateral, porém geralmente ocorre em contexto de sepse ou trauma, com pressão arterial não elevada e sem padrão clássico peri-hilar. (C) A pneumonia costuma apresentar infiltrado localizado ou lobar, associado a febre e leucocitose, não sendo típico o padrão em "asa de borboleta". (D) O TEP pode causar dispneia súbita, porém a radiografia frequentemente é normal ou com achados inespecíficos, não apresentando congestão alveolar difusa.
+
+40. Paciente de 21 anos, com antecedente de diabetes mellitus tipo 1, refere quadro gripal há cerca de uma semana, associado a inapetência, o que levou à omissão de doses de insulina. Procura atendimento de urgência com náuseas, vômitos, dor abdominal e sinais de desidratação. Exames laboratoriais evidenciam: glicemia $420mg/dL$ pH 7,1; bicarbonato 3mEq/L. Diante do quadro, a conduta inicial mais adequada é:
+A) Administração de bicarbonato de sódio intravenoso.
+B) Hidratação e dosagem de potássio sérico.
+C) Iniciar infusão de insulina regular intravenosa.
+D) Iniciar insulina subcutânea de ação intermediária.
+Ano: 2026
+Gabarito: ANULADA
+Explicação: N/A
+
+41. Paciente de 4 meses é admitido em enfermaria de pediatria com quadro de tosse, secreção clara em via aérea superior há 3 dias, e os pais referem piora nas últimas 12 horas com diminuição das mamadas, temperatura de $37,5^{\circ}C$ e taquipneia. Ao exame físico, apresenta FR 64ipm, FC140bpm, tiragem intercostal e subdiafragmática leve, sibilos e roncos difusos, saturação de 91%. Com base no quadro clínico e diagnóstico mais provável, qual a conduta mais adequada?
+A) Administrar corticosteroide sistêmico e manter em observação ambulatorial, devido ao padrão inflamatório das vias aéreas.
+B) Iniciar antibioticoterapia adequada para a idade, juntamente com suporte ventilatório não invasivo para diminuir as complicações.
+C) Realizar resgate com salbutamol inalatório, associado a corticoterapia sistêmica; se saturações abaixo de 90%, indicar oxigenoterapia.
+D) Devem ser realizadas medidas de suporte para manter hidratação adequada e oxigenoterapia por cânula nasal de
+Ano: 2026
+Gabarito: D
+Explicação: PEDIATRIA  (A) Tratamento: Não há medicamento específico. Foca-se em suporte respiratório e hidratação. Sinais de Alerta: aceleração do desconforto respiratório, aparência enferma, cianose, letargia e dificuldade na ingestão oral. Comentários sobre os distratores: (A) Ribavirina, um antiviral ativo in vitro contra o virus sincicial respiratório (VSR), influenza e sarampo, não tem eficácia clínica comprovada e não é mais recomendada, paciente sem indicação de intubação. (B) O uso de antibiótico não tem evidências qualificadas pela etiologia essencialmente viral da BVA3,8,10,14; nível B de evidência8, 10. Idem quanto à prescrição de macrolidios para a tosse, que pode persistir por até 3 semanas após BVA. (C) Corticoides sistêmicos parecem ser benéficos quando administrados a pacientes portadores de doenças que respondem a corticoterapia (p. ex., displasia broncopulmonar, asma), mas não há benefício para lactentes previamente saudáveis.
+
+42. Criança de 8 anos dá entrada no hospital com queixa de evacuações dolorosas há 4 meses. A maior relata que a criança evacua cerca de duas vezes por semana, fezes endurecidas e de grande volume, além de apresentar episódios ocasionais de escape fecal. Refere dor abdominal associada à evacuação, que se intensificou nas últimas 24 horas. Considerando esse quadro clínico, o diagnóstico mais provável é:
+A) Doença orgânica intestinal
+B) Síndrome do intestino irritável
+C) Constipação funcional
+D) Adenite mesentérica
+Ano: 2026
+Gabarito: C
+Explicação: (C) De acordo com os critérios de Roma IV, a constipação funcional é diagnosticada na presença de dois ou mais critérios (menos de duas evacuações por semana, escape fecal, história de retenção excessiva, fezes endurecidas ou de grande diâmetro, dor à evacuação) por pelo menos 1 mês. O tratamento envolve desimpactação, manutenção com laxantes osmóticos (polietilenoglicol) e modificações dietéticas/comportamentais.
+
+43. Um recém-nascido, com 7 dias de vida, retorna ao hospital com história de recusa alimentar e irritabilidade. Ao exame físico, apresenta taquipneia, palidez cutânea, sinais de desidratação, além de coto umbilical em mumificação com odor fétido e pequenas lesões vesico-bolhosas, com áreas de hiperemia espalhadas pelo abdômen e membros superiores. Considerando o quadro clínico apresentado, a conduta adequada é:
+A) Internar, iniciar antibioticoterapia empírica intravenosa de amplo espectro após coleta de culturas e suporte clínico intensivo.
+B) Prescrever antibiótico via oral e tópico, reorientar cuidados com o coto umbilical e monitorar febre, com retorno em 48 horas para reavaliação.
+C) Internar, solicitar hemocultura e cultura de secreção das lesões, iniciar antibioticoterapia de acordo com os resultados das culturas.
+D) Realizar cuidados locais do coto umbilical na unidade, instituir antibiótico via oral e tópico para casa e orientar sinais de alarme.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O recém-nascido apresenta sinais clássicos de sepse neonatal tardia: comprometimento sistêmico (taquipneia, palidez, desidratação), associado a focos infecciosos evidentes (onfalite e lesões cutâneas sugestivas de impetigo) e a abordagem padrão para sepse neonatal: internação imediata, coleta de culturas (hemocultura) e início precoce de antibioticoterapia intravenosa de amplo espectro. Comentários sobre os distratores: (B) Erro por tratar apenas foco cutâneo e ignorar sinais sistêmicos de sepse. (C) Erro por manejo ambulatorial inadequado em quadro potencialmente grave. (D) Erro por atraso terapêutico diante de sinais claros de infecção sistêmica.
+
+44. Recém-nascido, 38 semanas e 2 dias, parto vaginal, líquido amniótico claro. Ao nascer, apresentou choro fraco, respiração irregular, hipotonia, FC 88bpm e cianose de extremidades. Após os cuidados iniciais, a equipe inicia ventilação com pressão positiva (VPP) com máscara e balão. Depois de 30 segundos de VPP eficaz, apresenta FC 70bpm. Realizados mais 30 segundos de VPP com técnica corrigida, com nova FC 55bpm. Com base nas diretrizes de reanimação neonatal, o próximo passo é:
+A) Iniciar massagem cardíaca coordenada com VPP ao oxigênio (3:1), considerar acesso venoso para adrenalina, se FC permanecer < 60bpm.
+B) Realizar intubação orotraqueal, providenciar acesso venoso para adrenalina, uma vez que $FC<60bpm$
+C) Manter VPP e oxigênio a 21% e aguardar mais 60 segundos para decisão de massagem cardíaca.
+D) Iniciar massagem cardíaca coordenada e realizar intubação orotraqueal imediata, pois com FC < 60bpm deve-se suspender VPP.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Após 1º ciclo de VPP eficaz, se a FC permanece < 60 bpm, a conduta é: Iniciar massagem cardíaca coordenada com VPP (relação 3:1) Oferta de oxigênio (geralmente aumentar até 100%) Garantir via aérea eficaz (máscara bem ajustada ou considerar via avançada) Se após 60 segundos de massagem + VPP, a FC continuar 60 bpm, deve-se indicar adrenalina < (preferencialmente via EV) Comentários sobre os distratores: (B) A intubação orotraqueal pode ser considerada, mas não substitui a massagem cardiaca, além do que, nunca se deve suspender a VPP em um RN com bradicardia, a adrenalina (1:1.000) pode ser administrada na cânula orotraqueal. (C) A FC já está < 60 bpm (55 bpm) não se deve aguardar. Além disso, não se mantém $O_{2}$ a 21% nessa fase. (D) Correto iniciar massagem cardíaca, porém é incorreto suspender VPP ventilação deve ser mantida e coordenada com a massagem. A intubação pode ser feita, mas não é obrigatoriamente imediata antes de iniciar compressões.
+
+45. Recém-nascido, 32 semanas e 4 dias, nascido por cesariana indicada por pré-eclampsia grave materna, Apgar $5/7,$ líquido com mecônio $+/4+$. Evolui nas primeiras horas de vida com desconforto respiratório progressivo, caracterizado por taquipneia, gemência, retrações subcostais e necessidade crescente de oxigênio, sendo encaminhado à UTI neonatal. Radiografia de tórax com padrão reticulogranular difuso, presença de broncograma aéreo e redução do volume pulmonar. Qual é o principal mecanismo fisiopatológico responsável pelo quadro apresentado?
+A) Retardo e falha na reabsorção do líquido pulmonar fetal, diminuição da absorção de sódio pelos canais epiteliais, reduzindo a passagem de líquido dos alvéolos para o intersticio e circulação.
+B) Deficiência de surfactante, levando ao aumento da tensão superficial alveolar, colapso alveolar difuso, redução da complacência pulmonar e prejuízo das trocas gasosas.
+C) Imaturidade do centro respiratório, que causa alternância progressiva entre períodos de respiração normal e pausas respiratórias, com respiração periódica e apneia sustentada por no mínimo 30 segundos.
+D) Presença de líquido meconial, que leva à diminuição da tensão superficial alveolar e colapso alveolar, devido a obstruções dos bronquíolos adjacentes, comprometendo as trocas gasosas.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Sindrome da membrana hialina comum em RN pré- termo (32 semanas) com fator de risco (pré-eclampsia associada à prematuridade) e o desconforto da sindrome da membrana hialina tem início nas primeiras horas de vida. Descrição da radiografia de tórax é típica da doença. Fisiopatologia correta: deficiência de surfactante, aumento da tensão superficial alveolar, colapso alveolar (atelectasia difusa), redução da complacência pulmonar com prejuízo das trocas gasosas. Comentários sobre os distratores: (A) Taquipneia transitória do RN ocorre por retardo na absorção do líquido pulmonar fetal (ENaC) (fisiopatologia correta). Porém, é mais comum em RN termo ou pré-termo tardio e a radiografia de tórax mostra hiperinsuflação, não redução de volume, e não apresenta broncograma aéreo típico, descrição incompatível com o quadro radiológico e gravidade. (C) Apneia da prematuridade decorre de imaturidade do centro respiratório, manifesta-se com pausas respiratórias assintomáticas de 20 segundos e/ou pausas respiratórias sintomáticas de 10 segundos com bradicardia e dessaturação. Sua manifestação clínica não cursa com desconforto respiratório progressivo e tais achados evidenciados na radiografia de tórax. (D) Sindrome de aspiração meconial ocorre em RN termo ou pós-termo associada a líquido meconial espesso. Tratando-se desta doença, a definição da fisiopatologia está incorreta, o mecônio causa inativação do surfactante + inflamação + obstrução, levando frequentemente a hiperinsuflação, não apenas colapso. A radiografia de tórax tipica seria um padrão heterogêneo, não reticulogranular difuso com hipoinsuflação.
+
+46. Menino, 6 anos e 2 meses, é levado à UBS por preocupação com "baixa estatura" em relação aos colegas. Ao exame, apresenta escore Z de estatura para idade <-2, com velocidade de crescimento reduzida no último ano. Não há sinais de doenças crônicas evidentes. Aguarda exames complementares, como idade óssea, TSH e IGF-1. Considerando este quadro clínico e os exames complementares solicitados, a fisiopatologia que melhor explica a principal hipótese diagnóstica é:
+A) O crescimento linear é principalmente dependente do neuroeixo e do TSH, e nesta faixa etária o crescimento é predominantemente influenciado pela qualidade nutricional.
+B) A redução de GH causa aumento de IGF-1, levando ao comprometimento do crescimento ósseo e aumento do risco de osteoporose juvenil.
+C) A baixa estatura ocorre por alterações de IGF-1, que inibe diretamente a placa epifisária e prejudica a regulação promovida por fatores nutricionais.
+D) A deficiência de GH leva à redução da produção hepática de IGF-1, comprometendo a proliferação das cartilagens de crescimento.
+Ano: 2026
+Gabarito: D
+Explicação: (D) A deficiência do hormônio do crescimento (GH) leva à redução da produção hepática de IGF-1, que é o principal mediador do crescimento linear. O IGF-1 atua na placa epifisária, estimulando a proliferação e diferenciação dos condrócitos. Sua redução compromete diretamente a ossificação endocondral, resultando em baixa estatura e diminuição da velocidade de crescimento. Comentários sobre os distratores: (A) O crescimento linear não é independente do eixo GH- IGF-1 esse é o principal regulador hormonal do crescimento. O TSH e os hormônios tireoidianos também são importantes, mas não atuam isoladamente nem substituem o papel do GH-IGF-1. A nutrição influencia o crescimento, porém não é o único determinante. (B) O GH não reduz o IGF-1; ao contrário, ele estimula sua produção. Portanto, aumento de GH não leva à diminuição do crescimento ósseo. Além disso, a associação direta com osteoporose juvenil não faz parte da fisiopatologia típica do eixo GH-IGF-1 nesse contexto. (C) O IGF-1 não inibe a placa epifisária ele é um estimulador fundamental do crescimento ósseo. Apesar de fatores nutricionais influenciarem seus níveis, a afirmação erra ao atribuir ao IGF-1 um efeito inibitório, o que contraria a fisiologia normal.
+
+47. Criança, 3 anos, apresenta febre alta por 4 dias, com melhora súbita e surgimento de exantema róseo em tronco. Sem sintomas respiratórios associados. Assinale o diagnóstico mais provável.
+A) Sarampo em resolução
+B) Exantema súbito clássico
+C) Rubéola atípica
+D) Eritema infeccioso inicial
+Ano: 2026
+Gabarito: B
+Explicação: (B) O exantema súbito caracteriza-se por febre alta seguida de aparecimento do exantema após defervescência. Comentários sobre os distratores: (A) Sarampo mantém sintomas respiratórios e febre persistente. (C) Rubéola apresenta febre baixa e linfadenopatia. (D) Eritema infeccioso inicia com rash facial típico.
+
+48. Uma criança de 4 anos e 3 meses é levada para consulta de rotina em um ambulatório secundário de pediatria. Durante a anamnese, a mãe relata que o filho é ativo, mas ela tem dúvidas se ele está "no tempo certo" em relação aos colegas da escola. Ao realizar o exame físico e a observação direta do desenvolvimento, o médico solicita que a criança realize algumas tarefas para avaliar os marcos do DNPM. Qual conjunto de achados adequados é esperado como marco de desenvolvimento nesta idade para esta criança?
+A) Consegue amarrar sapatos, escreve o próprio nome, apresenta ansiedade de separação com estranhos e desenha figuras humanas detalhadas.
+B) Alterna os pés ao subir escadas, constrói torres de 3-5 cubos e possui vocabulário de aproximadamente 50 palavras, sem formar frases.
+C) Copia um círculo, veste-se sozinho (exceto amarrar sapatos), pula em um pé só e articula frases completas usando conectivos.
+D) Copia um losango, anda de bicicleta de duas rodas sem auxílio e já possuí algum domínio de leitura e escrita funcional.
+Ano: 2026
+Gabarito: C
+Explicação: (C) A alternativa está correta pois descreve os marcos típicos de uma criança de 4 anos. Nesta idade, no aspecto motor grosseiro, a criança já consegue pular em um pé só; no motor fino, a cópia do círculo é um marco clássico (a cópia do quadrado vem aos 5 anos); na linguagem, espera-se que já forme frases completas e complexas; e na adaptação social, a independência para vestir-se (com exceção de tarefas complexas como laços) é esperada. Comentários sobre os distratores: (A) Descreve marcos do final do sexto ano de vida (6 anos). (B) Esses marcos (torre de 3 cubos e vocabulário de 50 palavras) são típicos de uma criança de 18 a 24 meses. Uma criança de 4 anos já possui um vocabulário muito mais extenso e constrói torres com 10 ou mais cubos. (D) Estes são marcos mais tardios. A cópia do losango e a bicicleta de duas rodas surgem geralmente por volta dos 6 a 7 anos. A alfabetização funcional (leitura e escrita) também é um marco esperado para o final do período pré-escolar e início do escolar (6-7 anos), não sendo exigida aos 4 anos.
+
+49. Paciente A.R.S., 2 anos e 8 meses, sexo masculino. Possui história familiar de atraso de fala em primo paterno. Pais relatam pouco contato visual, atraso de linguagem e preferência por brincar sozinho, além de irritabilidade diante de mudanças de rotina. Ao exame físico, observam-se contato visual reduzido e movimentos repetitivos das mãos. Foi aplicado o teste de triagem M-CHAT-R/F, com resultado de alto risco. Considerando os dados clínicos e o teste aplicado, qual é a interpretação mais adequada?
+A) Resultado do M-CHAT-R/F de alto risco indica necessidade de avaliação multidisciplinar especializada para diagnóstico de transtorno do espectro autista.
+B) Resultado do M-CHAT-R/F de alto risco sugere diagnóstico de deficiência intelectual global, sendo necessária avaliação multidisciplinar.
+C) Resultado do M-CHAT-R/F de alto risco indica necessidade de complementar a avaliação com questionário SNAP IV para diagnóstico definitivo.
+D) Resultado do M-CHAT-R/F de alto risco indica atraso motor global com necessidade de avaliação fisioterapêutica, fonoaudiológica e psicológica.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O M-CHAT-R/F é um instrumento de triagem para autismo, utilizado principalmente entre 16 e 30 meses. Um resultado de alto risco não confirma o diagnóstico, mas indica a necessidade de avaliação diagnóstica especializada, geralmente realizada por equipe multiprofissional utilizando instrumentos diagnósticos estruturados (como ADOS-2) associados à avaliação clínica. Comentários sobre os distratores: (B) O M-CHAT-R/F não avalia deficiência intelectual e não permite diagnóstico de comprometimento cognitivo global. Seu objetivo é identificar crianças com risco para TEA, não determinar perfil cognitivo. (C) Embora o resultado indique alto risco para autismo, o diagnóstico de TEA é clínico e deve ser confirmado por avaliação especializada. Portanto, o teste não estabelece diagnóstico definitivo. (D) O M-CHAT-R/F não é um instrumento para avaliação motora, e seus itens são voltados para comunicação social e comportamentos repetitivos. Assim, não permite concluir atraso motor global.
+
+50. Criança de 2 anos de idade é levada pelos pais ao pronto atendimento logo após quadro de perda de consciência, seguido de movimentação tônica e clônica de membros, com recuperação total após 3 minutos. Pais negam antecedentes relevantes e referem coriza e tosse discretos há 1 dia, sem febre. Negam episódios semelhantes anteriores e patologias de base. Pai refere que apresentava convulsões na infância. Ao exame: bom estado geral, alerta e vigil, calmo, ativo e reativo, FR 30ipm, FC 105bpm, T $38,3^{\circ}C$, avaliação neurológica, respiratória, cardiológica e abdominal normais para a idade. Qual a conduta mais adequada para o paciente em questão?
+A) Internar para coleta de hemocultura e realização de punção lombar, iniciar antibioticoterapia de acordo com os resultados.
+B) Indicar punção lombar com análise do líquido cefalorraquidiano, após descartar, com tomografia computadorizada, a presença de edema cerebral.
+C) Internar a criança para avaliação complementar com exame de imagem, punção lombar e eletroencefalograma.
+D) Indicar observação clínica breve, sem necessidade de exames complementares específicos, e orientação à família quanto à benignidade do quadro, apesar do risco de recorrência.
+Ano: 2026
+Gabarito: D
+Explicação: (D) A descrição do quadro clínico é de uma crise febril simples, ou seja, crise em vigência (ou após) febre, tônico-clônico generalizada, autolimitada, sem alteração neurológica e sem reentrada. Dessa forma, os exames complementares para diagnóstico específicos da convulsão são desnecessários, pois o diagnóstico é eminentemente clínico. Parte da conduta nesses casos é orientação familiar, para tranquilizar e ensinar sinais de alarme. Comentários sobre os distratores: (A) Não há evidências ao exame clínico da criança para o diagnóstico de meningite, assim sendo, punção lombar e antibioticoterapia não estão indicados. (B) Não há nenhuma evidência clínica de encefalite, já que a criança apresenta crise febril simples, sem alteração neurológica após o evento, contraindicando investigações mais invasivas. (C) A crise não é complexa, pois não é focal, não apresentou reentrada, teve duração inferior a 5 minutos e não evoluiu com alterações neurológicas, mesmo que transitórias, contraindicando internação e exames complementares.
+
+51. Uma criança de 2 meses vem à consulta na UBS acompanhada da mãe, que relata raias de sangue nas fezes há uma semana, sem outros sintomas. Criança previamente hígida, nascida a termo, sem intercorrências neonatais, com ganho de peso e desenvolvimento adequados para a idade. Recebe apenas fórmula láctea, com preparo adequado. O exame físico está normal. Considerando a principal hipótese para o quadro, qual a conduta mais adequada?
+A) Realizar troca de fórmula para fórmula láctea sem lactose e manter acompanhamento ambulatorial em 2 a 4 semanas.
+B) Realizar troca de fórmula para fórmula extensamente hidrolisada e programar teste de provocação oral em 2 a 4 semanas.
+C) Manter fórmula atual, iniciar antibioticoterapia via oral e reavaliar em 2 a 4 semanas.
+D) Realizar troca de fórmula para fórmula de aminoácidos livres e programar teste de provocação após quatro semanas de uso da nova fórmula.
+Ano: 2026
+Gabarito: B
+Explicação: (B) A principal hipótese é proctocolite alérgica (alergia à proteína do leite de vaca). A conduta inicial é exclusão da proteína íntegra do leite de vaca (com troca por fórmula extensamente hidrolisada/semi-elementar), e observação por 2 a 4 semanas, seguido de teste de provocação oral (TΡΟ) diagnóstico. O diagnóstico definitivo ocorre quando há melhora clínica no período de exclusão e recorrência dos sintomas após o ΤΡΟ. Comentários sobre os distratores: (A) A lactose é o principal carboidrato do leite e sua exclusão não tem efeito na alergia à proteína do leite de vaca, que é uma reação imunológica às proteínas do leite (caseína e proteínas do soro). A intolerância à lactose é um distúrbio de digestão de carboidratos por deficiência de lactase, incomum em lactentes jovens, e não está associada a sangramento intestinal. (C) A exclusão da proteína do leite de vaca deve ser feita inicialmente com fórmula extensamente hidrolisada, que resolve a maioria dos casos. Fórmulas de aminoácidos são indicadas quando há falha terapêutica ou em apresentações mais graves (como perda de peso ou manifestações IgE-mediadas). O teste de provocação oral diagnóstico em tempo oportuno (2 a 4 semanas) é essencial para confirmar o diagnóstico e evitar restrições alimentares desnecessárias. (D) A única queixa é de raias de sangue nas fezes, não há sintomas sugestivos de infecção (diarreia, febre ou queda do estado geral). Não há indicação de uso de antibiótico.
+
+52. Criança, 2 anos, na sala de emergência em regular estado geral, cianótica, sonolenta, temperatura de $36^{\circ}C$, taquipneica, frequência respiratória de 48irpm, tiragem intercostal e subcostal, saturação em ar ambiente de 88%, FC 220bpm, pressão arterial de 70x40mmHg e tempo de enchimento capilar de 4 segundos. Instalada monitorização, máscara não reinalante com 15 litros/minuto e puncionado acesso venoso periférico. É constatada no monitor a seguinte imagem, confirmada pelo ECG. Qual conduta deve ser realizada?
+A) Desfibrilação ventricular 1 Joule/kg
+B) Adrenalina endovenosa $0,1~mg/kg$
+C) Adenosina endovenosa $0,1~mg/kg$
+D) Expansão com soro fisiológico 0,9% 20mL/kg
+Ano: 2026
+Gabarito: C
+Explicação: (C) A menor apresenta quadro de taquicardia de complexo estreito com onda p ausente, cujo descompensado mais provável e de taquicardia supraventricular necessitando de tratamento com urgência Comentários sobre os distratores: (A) Uma das opções para tratamento dessa criança seria a cardioversão sincronizada. A desfibrilação ventricular é indicada apenas em casos de parada cardiorrespiratória secundária a ritmos chocáveis (B) Adrenalina endovenosa não é indicada para tratamento de taquicardia supraventricular (D) A criança já apresenta quadro de choque cardiogênico descompensado a infusão de expansão com cristaloide pode piorar o quadro
+
+53. Criança de 3 anos, previamente hígida, é trazida à UBS por terceiro episódio de tosse e sibilância nos últimos 6 meses, sempre associados a quadros de resfriado, com intervalos assintomáticos entre as crises. Não há sintomas respiratórios entre os episódios, nem história familiar de asma ou atopia. Ao exame atual, apresenta sibilos expiratórios difusos e boa resposta a broncodilatador inalatório. Qual a conduta mais adequada para o manejo deste caso na atenção primária?
+A) Solicitar radiografia de tórax e espirometria para confirmar o diagnóstico de asma e, após o resultado, programar acompanhamento em serviço especializado.
+B) Iniciar corticoide inalatório diário em baixa dose como terapia de controle contínuo, considerando o quadro de asma persistente.
+C) Orientar broncodilatador de resgate e reavaliar padrão de recorrência dos episódios antes de instituir terapia de controle diária.
+D) Associar corticoide via oral nos episódios de sibilância, como forma de prevenir a progressão do quadro para asma persistente.
+Ano: 2026
+Gabarito: C
+Explicação: (C) O quadro descrito é típico de sibilância associada a infecção viral em pré-escolar, com episódios apenas durante viroses, intervalos totalmente assintomáticos e sem forte contexto atópico, o que torna precoce rotular como asma persistente. Na atenção primária, a conduta adequada é manejar a crise aguda (bronco dilatador inalatório conforme protocolo) e acompanhar a evolução clínica, observando frequência, gravidade das crises e eventual surgimento de sintomas intercrises para, então, decidir por introdução de terapia de controle contínua. Comentários sobre os distratores: (A) Espirometria é de difícil realização e interpretação abaixo de 5-6 anos, e radiografia de tórax não é necessária em quadro típico de sibilância viral recorrente sem sinais de complicação ou atipia; o diagnóstico é predominantemente clínico. (B) Superestima o diagnóstico de asma persistente, iniciando corticoide inalatório de uso continuo sem critérios suficientes (ausência de sintomas intercrises, padrão ainda compatível com sibilância viral). (D) O uso repetido e prolongado de corticoide sistêmico a cada episódio de sibilância viral não é recomendado devido ao perfil de eventos adversos e não previne a evolução para asma; corticoide sistêmico, quando indicado, deve ser em cursos curtos e em crises moderadas ou graves.
+
+54. Uma adolescente de 13 anos e 10 meses comparece à UBS para consulta. Durante a entrevista confidencial, relata que mantém relações sexuais com namorado de 23 anos há vários meses, solicita ao médico orientação contraceptiva e que não conte a ninguém. Qual deve ser a conduta adequada para este caso?
+A) Notificar o caso às autoridades competentes e acionar a rede de proteção à criança e ao adolescente.
+B) Respeitar o sigilo da consulta, orientando a adolescente e estimulando diálogo com os responsáveis.
+C) Orientar a adolescente para dialogar com os pais, aguardar e respeitar a decisão familiar.
+D) Registrar em prontuário e orientar a contracepção, mantendo o sigilo solicitado pela adolescente.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Nos casos de suspeita ou confirmação de violência sexual contra adolescentes, o sigilo profissional pode e deve ser quebrado para proteção da vítima. O médico tem obrigação legal de notificação aos órgãos competentes (Conselho Tutelar ou vigilância) conforme Estatuto da Criança e do Adolescente e normas do Ministério da Saúde. Comentários sobre os distratores: (B) Incorreta porque o sigilo não pode ser mantido quando há risco ou violência contra o adolescente. (C) Incorreta porque a comunicação apenas à família pode colocar a vítima em risco e não substitui a notificação obrigatória. (D) Incorreta porque a suspeita já é suficiente para desencadear notificação e proteção institucional.
+
+55. Criança de 2 anos e 4 meses, com tetralogia de Fallot, dá entrada na UBS com "crise de hipoxemia". Considerando a fisiopatologia da doença em questão, qual a melhor posição para acomodar a criança na maca de exame físico visando melhorar a hipoxemia?
+A) Posição de Trendelemburg.
+B) Posição genupeitoral.
+C) Decúbito dorsal com as pernas esticadas.
+D) Decúbito ventral com as pernas esticadas.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Posição genupeitoral Aumenta a resistência vascular sistêmica, reduz o shunt direita-esquerda e favorece maior fluxo sanguíneo pulmonar, melhorando a oxigenação sendo a conduta clássica nas crises hipercianóticas da Tetralogia de Fallot. Comentários sobre os distratores: (A) Incorreta. Apesar de aumentar o retorno venoso, não é eficaz na crise hipoxêmica da Tetralogia de Fallot, pois não corrige adequadamente o shunt direita-esquerda. (C) Incorreta. Não promove aumento da resistência vascular sistêmica nem melhora significativa do fluxo pulmonar, mantendo o quadro de hipoxemia. (D) Incorreta. Também não modifica de forma relevante a hemodinâmica necessária para reduzir o shunt direita-esquerda.
+
+56. Uma menina de 7 anos é levada ao ambulatório de pediatria pela mãe, devido ao aparecimento de desenvolvimento mamário há cerca de 6 meses, associado a crescimento acelerado e surgimento recente de odor axilar. Não há relato de uso de medicamentos hormonais ou doenças crônicas. Ao exame físico, apresenta estágio II de Tanner para mamas, sem desenvolvimento de pelos pubianos. A estatura encontra-se acima do percentil esperado para a idade, com avanço recente da velocidade de crescimento. Qual é o exame inicial mais indicado para investigação deste quadro clínico?
+A) Análise sérica de PTHI
+B) Análise sérica de TSH
+C) Análise sérica de GH e IGF-1
+D) Análise sérica de LH e FSH
+Ano: 2026
+Gabarito: D
+Explicação: (D) Avaliam ativação do eixo hipotálamo-hipófise-gonadal. Comentários sobre os distratores: (A) Exame não avalia a puberdade. (B) Exame não avalia a puberdade. (C) Exame não avalia a puberdade.
+
+57. Um menino de 8 anos é acompanhado em ambulatório pediátrico por apresentar três episódios de infecção do trato urinário febril nos últimos 12 meses, todos confirmados por urocultura positiva para Escherichia coli e tratados adequadamente. A mãe relata que, durante os episódios, a criança apresentou febre alta, dor lombar e mal-estar. Entre os episódios infecciosos, a criança permanece assintomática. Ao exame físico atual, não há alterações significativas. Qual é o exame indicado como primeira etapa da avaliação complementar?
+A) Ultrassonografia renal e das vias urinárias.
+B) Tomografia computadorizada de abdome e pelve.
+C) Cintilografia renal com DMSA.
+D) Uretrocistografia miccional seriada.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Primeiro exame de imagem para investigação. Comentários sobre os distratores: (B) TC: casos selecionados (C) DMSA: casos selecionados (D) UCM: etapa posterior.
+
+58. Uma criança de 3 anos é levada à Unidade Básica de Saúde (UBS) pela mãe, devido a infecções recorrentes desde o primeiro ano de vida. A mãe relata episódios frequentes de infecções bacterianas como pneumonia, otite e infecções de pele, que muitas vezes necessitam de antibióticos e internações. A criança apresenta baixo ganho de peso para a idade. Diante desses achados, qual é a conduta inicial mais adequada?
+A) Prescrever apenas vitaminas e acompanhar na UBS.
+B) Iniciar antibiótico profilático, suplementação de zinco e manter acompanhamento na UBS.
+C) Solicitar hemograma e avaliação imunológica inicial e referenciar ao especialista em imunologia/pediatria.
+D) Tranquilizar a mãe, pois infecções são comuns nessa idade, 8-10 episódios/ano são normais na primeira infância.
+Ano: 2026
+Gabarito: C
+Explicação: (C) A imunodeficiência primária deve ser suspeitada em crianças com infecções graves, frequentes ou de difícil tratamento, além de baixo ganho de peso ou necessidade repetida de antibióticos. Comentários sobre os distratores: (A) Devido quadro de infecções repetidas no primeiro ano é mandatório a investigação. (B) Sem necessidade de uso do antibiótico. (D) Não é normal tantas infecções no primeiro ano.
+
+59. Paciente com 5 anos é internado para investigação de febre persistente há 4 dias, acompanhada de faringite exsudativa, linfadenopatia cervical generalizada e baço a 3cm do rebordo costal esquerdo. O hemograma revelou linfocitose com 20% de atipia linfocitária. Durante a internação, a criança apresenta boa aceitação hidrica, mas os pais estão ansiosos quanto ao manejo. Com base no planejamento do cuidado e terapêutica adequados para este caso, a conduta correta é:
+A) Orientar hidratação e prescrever dexametasona oral para reduzir o tempo de febre e o volume dos linfonodos cervicais.
+B) Iniciar Aciclovir, para reduzir a carga viral e acelerar a resolução da esplenomegalia.
+C) Prescrever Amoxicilina para tratar a faringite exsudativa e prevenir febre reumática.
+D) Instituir repouso relativo, analgesia e a suspensão de atividades físicas e contato por 2 a 4 semanas.
+Ano: 2026
+Gabarito: D
+Explicação: (D) tratamento da mononucleose infecciosa é majoritariamente suporte. O repouso é indicado conforme a tolerância do paciente. A recomendação crucial no planejamento do cuidado é a suspensão de esportes de contato (devido ao risco de ruptura esplênica por conta da esplenomegalia), geralmente por um período de 21 a 28 dias após o início dos sintomas. Comentários sobre os distratores: (A) Corticoides não são usados rotineiramente. Eles são reservados apenas para complicações específicas, como obstrução iminente das vias aéreas por hipertrofia amigdaliana, anemia hemolítica autoimune ou trombocitopenia grave. (B) Antivirais como o Aciclovir podem reduzir a replicação viral, mas não apresentam benefício clínico significativo na duração da doença ou na gravidade dos sintomas em pacientes imunocompetentes. (C) Uso de antibióticos como Amoxicilina pode desencadear rash maculopapular clássico na mononucleose infecciosa e não há indicação por ser etiologia essencialmente viral.
+
+60. Menina de 4 anos comparece em UBS acompanhada da mãe, com queixa de dor e rigidez matinal, intermitente em tornozelos e joelhos, de início há 5 meses. Além da dor, apresenta edema e vermelhidão nas articulações, sem relato de trauma. Apresenta febre de $38^{\circ}C$ por 2 semanas, durante as quais apresentou exantema no tronco. Considerando os aspectos morfofuncionais do processo inflamatório articular nessa doença, a alteração diretamente relacionada ao dano articular progressivo é:
+A) Degeneração primária da cartilagem articular por sobrecarga mecânica.
+B) Hiperplasia sinovial com formação de pannus.
+C) Deposição de imunocomplexos localizada na cápsula articular.
+D) Redução transitória do líquido sinovial, predominantemente no período da manhã.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Na artrite idiopática juvenil, a inflamação crônica da sinóvia leva a hiperplasia sinovial e formação de pannus, tecido inflamatório proliferativo que invade progressivamente a cartilagem e o osso subcondral. Esse mecanismo explica a persistência da sinovite, a limitação funcional e o potencial de dano estrutural irreversível quando o processo inflamatório não é adequadamente controlado. Comentários sobre os distratores: (A) Essa descrição é mais compatível com processo degenerativo mecânico, como osteoartrose, e não com artrite inflamatória crônica da infância, na qual a sinóvia tem papel central no dano articular. (C) Embora mecanismos imunes participem da fisiopatologia, o dano articular progressivo não se limita à cápsula. A inflamação sinovial persistente compromete cartilagem, osso subcondral e estruturas periarticulares. (D) Na artrite inflamatória crônica, não há simples redução transitória do líquido sinovial como evento principal. O processo envolve sinovite proliferativa e efusão inflamatória, com potencial de lesão estrutural.

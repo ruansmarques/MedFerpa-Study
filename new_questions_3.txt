@@ -1,0 +1,269 @@
+61. Homem, 45 anos, previamente hígido, admitido em hospital secundário com dor abdominal em faixa no andar superior, de forte intensidade, com náuseas e vômitos há 24 horas. Exames laboratoriais revelam: amilase $1.200U/L$ (VR: $<110$), lipase $1.500U/L$ (VR: $<60$), hemoglobina $14,2g/dL$, hematócrito 43%, leucócitos $12.000/mm^{3},$ ureia $32mg/dL$, creatinina $0,8mg/dL$, PCR $120mg/L$. A hipótese diagnóstica principal é pancreatite aguda leve. Com base nos aspectos morfofuncionais e fisiopatológicos do pâncreas, qual das alternativas abaixo descreve o mecanismo inicial da doença?
+A) Obstrução persistente do ducto pancreático, levando ao refluxo do suco biliar para o parênquima exócrino.
+B) Ativação precoce de zimogênios, como o tripsinogênio em tripsina, no interior dos ácinos pancreáticos, resultando em autodigestão do tecido.
+C) Resposta inflamatória sistêmica desencadeada por citocinas, secundária à isquemia das células acinares.
+D) Lesão direta das células ductais pelo etanol, com consequente diminuição da síntese de bicarbonato e precipitação proteica.
+Ano: 2026
+Gabarito: B
+Explicação: CIRURGIA GERAL  (B) O mecanismo fisiopatológico inicial e central da pancreatite aguda envolve a ativação intracelular prematura de enzimas pancreáticas (como tripsinogênio em tripsina) no interior das células acinares, que leva a autodigestão do parênquima pancreático e a ativação de cascata inflamatória local e sistêmica. Comentários sobre os distratores: (A) Refluxo biliar pode ocorrer (coledocolitíase), mas não é o mecanismo inicial em todos os casos e não descreve o processo fisiológico celular primário (ativação enzimática). (C) A inflamação sistêmica é consequência da pancreatite, não o mecanismo desencadeante inicial. (D) Descreve alterações associadas à pancreatite crônica alcoólica (precipitação proteica e lesão ductal), mas não explica o evento agudo inicial de autodigestão.
+
+62. Um paciente de 52 anos é admitido em pronto-socorro com história de hematêmese volumosa há 4 horas. Apresenta-se desidratado, hipotenso (PA 90/50mmHg) e taquicárdico (FC 112bpm). Relata uso crônico de ácido acetilsalicílico (AAS) para profilaxia cardiovascular. Após estabilização hemodinâmica com infusão de cristaloides, é submetido à endoscopia digestiva alta (EDA), que evidencia gastrite hemorrágica difusa no corpo e antro gástrico, sem sangramento ativo no momento. Qual das alternativas abaixo descreve a alteração morfofuncional inicial mais relevante que levou à lesão mucosa?
+A) Inibição da via ciclooxigenase (COX) pelo AAS, reduzindo a produção de prostaglandinas e comprometendo a barreira de muco e bicarbonato.
+B) Vasoconstrição da microcirculação mucosa, reduzindo o fluxo sanguíneo local e favorecendo a retrodifusão de íons hidrogênio.
+C) Estimulação direta da via vagal pelo fármaco, aumentando a secreção ácida gástrica pelas células parietais.
+D) Colonização difusa da mucosa gástrica por Helicobacter pylori, promovendo resposta inflamatória crônica e erosão.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O uso crônico de anti-inflamatórios não esteroidais (AINEs), como o AAS, inibe a ciclooxigenase (COX), reduzindo a síntese de prostaglandinas ($PGE_{2}$ e $PGI_{2}$), substâncias essenciais para a manutenção da barreira mucosa gástrica, que estimulam a secreção de muco e bicarbonato e mantêm o fluxo sanguíneo mucosal. Comentários sobre os distratores: (B) A vasoconstrição ocorre secundariamente ao choque, mas não é a alteração primária induzida pelo fármaco. (C) O AAS não tem ação de estimulação vagal direta para secreção ácida. (D) Embora o H. pylori seja importante na patogênese de úlceras, o quadro agudo está diretamente relacionado ao uso do AINE (AAS).
+
+63. Um paciente de 48 anos é admitido em ambiente hospitalar com quadro de dor abdominal súbita e intensa, associada a náuseas e vômitos. A radiografia de abdome em pé revela presença de pneumoperitônio. O paciente tem história de úlcera péptica. Qual a conduta cirúrgica mais adequada?
+A) Laparotomia exploradora de urgência com sutura da úlcera perfurada e patch de epiplon (operação de Graham).
+B) Tratamento conservador com aspiração nasogástrica, antibioticoterapia de amplo espectro e inibidores de bomba de prótons.
+C) Vagotomia superseletiva de urgência para controle da secreção ácida.
+D) Gastrectomia parcial com reconstrução a Billroth II.
+Ano: 2026
+Gabarito: A
+Explicação: (A) A presença de pneumoperitônio indica perfuração de víscera oca, sendo uma emergência cirúrgica clássica. A conduta padrão para úlcera duodenal perfurada em paciente estável é a sutura da lesão associada à colocação de um retalho de epiplon (operação de Graham). Comentários sobre os distratores: (B) O tratamento conservador (método de Taylor) pode ser considerado apenas em casos selecionados com perfuração tamponada e estabilidade clínica completa, o que não é a conduta padrão geral. (C) A vagotomia superseletiva não é o procedimento de escolha na urgência para úlcera perfurada. (D) A gastrectomia parcial é cirurgia de grande porte e reservada para casos de perfurações recidivantes ou lesões muito extensas que impeçam a sutura simples.
+
+64. Um homem de 35 anos é vítima de acidente automobilístico (colisão frontal de alta energia) e dá entrada no pronto-socorro. Apresenta dor abdominal difusa e sinais de choque circulatório (PA 88x50mmHg, FC 124bpm, SatO2 93%). Foi realizado protocolo e, durante o exame FAST na sala de emergência, o médico detectou presença de líquido livre no recesso hepatorrenal (espaço de Morrison). Com base nos aspectos anatômicos deste espaço, assinale a alternativa correta:
+A) O espaço de Morrison localiza-se na cavidade peritoneal, limitado anteriormente pelo fígado e posteriormente pelo rim direito, sendo o local mais calino para acúmulo de líquido livre em decúbito dorsal.
+B) Trata-se de um recesso retroperitoneal, situado entre o lobo caudado do fígado e a glândula suprarrenal direita.
+C) O espaço de Morrison localiza-se na grande cavidade peritoneal, limitado anteriormente pelo fígado e posteriormente pelo rim esquerdo, sendo o local menos calino para acúmulo de líquido livre em decúbito dorsal.
+D) O acúmulo de líquido neste espaço no trauma é inespecífico e comumente decorre de perfuração de alça intestinal retroperitoneal.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O recesso hepatorrenal (espaço de Morrison) é uma área real/potencial da cavidade peritoneal, situada entre o lobo direito do fígado e o rim direito. Em decúbito dorsal (posição de exame), é a porção mais baixa da cavidade abdominal superior, o que a torna o local mais sensível para detecção de líquido livre (sangue no trauma) no ultrassom abdominal focado (FAST). Comentários sobre os distratores: (B) O espaço é intraperitoneal, e não retroperitoneal. (C) Limita-se com o rim direito, não esquerdo. (D) O líquido livre no trauma no Morrison é altamente sugestivo de hemoperitônio por lesão de órgãos maciços (fígado/baço).
+
+65. Paciente vítima de trauma abdominal fechado por colisão automobilística é admitido estável hemodinamicamente. Ao exame físico apresenta dor à palpação profunda em hipocôndrio direito. Realizado FAST (Focal Assessment with Sonography for Trauma), que foi positivo para líquido livre no espaço de Morrison. Diante da positividade do exame e da estabilidade do paciente, qual a conduta imediata?
+A) Indicar laparotomia exploradora imediata.
+B) Realizar tomografia computadorizada de abdome com contraste.
+C) Encaminhar para arteriografia hepática.
+D) Solicitar ressonância magnética de abdome.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Paciente estável hemodinamicamente com FAST positivo deve ser submetido à tomografia computadorizada (TC) de abdome com contraste para melhor caracterização das lesões e planejamento terapêutico (conservador vs cirúrgico). Comentários sobre os distratores: (A) Laparotomia imediata é indicada em pacientes instáveis. (C) Arteriografia é método terapêutico ou diagnóstico em casos de sangramento ativo documentado na TC (D) RM não é exame de escolha no trauma devido ao tempo de aquisição e complexidade.
+
+66. Um homem de 35 anos, vítima de queda de nível de cerca de 4 metros, é admitido no hospital secundário pelo SAMU. Durante a avaliação primária na sala de emergência, o paciente apresenta dispneia importante, FR 28irpm, SatO2 90% em máscara de oxigênio, murmúrio vesicular abolido em hemitórax esquerdo com maciez à percussão, PA 90/60mmHg e FC 118bpm. Após drenagem torácica tubular em selo d'água no $5^{\circ}$ espaço intercostal esquerdo, houve saída imediata de $1.200mL$ de sangue escuro, com melhora da dispneia e estabilização da PA para 110/70mmHg. Com base nas diretrizes do ATLS 10^{a} edição, qual a conduta mais adequada nesse momento?
+A) Indicar toracotomia de urgência imediatamente, devido ao volume de sangue drenado inicialmente.
+B) Manter observação clínica e monitorização em unidade de terapia intensiva, uma vez que o paciente apresentou melhora clínica e estabilização hemodinâmica.
+C) Realizar tomografia computadorizada de tórax para avaliar a origem do sangramento antes de decidir pela indicação de toracotomia.
+D) Indicar toracotomia de urgência se o sangramento persistir nas próximas horas com drenagem superior a $200mL/h$ por 2 a 4 horas sucessivas.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Segundo o ATLS $10^{a}$ Edição, as indicações clássicas de toracotomia de urgência no hemotórax são: drenagem imediata de $\ge1.500~mL$ de sangue OU drenagem contínua de $200~mL/h$ por 2 a 4 horas consecutivas. Como a drenagem inicial foi de $1.200~mL$ (abaixo de 1.500) e o paciente estabilizou hemodinamicamente, a conduta correta é o monitoramento clínico e do débito do dreno em UTI, sem indicação de toracotomia imediata. Comentários sobre os distratores: (A) A indicação de toracotomia imediata exige drenagem inicial $\ge1.500$ ml. (C) A TC de tórax é contraindicada na urgência em pacientes com indicação cirúrgica imediata ou instabilidade, embora neste caso o paciente esteja estável, a conduta prioritária é monitorar o débito do dreno. (D) Embora correta em tese como critério de acompanhamento, a conduta imediata após a drenagem e estabilização é a observação e monitoramento, e não a indicação de cirurgia.
+
+67. Paciente de 45 anos, gênero masculino. Submetido a colecistectomia videolaparoscópica por colelitíase há 7 dias. Retorna para retirada de pontos com queixa de dor e secreção purulenta na cicatriz umbilical. Exame físico: cicatriz umbilical hiperemiada, dolorosa à palpação, com saída de secreção purulenta. Nega febre ou sintomas sistêmicos. De acordo com as diretrizes de prevenção de Infecção de Sítio Cirúrgico (ISC), como é classificada essa infecção?
+A) Infecção de sítio cirúrgico incisional profunda.
+B) Infecção de sítio cirúrgico de órgão/espaço.
+C) Infecção de sítio cirúrgico incisional superficial.
+D) Infecção de sítio cirúrgico de cavidade abdominal.
+Ano: 2026
+Gabarito: C
+Explicação: (C) A ISC incisional superficial envolve apenas pele e tecido subcutâneo da incisão e ocorre nos primeiros 30 dias após o procedimento cirúrgico. No caso clínico, os sinais inflamatórios e a secreção purulenta limitam-se à ferida cirúrgica na pele, sem sinais de acometimento de fáscia/músculo (profunda) ou cavidade (órgão/espaço). Comentários sobre os distratores: (A) Envolve tecidos moles profundos da incisão (fáscia e músculo), o que não está descrito no caso. (B) Envolve qualquer parte da anatomia (ex: órgãos ou espaços) aberta ou manipulada durante a cirurgia, que não a incisão propriamente dita. (D) Não é classificação oficial adotada (o termo correto é ISC de órgão/espaço).
+
+68. Homem, 34 anos, pardo, previamente hígido, admitido em hospital secundário com dor intensa e abaulamento na região inguinal direita há 6 horas. Relata que o abaulamento existia há meses, mas sempre reduzia espontaneamente. Ao exame físico, apresenta abaulamento tenso e muito doloroso, sem sinais flogísticos locais, irredutível às manobras de redução manual. Qual a conduta cirúrgica mais apropriada?
+A) Indicar cirurgia de urgência para exploração e reparo da hérnia, devido ao risco de estrangulamento herniário.
+B) Prescrever analgésicos e orientar retorno se houver piora da dor ou surgimento de febre.
+C) Realizar tentativa de redução manual sob sedação profunda no pronto-socorro.
+D) Solicitar ultrassonografia da região inguinal para confirmar o diagnóstico antes de indicar a cirurgia.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Hérnia inguinal encarcerada com dor intensa há 6 horas e irredutível representa uma urgência cirúrgica. Há risco iminente de sofrimento vascular do conteúdo herniário (estrangulamento), o que exige exploração cirúrgica imediata para avaliação de viabilidade do órgão herniado e correção do defeito. Comentários sobre os distratores: (B) Conduta expectante com analgesia é contraindicada na hérnia irredutível sintomática aguda. (C) Tentativa de redução sob sedação profunda não é recomendada se houver suspeita de estrangulamento ou dor intensa de várias horas, pois pode reduzir alça intestinal já inviabilizada para a cavidade. (D) O diagnóstico é essencialmente clínico e a propedêutica armada (USG) não deve atrasar o tratamento cirúrgico de urgência.
+
+69. Mulher, 43 anos, previamente hígida, é internada por abscesso extenso em coxa direita. Foi submetida a drenagem cirúrgica ampla no primeiro dia de internação e iniciada antibioticoterapia com cefazolina intravenosa. No terceiro dia pós-operatório, a paciente evolui com piora da dor local, febre $(38,4^{\circ}C)$ e manutenção de secreção purulenta em pequena quantidade. Ao exame, a ferida cirúrgica apresenta bordas hiperemiadas e edemaciadas, sem flutuação, mas com infiltração inflamatória endurecida que se estende além da margem de ressecção. Qual a conduta mais adequada?
+A) Coletar nova cultura da secreção e manter a antibioticoterapia atual, aguardando os resultados laboratoriais.
+B) Indicar nova intervenção cirúrgica de urgência para desbridamento de tecidos desvitalizados e ampliação da drenagem.
+C) Associar um segundo antibiótico ao esquema atual e realizar compressas quentes no local.
+D) Suspender o antibiótico atual e iniciar corticoterapia para controle do processo inflamatório.
+Ano: 2026
+Gabarito: B
+Explicação: (B) A persistência de sintomas sistêmicos (febre), dor e expansão da infiltração inflamatória local mesmo em uso de antibiótico sugere falha no controle do foco infeccioso, frequentemente por drenagem incompleta ou presença de tecidos desvitalizados/necrosados (fisiopatologia da inflamação com barreira à penetração do antibiótico). A conduta cirúrgica adequada é a reexploração para desbridamento e ampliação da drenagem. Comentários sobre os distratores: (A) Manter tratamento ineficaz na presença de foco não controlado agrava o quadro infeccioso e aumenta o risco de sepse. (C) Modificar apenas tratamento medicamentoso sem resolver a barreira mecânica (abscesso residual/necrose) é ineficaz. (D) Corticoterapia é contraindicada em infecções bacterianas agudas não controladas.
+
+70. Homem, 68 anos, tabagista, hipertenso e diabético, é acompanhado em ambulatório de cirurgia vascular por queixa de dor na panturrilha direita que surge após caminhar cerca de 150 metros e melhora rapidamente com o repouso. Diante da hipótese de Doença Arterial Obstrutiva Periférica (DAOP) estágio II de Fontaine (claudicação intermitente), qual a conduta inicial recomendada?
+A) Indicar revascularização cirúrgica convencional (by-pass arterial) de urgência.
+B) Prescrever antiagregação plaquetária, estatina de alta potência, controle de fatores de risco e programa de reabilitação física com caminhadas supervisionadas.
+C) Solicitar angiografia por tomografia computadorizada (angio-TC) de membros inferiores para programar angioplastia transluminal imediata.
+D) Prescrever anticoagulação oral plena com varfarina e orientar repouso absoluto.
+Ano: 2026
+Gabarito: B
+Explicação: (B) O tratamento inicial da claudicação intermitente estável (DAOP não crítica, estágio II de Fontaine) é clínico e conservador: cessação do tabagismo, controle estrito do diabetes e hipertensão, uso de antiagregante plaquetário (AAS) e estatina (visando estabilização de placas e redução de eventos cardiovasculares) e, fundamentalmente, terapia de exercícios supervisionados para estímulo à circulação colateral. Comentários sobre os distratores: (A) A revascularização cirúrgica ou endovascular é reservada para claudicação limitante refratária ao tratamento clínico ou isquemia crítica (estágio III e IV). (C) Angio-TC e exames invasivos são indicados apenas no planejamento cirúrgico, não na avaliação inicial de claudicação estável. (D) Anticoagulação plena não é indicada para tratamento de claudicação estável e o repouso absoluto piora a evolução da doença.
+
+71. Paciente de 65 anos, gênero masculino, refere queixas de dor, peso e queimação em membros inferiores que pioram ao final do dia, associados a edema maleolar bilateral discreto. Possui varizes visíveis em perna esquerda. O exame físico evidencia pulsos pediosos e tibiais posteriores cheios e simétricos. O médico assistente solicita ultrassonografia Doppler venosa de membros inferiores. Qual o achado morfofuncional no exame que melhor explica os sintomas e a patogênese da doença venosa crônica?
+A) Presença de trombo oclusivo na veia femoral comum com ausência de fluxo.
+B) Refluxo de sangue na veia safena magna, demonstrando incompetência valvar.
+C) Redução do diâmetro das veias profundas por espessamento fibrótico da parede vascular.
+D) Fluxo turbulento de alta velocidade na artéria poplitea durante a compressão muscular.
+Ano: 2026
+Gabarito: B
+Explicação: (B) A incompetência valvar no sistema venoso superficial (como na veia safena magna) leva ao refluxo de sangue, gerando hipertensão venosa crônica, que é o mecanismo patogênico central da doença venosa crônica e explica sintomas de dor, peso e edema. Comentários sobre os distratores: (A) Trombo oclusivo indica trombose venosa profunda (TVP) aguda, não sendo o achado padrão da insuficiência venosa crônica estável. (C) Ocorre dilatação e estiramento das veias (varizes), e não redução de diâmetro. (D) Descreve alteração arterial, incompatível com a patologia venosa apresentada.
+
+72. Um homem de 35 anos procura atendimento no pronto- socorro devido a dor em cólica intensa no flanco direito, com irradiação para a região inguinal e escroto, de início há 2 horas. Relata episódios de náuseas e vômitos. A urina tipo I mostra hematúria microscópica, sem leucocitúria. A tomografia computadorizada de abdome sem contraste identifica cálculo de 4mm no terço distal do ureter direito, sem sinais de hidronefrose grave ou infecção. Qual a conduta inicial mais adequada?
+A) Indicar ureterolitotripsia a laser de urgência.
+B) Internar o paciente para nefrostomia percutânea de urgência.
+C) Instituir terapia médica expulsiva com tansulosina, analgesia adequada e acompanhamento ambulatorial.
+D) Prescrever antibioticoterapia profilática e indicar passagem de duplo J.
+Ano: 2026
+Gabarito: C
+Explicação: (C) Cálculos ureterais < 5-6mm têm alta taxa de eliminação espontânea (especialmente no ureter distal). Na ausência de complicações (infecção, insuficiência renal, dor refratária ou rim único), a conduta inicial preferencial é o tratamento clínico expulsivo com tansulosina (bloqueador alfa-1 que relaxa o músculo liso ureteral distal), associado a analgesia e seguimento ambulatorial. Comentários sobre os distratores: (A) Ureterolitotripsia de urgência é reservada para casos complicados ou falha do tratamento clínico. (B) Nefrostomia ou duplo J são procedimentos de desobstrução indicados em vigência de infecção (pielo obstrutiva) ou injúria renal grave. (D) Antibiótico profilático e duplo J não são condutas padrão para cálculos pequenos não complicados de eliminação provável.
+
+73. Um homem de 58 anos, diabético, é internado com quadro de febre $(38,9^{\circ}C)$, calafrios e dor lombar esquerda de forte intensidade há 24 horas. Exames laboratoriais revelam leucocitose significativa com desvio à esquerda e elevação da creatinina de $1,0mg/dL$ para $2,1mg/dL$. A tomografia computadorizada de abdome e pelve sem contraste identifica cálculo de 8mm obstruindo a junção ureteropélvica esquerda, com acentuada hidronefrose ipsilateral e áreas de densificação da gordura perirrenal. Qual é a conduta imediata mais adequada?
+A) Iniciar antibioticoterapia de amplo espectro e indicar desobstrução urinária de urgência (passagem de cateter duplo J ou nefrostomia percutânea).
+B) Prescrever tansulosina e analgésicos potentes, visando eliminação espontânea do cálculo.
+C) Indicar ureterolitotripsia flexível a laser de urgência para fragmentação do cálculo.
+D) Encaminhar o paciente para litotripsia extracorpórea por ondas de choque (LEOC) nas primeiras 12 horas.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Trata-se de uma urgência urológica grave: pielonefrite aguda obstrutiva (infecção em sistema coletor sob pressão/obstruído) em paciente diabético, evoluindo com disfunção renal. A conduta imediata obrigatória é a associação de suporte clínico com antibiótico de amplo espectro intravenoso e desobstrução rápida do trato urinário (por cateter duplo J ou nefrostomia), visando drenagem do foco infeccioso purulento. Comentários sobre os distratores: (B) A eliminação espontânea é improvável para cálculo de 8mm e contraindicada em vigência de infecção obstrutiva aguda. (C) A fragmentação cirúrgica definitiva do cálculo na fase aguda infecciosa é contraindicada pelo alto risco de translocação bacteriana e choque séptico. (D) LEOC é contraindicada na presença de infecção ativa não controlada e obstrução ureteral completa.
+
+74. Um lactente de 7 meses é levado ao pronto-socorro pelos pais por episódios intermitentes de choro inconsolável, em que flete os membros inferiores sobre o abdome, acompanhados de vômitos alimentares. Há cerca de 4 horas, apresentou uma evacuação com fezes de aspecto gelatinoso e avermelhado (em "geleia de morango"). Ao exame físico, apresenta abdome discretamente distendido e palpa-se uma massa em formato de salsicha no hipocôndrio direito. Qual é a conduta diagnóstica e terapêutica inicial mais indicada para este caso?
+A) Indicar laparotomia exploradora imediata para ressecção segmentar de alça intestinal desvitalizada.
+B) Solicitar tomografia computadorizada de abdome e prescrever antibioticoterapia de amplo espectro.
+C) Realizar ultrassonografia de abdome e, após confirmação, indicar redução pneumática ou hidrostática guiada por imagem.
+D) Solicitar radiografia de abdome simples e prescrever antiespasmódicos por via oral.
+Ano: 2026
+Gabarito: C
+Explicação: (C) O quadro clínico é clássico de intussuscepção intestinal (ou invaginação), comum em lactentes. A tríade típica inclui dor abdominal em cólica intermitente, massa palpável (sinal da salsicha) e fezes em geleia de morango. A ultrassonografia é o exame diagnóstico de escolha (sinal do alvo ou pseudorrim). Na ausência de sinais de peritonite ou perfuração, o tratamento inicial é a redução não cirúrgica por enema pneumático ou hidrostático, com alta taxa de sucesso. Comentários sobre os distratores: (A) A laparotomia é reservada para casos de falha na redução não cirúrgica, suspeita de sofrimento de alça persistente, peritonite ou perfuração. (B) TC de abdome não é exame de primeira linha pela radiação e menor especificidade comparada à USG na infância. (D) Radiografia simples tem baixa sensibilidade e antiespasmódicos são ineficazes e retardam o tratamento adequado.
+
+75. Recém-nascido de 36 horas, em alojamento conjunto, inicia episódios de salivação excessiva, cianose transitória e engasgos durante as tentativas de amamentação. Na tentativa de passagem de sonda nasogástrica, observa-se resistência e interrupção do trajeto na altura do tórax médio. A radiografia de tórax e abdome revela a sonda enrolada no coto esofágico superior e presença de gás no estômago e intestinos. Qual a principal hipótese diagnóstica e a conduta cirúrgica inicial apropriada?
+A) Atresia de esôfago sem fistula traqueoesofágica (tipo A); esofagostomia cervical e gastrostomia de alimentação imediatas.
+B) Atresia de esôfago com fístula traqueoesofágica distal (tipo C); cirurgia para ligadura da fístula e anastomose esofágica primária.
+C) Estenose esofágica congênita; dilatação esofágica endoscópica programada.
+D) Membrana esofágica congênita; ressecção cirúrgica da membrana por toracotomia.
+Ano: 2026
+Gabarito: B
+Explicação: (B) O quadro clínico (salivação excessiva, engasgos, cianose na amamentação e interrupção da sonda) é patognomônico de atresia de esôfago. A presença de gás no estômago/intestinos na radiografia confirma a existência de uma fístula traqueoesofágica distal (Tipo C de Vogt- Ladd ou Tipo III, a variante mais comum, ocorrendo em cerca de 85% dos casos). A conduta padrão é a correção cirúrgica por toracotomia/toracoscopia para fechamento da fístula e anastomose primária término-terminal do esôfago. Comentários sobre os distratores: (A) Se não houvesse fístula distal (tipo A), o abdome estaria completamente sem gás (abdome opaco). (C) A estenose esofágica não impede a passagem completa da sonda no nascimento com enrolamento na radiografia. (D) Membrana esofágica é causa rara de disfagia posterior, não se apresentando de forma tão precoce e completa no nascimento.
+
+76. Um menino de 2 anos é levado à consulta pediátrica de rotina na UBS. Durante o exame físico físico detalhado, o médico observa ausência de testículo direito na bolsa escrotal. Realiza manobra de palpação cuidadosa ao longo do canal inguinal e consegue palpar o testículo na região inguinal média. No entanto, ao tentar tracioná-lo para a bolsa escrotal, observa que o testículo retorna imediatamente para a região inguinal assim que a tração é liberada. Qual é o diagnóstico e o planejamento terapêutico correto para este caso?
+A) Testículo retrátil; conduta expectante com acompanhamento clínico semestral até a puberdade.
+B) Criptorquidia (testículo ectópico ou não descido verdadeiro); indicação de orquidopexia cirúrgica programada.
+C) Testículo retrátil; indicação imediata de tratamento hormonal com gonadotrofina coriônica humana (hCG).
+D) Criptorquidia; conduta expectante até os 5 anos de idade, aguardando descida espontânea tardia.
+Ano: 2026
+Gabarito: B
+Explicação: (B) Trata-se de criptorquidia (ou testículo não descido verdadeiro), pois o testículo não pode ser posicionado na bolsa escrotal estável sem tensão/tração imediata de retorno. Diferencia-se do testículo retrátil, que pode ser levado ao escroto e lá permanece sem tração por algum tempo. A cirurgia de orquidopexia é recomendada idealmente entre os 6 e 12 meses de vida (ou no momento do diagnóstico se mais tardio) para preservar a função espermatogênica e reduzir o risco de malignização. Comentários sobre os distratores: (A) No testículo retrátil, o testículo permanece na bolsa após a tração, o que não ocorreu neste caso. (C) O tratamento com hCG não é a primeira linha recomendada para criptorquidia verdadeira, sendo a cirurgia o padrão ouro. (D) Aguardar até os 5 anos aumenta o risco de infertilidade e dano celular testicular irreversível; a descida espontânea é rara após os 6 meses de vida.
+
+77. Um homem de 65 anos, previamente hígido, é admitido no pronto-socorro com queixa de dor e distensão abdominal progressiva há 3 dias, associada à parada de eliminação de gases e fezes. Nega cirurgias abdominais prévias. Ao exame físico, apresenta abdome muito distendido, timpanico, doloroso difusamente, sem sinais de peritonite. A radiografia de abdome mostra grande distensão de alças colônicas, com imagem de "bico de pássaro" no cólon sigmoide. Qual é o diagnóstico mais provável e a conduta inicial recomendada?
+A) Volvulo de sigmoide; descompressão endoscópica por colonoscopia (se não houver sinais de peritonite ou gangrena).
+B) Obstrução intestinal por brida; laparotomia exploradora imediata para lise de aderências.
+C) Neoplasia obstrutiva de cólon; colectomia subtotal de urgência com anastomose primária.
+D) Intussuscepção colônica; redução hidrostática guiada por ultrassonografia.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O quadro clínico (obstrução intestinal baixa) associado à imagem clássica em "bico de pássaro" (ou "grão de café" na radiografia) é altamente sugestivo de vólvulo de sigmoide. Na ausência de sinais de sofrimento de alça (peritonite, febre, leucocitose grave, instabilidade), a conduta inicial recomendada é a descompressão e distorção colonoscópica/sigmoidoscópica, que apresenta alta taxa de sucesso, permitindo posterior programação de cirurgia eletiva para ressecção (sigmoidectomia). Comentários sobre os distratores: (B) O paciente não tem cirurgias prévias (bridas são raras) e a imagem aponta para vólvulo. (C) Embora a neoplasia seja causa frequente de obstrução, o achado de "bico de pássaro" e vólvulo exige descompressão inicial como prioridade antes de cirurgias definitivas. (D) Redução hidrostática é típica para intussuscepção em crianças, não para vólvulo em idosos.
+
+78. Paciente pardo de 42 anos, hígido, procura pronto atendimento com história de sangramento anal indolor às evacuações e protusão de nódulos pela margem anal durante o esforço evacuatório, que necessitam de redução manual para retornar ao canal anal. Qual o diagnóstico e classificação corretos desse quadro hemorroidário?
+A) Doença hemorroidária interna grau III.
+B) Doença hemorroidária externa grau III.
+C) Doença hemorroidária interna grau II.
+D) Doença hemorroidária interna grau IV.
+Ano: 2026
+Gabarito: A
+Explicação: (A) As hemorroidas internas são classificadas em graus: Grau I: sem prolapso; Grau II: prolapso com redução espontânea; Grau III: prolapso com necessidade de redução manual; Grau IV: prolapso irredutível. O sangramento indolor é característico de hemorroidas internas. Comentários sobre os distratores: (B) Hemorroidas externas originam-se abaixo da linha pectínea e não são classificadas em graus. (C) Grau II apresenta redução espontânea, sem necessidade de manobra manual. (D) Grau IV é irredutível e permanentemente prolapsado.
+
+79. Mulher de 72 anos, tabagista e cardiopata (portadora de fibrilação atrial crônica sem uso de anticoagulantes), dá entrada na emergência com quadro de dor abdominal súbita de forte intensidade, desproporcional aos achados do exame físico (abdome flácido, pouco doloroso à palpação, sem sinais de irritação peritoneal). Apresenta náuseas e episódios de diarreia mucossanguinolenta. Diante da hipótese de isquemia mesentérica aguda por embolia, qual o exame diagnóstico padrão-ouro imediato?
+A) Ultrassonografia Doppler de artérias mesentéricas.
+B) Radiografia simples de abdome para pesquisa de pneumoperitônio.
+C) Angiotomografia computadorizada de abdome.
+D) Colonoscopia diagnóstica de urgência.
+Ano: 2026
+Gabarito: C
+Explicação: (C) A angio-TC de abdome é atualmente o exame de escolha e padrão-ouro prático para o diagnóstico rápido de isquemia mesentérica aguda, demonstrando falhas de enchimento vascular, hipoperfusão de alças e sinais de sofrimento de parede intestinal. Apresenta alta sensibilidade e especificidade. Comentários sobre os distratores: (A) O Doppler mesentérico é limitado pelo meteorismo intestinal frequente na obstrução/isquemia, não sendo confiável na urgência. (B) Radiografia simples é pouco sensível e mostra alterações apenas em fases tardias/catastróficas (pneumatose, perfuração). (D) A colonoscopia é contraindicada na fase aguda pelo risco de perfuração e baixa utilidade diagnóstica na isquemia de intestino delgado (mesentérica superior).
+
+80. Um jovem de 22 anos é atendido na emergência após acidente de motocicleta. Apresentou perda transitória de consciência no local, seguida de melhora completa ("intervalo lúcido"), e agora dá entrada com cefaleia intensa, náuseas e sonolência progressiva. A tomografia de crânio mostra imagem hiperdensa em formato biconvexo na região temporoparietal direita. Qual o diagnóstico mais provável e a estrutura vascular lesada?
+A) Hematoma epidural; ruptura da artéria meningea média.
+B) Hematoma subdural; ruptura de veias pontes.
+C) Hemorragia subaracnoidea; ruptura de aneurisma sacular.
+D) Hematoma intraparenquimatoso; lesão axonal difusa.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O quadro clínico (trauma, perda de consciência seguida de intervalo lúcido e deterioração neurológica subsequente) associado à imagem clássica na TC (lesão hiperdensa biconvexa) é patognomônico de hematoma epidural (ou extradural). A causa mais comum é a fratura óssea temporoparietal com consequente lesão/ruptura da artéria meningea média (ramo da maxilar). Comentários sobre os distratores: (B) O hematoma subdural apresenta imagem em formato de crescente (côncavo-convexo) na TC e decorre de ruptura de veias pontes, mais comum em idosos e alcoólatras. (C) A HSA cursa com sangue nas cisternas e sulcos cerebrais, sem massa localizada biconvexa. (D) O hematoma intraparenquimatoso localiza-se dentro do parênquima cerebral e a LAD apresenta múltiplos pontos de microrrupturas axonais (lesões puntiformes em transição substância branca-cinzenta).
+
+81. Homem transgênero de 24 anos procura atendimento ginecológico em uma Unidade Básica de Saúde (UBS) solicitando aconselhamento contraceptivo. Ele está em uso de testosterona injetável há 18 meses, apresenta amenorreia hipogonadotrófica induzida pela terapia androgênica e mantém relações sexuais ativas com um parceiro cisgênero masculino. Durante a consulta, ele expressa o desejo de evitar a gestação neste momento, mas quer manter o uso da testosterona. Qual das seguintes condutas contraceptivas é a mais adequada para este paciente?
+A) Informar que a terapia com testosterona em homens trans atua como um método contraceptivo eficaz devido à supressão do eixo hipotálamo-hipófise-gonadal e à presença de amenorreia, dispensando o uso de métodos adicionais.
+B) Indicar o uso de anticonceptivos combinados orais (contendo estrogênio e progesterona), pois são os métodos mais eficazes para reverter potenciais efeitos adversos da testosterona no endométrio.
+C) Prescrever anticoncepcional injetável mensal à base de estrogênios isolados, com o objetivo de sincronizar os níveis hormonais sem interferir na transição de gênero.
+D) Recomendar o uso de métodos não estrogênicos, como o Dispositivo Intrauterino (DIU) de cobre ou DIU de levonorgestrel, ou implante de etonogestrel, esclarecendo que a testosterona não deve ser considerada contraceptivo.
+Ano: 2026
+Gabarito: D
+Explicação: GINECOLOGIA E OBSTETRICIA  (D) A testosterona promove a supressão do eixo e amenorreia em muitos homens trans, mas não garante a anovulação persistente, existindo risco de gravidez indesejada. O uso de métodos não estrogênicos (como DIU de cobre, DIU de levonorgestrel ou implantes de progesterona) é altamente eficaz e seguro, pois não interfere nos efeitos virilizantes da terapia androgênica (diferente de métodos com estrogênio). Comentários sobre os distratores: (A) Erro conceitual grave: a testosterona não é contraceptivo. (B) Métodos combinados com estrogênio podem causar efeitos feminilizantes indesejados e antagonizar a ação da testosterona. (C) Não existem contraceptivos de estrogênio isolado; estrogênio isolado causaria hiperplasia endometrial grave e efeitos feminilizantes.
+
+82. Jovem de 22 anos, nuligesta, com vida sexual ativa, procura atendimento ambulatorial com queixa de dor pélvica de início há 10 dias, associada a corrimento vaginal com odor fétido e febre baixa $(37,9^{\circ}C)$. Ao exame especular: colo uterino hiperemiado com secreção mucopurulenta pelo orifício externo. Ao toque vaginal combinado: dor importante à mobilização do colo uterino e à palpação de anexos bilateralmente, sem massas anexiais. Qual é a principal hipótese diagnóstica e a conduta inicial apropriada?
+A) Doença Inflamatória Pélvica (DIP) estágio I (aguda sem peritonite); tratamento ambulatorial com ceftriaxona dose única IM + doxiclina VO por 14 dias + metronidazolo VO por 14 dias.
+B) Endometriose profunda; videolaparoscopia diagnóstica eletiva.
+C) Gravidez ectópica integra; internação para salpingostomia videolaparoscópica.
+D) Abscesso tubo-ovariano rompido; laparotomia exploradora de urgência com inventário de cavidade.
+Ano: 2026
+Gabarito: A
+Explicação: (A) O quadro clínico (dor pélvica, corrimento purulento, dor à mobilização do colo e palpação anexial) é clássico de Doença Inflamatória Pélvica (DIP). Como não há sinais de peritonite (estágio I de Monif), o tratamento pode ser ambulatorial. O esquema recomendado pelo Ministério da Saúde inclui ceftriaxona (500mg IM dose única para cobertura de Neisseria gonorrhoeae), doxiclina (100mg VO 12/12h por 14 dias para Chlamydia trachomatis) e metronidazol (400mg ou 500mg VO 12/12h por 14 dias para anaeróbios). Comentários sobre os distratores: (B) Endometriose causa dor crônica e cíclica, sem febre ou secreção purulenta. (C) Gravidez ectópica exige atraso menstrual e níveis de beta-hCG positivos, sem corrimento mucopurulento típico. (D) O abscesso rompido causaria peritonite difusa e choque séptico (estágio IV de Monif), exigindo cirurgia imediata, o que não condiz com o quadro de estabilidade e ausência de massas anexiais.
+
+83. Uma mulher de 28 anos, nuligesta, comparece à consulta na UBS para aconselhamento contraceptivo. Relata história de enxaqueca com aura visual há cerca de 5 anos, caracterizada por escotomas cintilantes que precedem a dor de cabeça. Diante dessa condição médica específica e com base nos Critérios Médicos de Elegibilidade para Uso de Contraceptivos da OMS, qual a recomendação correta?
+A) Os anticoncepcionais hormonais combinados (orais, injetáveis ou anel vaginal) são classificados como categoria 4 da OMS para esta paciente, sendo contraindicados devido ao risco aumentado de acidente vascular cerebral (AVC).
+B) O uso de pílulas combinadas de baixa dose de estrogênio é classificado como categoria 2, sendo permitido desde que haja monitoramento rigoroso da pressão arterial.
+C) O dispositivo intrauterino com levonorgestrel (DIU-LNG) é classificado como categoria 4, devido ao efeito vasoconstritor sistêmico do progestágeno.
+D) Os métodos de progesterona isolada, como a pílula de desogestrel ou o implante de etonogestrel, são classificados como categoria 3, devendo ser evitados.
+Ano: 2026
+Gabarito: A
+Explicação: (A) Segundo os critérios de elegibilidade da OMS, a enxaqueca com aura em qualquer idade classifica o uso de contraceptivos hormonais combinados (que contêm estrogênio) como Categoria 4 (risco inaceitável à saúde), devido ao risco significativamente aumentado de acidente vascular cerebral (AVC) isquêmico nesses pacientes. Métodos combinados são, portanto, contraindicados. Comentários sobre os distratores: (B) O uso de pílulas combinadas (mesmo de baixa dose) permanece categoria 4 na enxaqueca com aura. (C) O DIU-LNG é classificado como categoria 2 (ou 1) para enxaqueca com aura, sendo uma opção segura. (D) Métodos de progestogênio isolado (pílulas de desogestrel, implante, DIU-LNG, injetável de AMPD) são classificados como categoria 2 (ou 1), o que significa que os benefícios superam os riscos teóricos, não sendo categoria 3.
+
+84. Mulher, 48 anos, comparece ao ambulatório de ginecologia com queixa de aumento do volume abdominal e dor pélvica persistente há 6 meses. O ultrassom pélvico transvaginal revela útero aumentado de volume, com presença de formação nodular hipoecogênica, bem delimitada, medindo $8,0\times6,0cm$, localizada na parede anterior uterina, que abaula a cavidade endometrial. Considerando o diagnóstico de leiomioma uterino, qual a sua classificação de acordo com a Federação Internacional de Ginecologia e Obstetrícia (FIGO)?
+A) Submucoso FIGO tipo 0.
+B) Intramural FIGO tipo 4.
+C) Subseroso FIGO tipo 6.
+D) Submucoso FIGO tipo 2.
+Ano: 2026
+Gabarito: D
+Explicação: (D) De acordo com o sistema de classificação FIGO para leiomiomas uterinos: Tipo 0: submucoso, totalmente intracavitário; Tipo 1: submucoso, <50% intramural; Tipo 2: submucoso, ≥50% intramural. Como o nódulo está localizado na parede uterina e abaula a cavidade endometrial, trata-se de um leiomioma submucoso com componente intramural significativo, sendo classificado como FIGO tipo 2. Comentários sobre os distratores: (A) Tipo O seria totalmente intracavitário pediculado, sem componente intramural. (B) Tipo 4 é estritamente intramural, sem abaulamento da cavidade ou da serosa. (C) Tipo 6 é subseroso, com <50% de componente intramural, projetando-se para fora do útero.
+
+85. Uma paciente de 25 anos apresenta queixa de amenorreia secundária há 8 meses, associada a galactorreia bilateral abundante. Nega uso de medicações ou métodos contraceptivos hormonais. Diante da hipótese de prolactinoma, qual alteração no eixo hipotálamo-hipófise-gonadal explica a ocorrência da amenorreia?
+A) Supressão da secreção pulsátil de GnRH pelo hipotálamo, induzida pelos altos níveis de prolactina, levando a um hipogonadismo hipogonadotrófico.
+B) Estimulação excessiva de FSH e LH, causando esgotamento folicular ovariano precoce por feedback positivo.
+C) Bloqueio dos receptores ovarianos de estrogênio pela prolactina circulante, impedindo a proliferação endometrial.
+D) Destruição autoimune das células gonadotróficas na adeno- hipófise devido à infiltração linfocitária associada ao tumor.
+Ano: 2026
+Gabarito: A
+Explicação: (A) A hiperprolactinemia inibe a secreção pulsátil de GnRH (hormônio liberador de gonadotrofina) pelo hipotálamo. Sem o estímulo pulsátil do GnRH, a secreção hipofisária de LH e FSH diminui drasticamente, resultando em hipogonadismo hipogonadotrófico, com baixos níveis de estrogênio e consequente anovulação e amenorreia secundária. Comentários sobre os distratores: (B) A prolactina reduz, e não estimula, o LH e FSH. (C) A ação ocorre no hipotálamo, e não por bloqueio direto de receptores ovarianos de estrogênio. (D) O prolactinoma é um adenoma benigno hipersecretor de prolactina, não ocorrendo destruição autoimune ou infiltração celular destrutiva das outras células hipofisárias no quadro típico.
+
+86. Uma mulher de 25 anos apresenta queixa de amenorreia secundária há 9 meses. Refere ciclo menstrual previamente regular. O teste de gravidez (beta-hCG) foi negativo. Na investigação inicial, foi realizado o teste da progesterona (administração de acetato de medroxiprogesterona 10mg/dia por 10 dias), que resultou em ausência de sangramento por privação após 7 dias do término. Em seguida, foi realizado o teste do estrogênio e progesterona combinados (estrogênio conjugado seguido de progesterona), que resultou em sangramento vaginal normal. Qual a interpretação fisiopatológica correta deste resultado?
+A) O teste da progesterona negativo associado ao teste do estrogênio e progesterona positivo indica que a causa da amenorreia é uma alteração anatômica do trato de saída (como estenose cervical ou sinéquias uterinas).
+B) O resultado demonstra que a paciente apresenta endométrio responsivo e trato de saída pérvio, sugerindo que a amenorreia decorre de falta de estimulação estrogênica prévia (hipoestrogenismo), seja por falha ovariana ou hipotalâmica-hipofisária.
+C) O teste do estrogênio e progesterona positivo confirma o diagnóstico de gestação ectópica íntegra hipersecretora de progesterona.
+D) O sangramento após o teste combinado indica que a causa é a hiperprolactinemia primária com útero insensível a hormônios sexuais.
+Ano: 2026
+Gabarito: B
+Explicação: (B) O teste da progesterona avalia o nível de estrogênio endógeno e a patência do trato de saída. Se negativo, significa que o endométrio não foi previamente exposto a estrogênio suficiente ou que há defeito anatômico. O teste de estrogênio + progesterona avalia se o endométrio é funcional e se o trato de saída é pérvio. Se positivo (com sangramento), confirma que o endométrio responde aos hormônios e o trato está desobstruído. Conclusão: a causa da amenorreia é o hipoestrogenismo (falta de produção de estrogênio pelos ovários ou falta de estímulo central). Comentários sobre os distratores: (A) Se houvesse defeito anatômico (trato de saída obstruído), o teste combinado também seria negativo (sem sangramento). (C) O beta-hCG negativo afasta gestação. (D) O sangramento demonstra que o útero é responsivo aos hormônios aplicados.
+
+87. Mulher de 34 anos procura atendimento devido a nódulo palpável em mama direita há 2 meses. Ao exame físico: nódulo de aproximadamente 2,0cm, móvel, indolor, consistência firme- elástica, em quadrante superior externo de mama direita, sem linfadenopatias palpáveis. Traz mamografia com nódulo denso, circunscrito, de limites precisos, classificado como BI- RADS 3. Qual a conduta inicial mais adequada?
+A) Solicitar biópsia por agulha grossa (Core Biopsy) de imediato.
+B) Indicar ressecção cirúrgica do nódulo para biópsia excisional.
+C) Realizar ultrassonografia mamária complementar para melhor caracterização e, se confirmado nódulo sólido simples, propor controle ultrassonográfico em 6 meses.
+D) Tranquilizar a paciente e indicar retorno para mamografia de rotina em 2 anos.
+Ano: 2026
+Gabarito: C
+Explicação: (C) Achados de imagem circunscritos e benignos (BI-RADS 3) têm risco de malignidade < 2%. A conduta padrão para pacientes jovens com nódulo palpável e mamografia BI- RADS 3 é complementar com ultrassonografia para confirmar se trata-se de nódulo sólido simples (sugestivo de fibroadenoma) ou cisto, e propor acompanhamento semestral por 2 a 3 anos antes de reclassificar o nódulo. Comentários sobre os distratores: (A) A biópsia imediata é indicada para lesões suspeitas (BI- RADS 4 ou 5), não sendo necessária inicialmente em lesões tipicamente benignas (BI-RADS 3). (B) A cirurgia não é indicada inicialmente para nódulos benignos pequenos e assintomáticos. (D) O intervalo de rastreamento de rotina (2 anos) é inadequado para lesão palpável em investigação, que exige acompanhamento semestral inicial.
+
+88. Mulher de 28 anos, casada, procura UBS com queixa de lesões verrucosas vulvares que surgiram há 3 meses e estão aumentando em tamanho e número. Nega dor ou sangramento. Ao exame físico: múltiplas lesões papulares, acetobrancas à aplicação de ácido acético, vegetantes, localizadas nos pequenos e grandes lábios e região perianal. Qual o agente etiológico principal envolvido nesta patologia e qual a sua classificação quanto ao risco oncogênico?
+A) Papilomavirus Humano (HPV) genótipos 16 e 18; alto risco oncogênico.
+B) Papilomavírus Humano (HPV) genótipos 6 e 11; baixo risco oncogênico.
+C) Vírus do Herpes Simples tipo 2 (HSV-2); baixo risco oncogênico.
+D) Chlamydia trachomatis genótipos L1, L2 e L3; alto risco oncogênico.
+Ano: 2026
+Gabarito: B
+Explicação: (B) O condiloma acuminado (verrugas genitais) é uma infecção sexualmente transmissível causada pelo Papilomavírus Humano (HPV). Mais de 90% dos casos são causados pelos genótipos 6 e 11, que são classificados como de baixo risco oncogênico (não associados a câncer de colo uterino). Os tipos de alto risco são o 16 e 18, responsáveis por lesões precursoras e neoplasias. Comentários sobre os distratores: (A) Os tipos 16 e 18 causam lesões subclínicas e neoplasia, não sendo os principais causadores de condilomas vegetantes típicos. (C) O HSV-2 causa lesões vesiculares dolorosas que ulceram, não lesões verrucosas vegetantes. (D) C. trachomatis L1-L3 causa o linfogranuloma venéreo, caracterizado por úlcera passageira e linfadenopatia inguinal dolorosa (bubão).
+
+89. Paciente de 24 anos, com queixa de irregularidade menstrual, acne e hirsutismo progressivos há 2 anos. Apresenta IMC de $29~kg/m^{2}.$ Exames laboratoriais revelam relação LH/FSH aumentada e testosterona total discretamente elevada. Qual o principal mecanismo fisiopatológico envolvido na síndrome dos ovários policísticos (SOP)?
+A) Hiperatividade folicular primária, com depleção acelerada do pool de oócitos.
+B) Resistência à insulina e consequente hiperinsulinemia compensatória, estimulando a produção ovariana de androgênios e diminuindo a síntese hepática de SHBG.
+C) Deficiência congênita na produção de GnRH pelo hipotálamo, gerando hipogonadismo hipogonadotrófico.
+D) Produção autoimune de anticorpos contra os receptores de FSH e LH na granulosa.
+Ano: 2026
+Gabarito: B
+Explicação: (B) A resistência à insulina e a consequente hiperinsulinemia compensatória são pilares fisiopatológicos da SOP. A insulina atua em sinergia com o LH nas células da teca, estimulando a produção excessiva de androgênios. Além disso, a insulina inibe a síntese hepática de SHBG (globulina ligadora de hormônios sexuais), aumentando a fração livre e ativa da testosterona circulante. Comentários sobre os distratores: (A) Não há depleção folicular acelerada; ao contrário, há parada de maturação folicular com acúmulo de pequenos folículos antrais (aspecto policístico). (C) O GnRH na SOP apresenta frequência de pulsos aumentada (favorecendo a secreção de LH sobre FSH), e não deficiência. (D) A SOP não é uma doença autoimune de destruição de receptores.
+
+90. Mulher de 25 anos apresenta queixa de amenorreia secundária há 10 meses. Refere que a última menstruação ocorreu após um parto normal complicado por hemorragia pós-parto grave que necessitou de transfusão de hemoderivados e internação em UTI (síndrome de Sheehan). Desde então, não conseguiu amamentar e apresenta fadiga, intolerância ao frio e perda de libido. Qual a fisiopatologia que explica este quadro clínico?
+A) Necrose isquêmica da glândula hipófise devido ao choque hipovolêmico pós-parto, levando ao pan-hipopituitarismo.
+B) Insuficiência ovariana prematura secundária a processo autoimune desencadeado pela transfusão de sangue.
+C) Hiperprolactinemia reacional persistente causada pelo estresse do parto, bloqueando a liberação de gonadotrofinas.
+D) Destruição das células produtoras de TSH e LH na hipófise por anticorpos maternos direcionados contra a placenta.
+Ano: 2026
+Gabarito: A
+Explicação: (A) A síndrome de Sheehan é o pan-hipopituitarismo causado por necrose isquêmica da glândula hipófise decorrente de hemorragia pós-parto grave e choque hipovolêmico. Durante a gestação, a hipófise sofre hipertrofia fisiológica (principalmente das células lactotróficas) e torna-se altamente vulnerável à isquemia em situações de queda abrupta da perfusão sanguínea. A perda de múltiplos hormônios hipofisários explica a falha de lactação (prolactina), intolerância ao frio (TSH), fadiga (ACTH) e amenorreia (LH/FSH). Comentários sobre os distratores: (B) A causa é central (hipofisária), e não ovariana primária. (C) Ocorre falha de lactação por deficiência de prolactina (hipofunção hipofisária), e não hiperprolactinemia. (D) A patogênese é puramente isquêmica/vascular pelo choque, não autoimune por anticorpos antiplacenta.

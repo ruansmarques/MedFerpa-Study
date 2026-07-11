@@ -371,7 +371,7 @@ const LessonRow: React.FC<{
             </div>
 
             {/* Coluna Direita: 3 Botões de Ação com efeito hover animado */}
-            <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-4 w-full max-w-sm mx-auto justify-center">
               {/* Botão 1: Baixar Slide */}
               <button 
                 onClick={() => openMaterial(lesson.slideUrl)} 

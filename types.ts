@@ -6,9 +6,34 @@ export interface User {
   avatarColor: string;
   totalXP: number; // Sistema de Gamificação (Novo)
   // Novo campo para gamificação de trilhas
-  exerciseProgress?: Record<string, LevelProgress>; // Key: "{subjectId}_level_{levelNumber}"
+  exerciseProgress?: Record<string, any>; // Key: "{subjectId}_level_{levelNumber}" or "_session_history"
   listProgress?: Record<string, number>; // Key: "listId", Value: number of answered questions
   isRankVisible?: boolean; // Controls visibility in the global rank
+}
+
+export interface ExerciseSession {
+  id: string;
+  title: string;
+  createdAt: string;
+  filters: {
+    activeTab: 'internas' | 'enamed';
+    period: number | null;
+    subjectId: string;
+    lessonId: string;
+    bancas: string[];
+    areas: string[];
+    enamedSubjects: string[];
+    difficulty: string[];
+  };
+  questions: Exercise[];
+  answers: Record<string, number>;
+  isCompleted: boolean;
+  mode: 'normal' | 'simulado' | 'filtro';
+  timePerQuestion?: number; // in seconds, 0 for none
+  timeRemaining?: number; // in seconds, 0 for none
+  correctCount?: number;
+  xpEarned?: number;
+  lastActiveIndex?: number;
 }
 
 export interface LevelProgress {
@@ -74,6 +99,10 @@ export interface Exercise {
   options: string[];
   correctOptionIndex: number;
   explanation?: string;
+  difficulty?: 'Fácil' | 'Médio' | 'Difícil';
+  area?: string;
+  banca?: string;
+  ano?: string;
 }
 
 export interface Book {

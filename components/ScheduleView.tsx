@@ -89,11 +89,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     const weekNum = Math.floor(diffDays / 7) + 1;
 
     if (weekNum >= 1 && weekNum <= 18) {
-      return `Semana ${weekNum} (5º Período)`;
+      return `Semana ${weekNum}`;
     } else if (weekNum >= 19 && weekNum <= 25) {
       return `Férias de Inverno`;
     } else if (weekNum >= 26 && weekNum <= 43) {
-      return `Semana ${weekNum - 25} (6º Período)`;
+      return `Semana ${weekNum - 25}`;
     }
     return `Semana ${weekNum}`;
   };
@@ -263,15 +263,22 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     segments.push(currentSegment);
   }
 
+  const activePeriod = getPeriodForDate(currentWeekStart);
+
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 gap-3">
         <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-slate-800 flex items-center justify-center gap-2 w-full sm:w-auto">
           Cronograma - Turma TXXX
         </h2>
-        <div className="flex items-center justify-center gap-1 sm:gap-2 w-full sm:w-auto">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+           {activePeriod > 0 && (
+             <span className="text-xs sm:text-sm text-slate-600 font-normal mr-1">
+               ({activePeriod}º Período)
+             </span>
+           )}
            <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, -1))} disabled={currentWeekStart <= getWeekStart(SEMESTER_START)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 rotate-90" /></button>
-           <div className="px-2 sm:px-4 font-medium text-slate-700 min-w-[80px] sm:w-48 text-center text-xs sm:text-sm whitespace-nowrap">{getWeekLabel(currentWeekStart)}</div>
+           <div className="px-2 sm:px-4 font-medium text-slate-700 min-w-[80px] sm:w-36 text-center text-xs sm:text-sm whitespace-nowrap">{getWeekLabel(currentWeekStart)}</div>
            <button onClick={() => setCurrentDate(addWeeks(currentWeekStart, 1))} disabled={currentWeekStart >= getWeekStart(SEMESTER_END)} className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 border border-gray-100 flex-shrink-0"><IconChevronDown className="w-4 h-4 sm:w-5 sm:h-5 -rotate-90" /></button>
            <button onClick={() => setCurrentDate(new Date())} className="ml-2 px-3 py-1.5 sm:px-3 sm:py-1.5 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-medium text-slate-700 hover:bg-gray-50 flex-shrink-0">Hoje</button>
         </div>

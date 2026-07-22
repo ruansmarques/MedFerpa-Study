@@ -967,16 +967,24 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
             </div>
 
             {/* Main Tabs (Internas / ENAMED) */}
-            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-xs">
+            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-xs w-fit mx-auto">
               <button
                 onClick={() => setActiveTab('internas')}
-                className={`px-6 py-2.5 rounded-lg font-bold text-xs transition-all ${activeTab === 'internas' ? 'bg-green-100 text-green-800 shadow-xs border border-green-200' : 'text-gray-500 hover:text-gray-800'}`}
+                className={`px-6 py-2 rounded-lg font-bold text-xs transition-all border ${
+                  activeTab === 'internas' 
+                    ? 'bg-[#eefcf4] text-[#0f8a4f] border-[#d3f4e2] shadow-xs' 
+                    : 'text-gray-500 hover:text-gray-800 border-transparent'
+                }`}
               >
                 Modo CURSO
               </button>
               <button
                 onClick={() => setActiveTab('enamed')}
-                className={`px-6 py-2.5 rounded-lg font-bold text-xs transition-all ${activeTab === 'enamed' ? 'bg-green-100 text-green-800 shadow-xs border border-green-200' : 'text-gray-500 hover:text-gray-800'}`}
+                className={`px-6 py-2 rounded-lg font-bold text-xs transition-all border ${
+                  activeTab === 'enamed' 
+                    ? 'bg-[#eefcf4] text-[#0f8a4f] border-[#d3f4e2] shadow-xs' 
+                    : 'text-gray-500 hover:text-gray-800 border-transparent'
+                }`}
               >
                 Modo ENAMED
               </button>

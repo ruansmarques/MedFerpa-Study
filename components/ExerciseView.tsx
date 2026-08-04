@@ -45,6 +45,7 @@ interface ExerciseViewProps {
   onExit: () => void;
   onAddXP: (amount: number) => void; 
   initialSubjectId?: string;
+  initialLessonId?: string;
 }
 
 const MultiSelect = ({ options, selected, onChange, placeholder }: { options: string[], selected: string[], onChange: (val: string[]) => void, placeholder: string }) => {
@@ -99,7 +100,7 @@ const MultiSelect = ({ options, selected, onChange, placeholder }: { options: st
   );
 };
 
-const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP, initialSubjectId }) => {
+const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, onExit, onAddXP, initialSubjectId, initialLessonId }) => {
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<'internas' | 'enamed'>('internas');
   const [activeSubTab, setActiveSubTab] = useState<'config' | 'history'>('config');
@@ -116,7 +117,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
   const [selectedBancas, setSelectedBancas] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEnamedSubjects, setSelectedEnamedSubjects] = useState<string[]>([]);
-  const [selectedLessonId, setSelectedLessonId] = useState<string>('');
+  const [selectedLessonId, setSelectedLessonId] = useState<string>(initialLessonId || '');
   const [subjectLessons, setSubjectLessons] = useState<any[]>([]);
   const [allLessons, setAllLessons] = useState<any[]>([]);
   const [difficulty, setDifficulty] = useState<string[]>(['Fácil', 'Médio', 'Difícil']);
@@ -231,10 +232,60 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
         setSubjectLessons([]);
         setAvailableLists([]);
       }
-      setSelectedLessonId('');
+      if (!initialLessonId) {
+        setSelectedLessonId('');
+      }
     };
     fetchLessonsAndLists();
-  }, [selectedSubjectId]);
+  }, [selectedSubjectId, initialLessonId]);
+
+  // Auto-start exercise session for a specific lesson when requested from ClassList
+  const autoStartedLessonRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (initialLessonId && allQuestionsLoaded.length > 0 && autoStartedLessonRef.current !== initialLessonId) {
+      autoStartedLessonRef.current = initialLessonId;
+
+      const matchingQuestions = allQuestionsLoaded.filter(q => 
+        q.lessonId && q.lessonId.split(',').map(s => s.trim()).includes(initialLessonId)
+      );
+
+      if (matchingQuestions.length > 0) {
+        const lessonObj = allLessons.find(l => l.id === initialLessonId);
+        const title = lessonObj ? `Sessão: ${lessonObj.title}` : `Exercícios da Aula`;
+
+        const autoSession: ExerciseSession = {
+          id: 'sess_lesson_' + initialLessonId + '_' + Date.now(),
+          title: title,
+          createdAt: new Date().toISOString(),
+          filters: {
+            activeTab: 'internas',
+            period: selectedPeriod,
+            subjectId: initialSubjectId,
+            lessonId: initialLessonId,
+            bancas: [],
+            areas: [],
+            enamedSubjects: [],
+            difficulty: ['Fácil', 'Médio', 'Difícil']
+          },
+          questions: matchingQuestions,
+          answers: {},
+          isCompleted: false,
+          mode: 'normal'
+        };
+
+        const updatedHistory = [autoSession, ...sessionHistory];
+        saveSessionsToUser(updatedHistory);
+
+        setActiveSession(autoSession);
+        setResolutionStarted(true);
+        setCurrentQuestionIndex(0);
+      } else {
+        setSelectedSubjectId(initialSubjectId || '');
+        setSelectedLessonId(initialLessonId);
+      }
+    }
+  }, [initialLessonId, allQuestionsLoaded, allLessons, initialSubjectId, selectedPeriod, sessionHistory]);
 
   // Reset tags visible state when active question changes
   useEffect(() => {
@@ -269,7 +320,7 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
       }
       // Lesson filter
       if (selectedLessonId) {
-        source = source.filter(q => q.lessonId === selectedLessonId);
+        source = source.filter(q => q.lessonId && q.lessonId.split(',').map(s => s.trim()).includes(selectedLessonId));
       }
     } else {
       // ENAMED

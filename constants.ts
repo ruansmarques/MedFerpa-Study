@@ -26,13 +26,111 @@ export const MOCK_USERS: User[] = [
   }
 ];
 
-// Mapeamento padrão de horários para o 5º Período (Automação Admin)
+export interface ScheduleEvent {
+  dayOfWeek: number; // 1 = Monday, 5 = Friday
+  startTime: string;
+  endTime: string;
+  subjectId: string;
+  slot: string; // "1", "2" or "3"
+  defaultTitle?: string;
+}
+
+export const SCHEDULE_TEMPLATE_5: ScheduleEvent[] = [
+  // Segunda
+  { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
+  { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
+  { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+  // Terça
+  { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
+  { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
+  { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
+  // Quarta
+  { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'mbe', slot: "1" },
+  { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
+  { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+  // Quinta
+  { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
+  { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
+  { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
+  // Sexta
+  { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
+  { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
+  { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
+];
+
+export const SCHEDULE_TEMPLATE_6: ScheduleEvent[] = [
+  // Segunda
+  { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
+  { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'p6-bioetica', slot: "3" },
+  // Terça
+  { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'p6-tecnica-cirurgica', slot: "1" },
+  { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'p6-tecnica-cirurgica', slot: "2" },
+  { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Quarta
+  { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'p6-gestao-saude', slot: "1" },
+  { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Quinta
+  { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'p6-psiquiatria-1', slot: "1" },
+  { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'p6-psiquiatria-1', slot: "2" },
+  { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
+  // Sexta
+  { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
+  { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
+  { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'p6-linhas-cuidado', slot: "3" },
+];
+
+// Mapeamento padrão de horários para disciplinas (Automação Admin)
 export const DEFAULT_SUBJECT_SLOTS: Record<string, string[]> = {
+  // 5º Período
   'pna': ['1'],
   'semio-sist': ['2', '3'],
   'anat-patol': ['1', '2'],
   'farma-med': ['3'],
-  'mbe': ['1']
+  'mbe': ['1'],
+
+  // 6º Período
+  'p6-pratica-adulto-1': ['1'],
+  'p6-cardiopulmonar': ['2'],
+  'p6-bioetica': ['3'],
+  'p6-tecnica-cirurgica': ['1', '2'],
+  'p6-neuroendo': ['3'],
+  'p6-gestao-saude': ['1'],
+  'p6-psiquiatria-1': ['1', '2'],
+  'p6-linhas-cuidado': ['3'],
+};
+
+export const getSlotsForSubjectAndDate = (subjectId: string, dateStr?: string, period?: number): string[] => {
+  if (!subjectId) return [];
+
+  if (dateStr && dateStr.trim() !== '') {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const day = parseInt(parts[2], 10);
+
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        const d = new Date(year, month - 1, day, 12, 0, 0);
+        const dayOfWeek = d.getDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
+
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+          const isP6 = period === 6 || subjectId.startsWith('p6-');
+          const template = isP6 ? SCHEDULE_TEMPLATE_6 : SCHEDULE_TEMPLATE_5;
+          const matching = template
+            .filter(e => e.dayOfWeek === dayOfWeek && e.subjectId === subjectId)
+            .map(e => e.slot);
+
+          if (matching.length > 0) {
+            return Array.from(new Set(matching));
+          }
+        }
+      }
+    }
+  }
+
+  return DEFAULT_SUBJECT_SLOTS[subjectId] || [];
 };
 
 // Mock Books

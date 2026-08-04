@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Register from './components/Register';
+import LandingPage from './components/LandingPage';
 import Sidebar from './components/Sidebar';
 import ClassList from './components/ClassList';
 import ExerciseView from './components/ExerciseView';
@@ -123,6 +124,7 @@ const App: React.FC = () => {
   // State for Deep Linking (Passing data between views)
   const [viewParams, setViewParams] = useState<{
     targetSubjectId?: string;
+    targetLessonId?: string;
     targetDate?: Date;
     targetCategory?: string;
   }>(() => {
@@ -321,8 +323,8 @@ const App: React.FC = () => {
       setCurrentView('schedule');
   };
 
-  const navigateToExercises = (subjectId?: string) => {
-      setViewParams({ targetSubjectId: subjectId });
+  const navigateToExercises = (subjectId?: string, lessonId?: string) => {
+      setViewParams({ targetSubjectId: subjectId, targetLessonId: lessonId });
       setCurrentView('exercises');
   };
 
@@ -347,18 +349,31 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     if (window.location.pathname === '/cadastrar') {
-      return <Register />;
+      return (
+        <LandingPage 
+          onLogin={handleLogin} 
+          initialAuthModal="register" 
+          onOpenAdmin={() => setCurrentView('admin')} 
+        />
+      );
     }
 
     // Admin bypasses login check
     if (currentView === 'admin' || window.location.pathname === '/admin') {
       return <AdminDashboard onExit={() => {
         window.history.pushState({}, '', '/'); // Reset URL
-        setCurrentView(currentUser ? 'classes' : 'login');
+        setCurrentView(currentUser ? 'classes' : 'classes');
       }} />;
     }
 
-    if (!currentUser) return <Login onLogin={handleLogin} />;
+    if (!currentUser) {
+      return (
+        <LandingPage 
+          onLogin={handleLogin} 
+          onOpenAdmin={() => setCurrentView('admin')} 
+        />
+      );
+    }
 
     switch (currentView) {
       case 'classes':
@@ -388,6 +403,7 @@ const App: React.FC = () => {
             onExit={() => setCurrentView('classes')}
             onAddXP={handleAddXP}
             initialSubjectId={viewParams.targetSubjectId}
+            initialLessonId={viewParams.targetLessonId}
           />
         );
       case 'library':

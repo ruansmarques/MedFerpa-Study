@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { SUBJECTS, DEFAULT_SUBJECT_SLOTS } from '../constants';
+import { SUBJECTS, DEFAULT_SUBJECT_SLOTS, getSlotsForSubjectAndDate } from '../constants';
 import { supabase } from '../supabase';
-import { IconCheck, IconX, IconEdit, IconPresentation, IconBook } from './Icons';
+import { IconCheck, IconX, IconEdit, IconPresentation, IconBook, IconPen } from './Icons';
 import { Lesson } from '../types';
 
 interface AdminDashboardProps {
@@ -36,6 +36,35 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
+  const [lastSavedLesson, setLastSavedLesson] = useState<Lesson | null>(null);
+
+  const getDisciplineValueForLesson = (lesson: Lesson) => {
+    if (lesson.subjectId === 'proc-patol') {
+      if (lesson.category === 'Imunologia') return 'proc-patol:cat-imuno';
+      if (lesson.category === 'Parasitologia') return 'proc-patol:cat-parasi';
+      if (lesson.category === 'Microbiologia') return 'proc-patol:cat-micro';
+      return 'proc-patol:cat-patogeral';
+    }
+    if (lesson.subjectId === 'anat-patol') {
+      if (lesson.category === 'Parasitologia') return 'anat-patol:cat-parasi';
+      if (lesson.category === 'Microbiologia') return 'anat-patol:cat-micro';
+      return 'anat-patol:cat-geral';
+    }
+    return lesson.subjectId;
+  };
+
+  const handleNavigateToCreateQuestionsForLesson = (lesson: Lesson) => {
+    const discVal = getDisciplineValueForLesson(lesson);
+    setAdminTab('questions');
+    setQ_selectedPeriod(lesson.period);
+    setQ_selectedDisciplines([discVal]);
+    setQ_selectedLessons([lesson.id]);
+    setQ_bulkSubjectId(discVal);
+    setQ_bulkLessonId(lesson.id);
+    setIsTag5Expanded(true);
+    setSuccessMsg(`Criando questões para a aula: ${lesson.title}`);
+    setTimeout(() => setSuccessMsg(''), 4000);
+  };
 
   // --- Questions & Tagging States (v2.031) ---
   const [adminTab, setAdminTab] = useState<'classes' | 'questions'>('classes');
@@ -94,11 +123,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   // Helper to get current lesson being edited
   const editingLesson = editingId ? dbLessons.find(l => l.id === editingId) : null;
 
-  // --- AUTOMATION: Pre-select slots based on subject ---
+  // --- AUTOMATION: Pre-select slots based on subject and date ---
   useEffect(() => {
     if (subjectId && !editingId) {
-      const defaultSlots = DEFAULT_SUBJECT_SLOTS[subjectId] || [];
-      setSelectedSlots(defaultSlots);
+      const autoSlots = getSlotsForSubjectAndDate(subjectId, date, period);
+      setSelectedSlots(autoSlots);
     }
     
     // Auto-set period based on subject if subject changes
@@ -106,7 +135,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     if (subj) {
       setPeriod(subj.period);
     }
-  }, [subjectId, editingId]);
+  }, [subjectId, date, editingId]);
 
   const fetchLessons = async () => {
     try {
@@ -577,6 +606,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               if (action === 'cat-parasi') updatePayload.category = 'Parasitologia';
               if (action === 'cat-imuno') updatePayload.category = 'Imunologia';
               if (action === 'cat-patogeral') updatePayload.category = 'Patologia Geral';
+              if (action === 'auto-slots') {
+                const targetL = dbLessons.find(l => l.id === id);
+                if (targetL) {
+                  const autoSlots = getSlotsForSubjectAndDate(targetL.subjectId, targetL.date, targetL.period);
+                  if (autoSlots.length > 0) updatePayload.targetSlots = autoSlots;
+                }
+              }
               
               return supabase.from('lessons').update(updatePayload).eq('id', id);
           });
@@ -599,11 +635,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setLoading(true);
     try {
       const currentLesson = dbLessons.find(l => l.id === editingId);
+      const finalSlots = selectedSlots.length > 0 
+        ? selectedSlots 
+        : getSlotsForSubjectAndDate(subjectId, date, period);
 
       const payload: any = {
         subjectId, title, period, date, category, type: entryType,
         description: entryType === 'notice' ? noticeMessage : null,
-        targetSlots: selectedSlots,
+        targetSlots: finalSlots,
         slideUrl: slideUrlInput ? slideUrlInput : null,
         summaryUrl: summaryUrlInput ? summaryUrlInput : null,
         youtubeIds: youtubeLink ? [youtubeLink.split('v=')[1]?.split('&')[0] || youtubeLink] : (currentLesson?.youtubeIds || []),
@@ -612,15 +651,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         examPeriod
       };
 
+      let savedId = editingId;
       if (editingId) {
         const { error } = await supabase.from('lessons').update(payload).eq('id', editingId);
         if (error) throw error;
       } else {
         payload.id = crypto.randomUUID();
+        savedId = payload.id;
         payload.createdAt = new Date().toISOString();
         const { error } = await supabase.from('lessons').insert(payload);
         if (error) throw error;
       }
+
+      const savedLessonObj: Lesson = {
+        id: savedId || crypto.randomUUID(),
+        title,
+        subjectId,
+        period,
+        date,
+        category,
+        type: entryType,
+        description: payload.description,
+        targetSlots: selectedSlots,
+        slideUrl: payload.slideUrl,
+        summaryUrl: payload.summaryUrl,
+        youtubeIds: payload.youtubeIds,
+        createdAt: payload.createdAt || new Date().toISOString(),
+        isContinuation,
+        examPeriod
+      };
+      setLastSavedLesson(savedLessonObj);
+
       setSuccessMsg("Salvo com sucesso!");
       fetchLessons();
       clearForm();
@@ -950,6 +1011,23 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               </form>
             </section>
 
+            {lastSavedLesson && (
+              <div className="bg-purple-50 border border-purple-200 p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
+                <div>
+                  <p className="text-sm font-black text-purple-900">Aula "{lastSavedLesson.title}" salva com sucesso!</p>
+                  <p className="text-xs text-purple-700">Deseja cadastrar questões para esta aula agora?</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleNavigateToCreateQuestionsForLesson(lastSavedLesson)}
+                  className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs transition shadow-md shrink-0 flex items-center gap-2"
+                >
+                  <IconPen className="w-4 h-4" />
+                  <span>Criar questões para esta aula</span>
+                </button>
+              </div>
+            )}
+
             {/* Tabela de aulas */}
             <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden h-fit">
                 {selectedLessonIds.length > 0 && (
@@ -963,6 +1041,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                            <button type="button" onClick={() => handleMassEdit('exam-n1')} className="px-3 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 w-full sm:w-auto leading-tight">Mudar para N1</button>
                            <button type="button" onClick={() => handleMassEdit('exam-n2')} className="px-3 py-2 bg-pink-600 text-white text-xs font-bold rounded-lg hover:bg-pink-700 w-full sm:w-auto leading-tight">Mudar para N2</button>
                            <button type="button" onClick={() => handleMassEdit('exam-praticas')} className="px-3 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 w-full sm:w-auto leading-tight">Aulas Práticas</button>
+                           <button type="button" onClick={() => handleMassEdit('auto-slots')} className="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 w-full sm:w-auto leading-tight">Preencher Slots da Grade</button>
                            
                            {(subjectId === 'anat-patol' || subjectId === 'proc-patol') && (
                               <>
@@ -999,16 +1078,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                 </td>
                                 <td className="p-4">
                                     <div className="text-[10px] font-bold text-blue-500 mb-1">
-                                        {l.date?.split('-').reverse().join('/')} | Slots: {l.targetSlots?.join(', ') || 'N/A'} | {l.examPeriod || 'N2'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
+                                        {l.date?.split('-').reverse().join('/')} | Slots: {(l.targetSlots && l.targetSlots.length > 0) ? l.targetSlots.join(', ') : (getSlotsForSubjectAndDate(l.subjectId, l.date, l.period).join(', ') || 'N/A')} | {l.examPeriod || 'N2'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
                                     </div>
                                     <div className="text-sm font-bold text-slate-800 line-clamp-1">
                                         {l.title}
                                     </div>
                                     <div className="text-[10px] text-gray-400 uppercase">{SUBJECTS.find(s => s.id === l.subjectId)?.title}</div>
                                 </td>
-                                <td className="p-4 text-right flex justify-end gap-2">
-                                    <button onClick={() => handleEdit(l)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><IconEdit className="w-5 h-5" /></button>
-                                    <button onClick={() => handleDelete(l.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><IconX className="w-5 h-5" /></button>
+                                <td className="p-4 text-right flex justify-end items-center gap-2">
+                                    <button 
+                                        onClick={() => handleNavigateToCreateQuestionsForLesson(l)} 
+                                        className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 shadow-xs"
+                                        title="Criar questões exclusivas para esta aula"
+                                    >
+                                        <IconPen className="w-3.5 h-3.5" />
+                                        <span>Criar questões</span>
+                                    </button>
+                                    <button onClick={() => handleEdit(l)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg" title="Editar aula"><IconEdit className="w-5 h-5" /></button>
+                                    <button onClick={() => handleDelete(l.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Excluir aula"><IconX className="w-5 h-5" /></button>
                                 </td>
                             </tr>
                         ))}

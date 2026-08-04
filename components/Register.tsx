@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabase';
+import { User } from '../types';
 
-const Register: React.FC = () => {
+interface RegisterProps {
+  onAutoLogin?: (user: User) => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ onAutoLogin }) => {
   const [name, setName] = useState('');
   const [ra, setRa] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,10 +58,20 @@ const Register: React.FC = () => {
         return;
       }
 
+      const newUserObj: User = {
+        ra: ra,
+        name: name.trim(),
+        totalXP: 0,
+        completedLessons: [],
+        avatarColor: 'bg-blue-600',
+        exerciseProgress: {},
+        listProgress: {}
+      };
+
       const { error: insertError } = await supabase.from('users').insert({
         id: crypto.randomUUID(),
-        name: name.trim(),
-        ra: ra,
+        name: newUserObj.name,
+        ra: newUserObj.ra,
         totalXP: 0,
         completedLessons: [],
         listProgress: {},
@@ -67,9 +82,15 @@ const Register: React.FC = () => {
           throw insertError;
       }
 
-      setMessage({ type: 'success', text: 'Usuário cadastrado com sucesso!' });
+      setMessage({ type: 'success', text: 'Usuário cadastrado com sucesso! Entrando...' });
       setName('');
       setRa('');
+
+      if (onAutoLogin) {
+        setTimeout(() => {
+          onAutoLogin(newUserObj);
+        }, 600);
+      }
     } catch (error: any) {
       console.error(error);
       setMessage({ type: 'error', text: 'Erro ao cadastrar usuário. Tente novamente mais tarde.' });

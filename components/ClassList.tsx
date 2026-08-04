@@ -10,7 +10,7 @@ interface ClassListProps {
   initialSubjectId?: string;
   initialCategory?: string;
   onNavigateToSchedule?: (date?: Date) => void;
-  onNavigateToExercises?: (subjectId?: string) => void;
+  onNavigateToExercises?: (subjectId?: string, lessonId?: string) => void;
 }
 
 interface ActionButtonProps {
@@ -418,7 +418,7 @@ const LessonRow: React.FC<{
               <button 
                 onClick={() => {
                   if (onNavigateToExercises) {
-                    onNavigateToExercises(lesson.subjectId);
+                    onNavigateToExercises(lesson.subjectId, lesson.id);
                   }
                 }}
                 className="blob-btn" 

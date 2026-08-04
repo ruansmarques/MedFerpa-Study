@@ -1,64 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { SUBJECTS } from '../constants';
+import { SUBJECTS, SCHEDULE_TEMPLATE_5, SCHEDULE_TEMPLATE_6, ScheduleEvent, getSlotsForSubjectAndDate } from '../constants';
 import { supabase } from '../supabase';
 import { Lesson } from '../types';
 import { IconChevronDown, IconVideoOff } from './Icons';
-
-interface ScheduleEvent {
-  dayOfWeek: number; // 1 = Monday, 5 = Friday
-  startTime: string;
-  endTime: string;
-  subjectId: string;
-  slot: string; // "1", "2" or "3"
-  defaultTitle?: string;
-}
-
-const SCHEDULE_TEMPLATE_5: ScheduleEvent[] = [
-  // Segunda
-  { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
-  { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
-  { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
-  // Terça
-  { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
-  { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
-  { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
-  // Quarta
-  { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'mbe', slot: "1" },
-  { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
-  { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
-  // Quinta
-  { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'anat-patol', slot: "1" },
-  { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'anat-patol', slot: "2" },
-  { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'farma-med', slot: "3" },
-  // Sexta
-  { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'pna', slot: "1" },
-  { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'semio-sist', slot: "2" },
-  { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'semio-sist', slot: "3" },
-];
-
-const SCHEDULE_TEMPLATE_6: ScheduleEvent[] = [
-  // Segunda
-  { dayOfWeek: 1, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
-  { dayOfWeek: 1, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
-  { dayOfWeek: 1, startTime: "10:50", endTime: "12:30", subjectId: 'p6-bioetica', slot: "3" },
-  // Terça
-  { dayOfWeek: 2, startTime: "07:00", endTime: "08:40", subjectId: 'p6-tecnica-cirurgica', slot: "1" },
-  { dayOfWeek: 2, startTime: "08:50", endTime: "10:30", subjectId: 'p6-tecnica-cirurgica', slot: "2" },
-  { dayOfWeek: 2, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
-  // Quarta
-  { dayOfWeek: 3, startTime: "07:00", endTime: "08:40", subjectId: 'p6-gestao-saude', slot: "1" },
-  { dayOfWeek: 3, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
-  { dayOfWeek: 3, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
-  // Quinta
-  { dayOfWeek: 4, startTime: "07:00", endTime: "08:40", subjectId: 'p6-psiquiatria-1', slot: "1" },
-  { dayOfWeek: 4, startTime: "08:50", endTime: "10:30", subjectId: 'p6-psiquiatria-1', slot: "2" },
-  { dayOfWeek: 4, startTime: "10:50", endTime: "12:30", subjectId: 'p6-neuroendo', slot: "3" },
-  // Sexta
-  { dayOfWeek: 5, startTime: "07:00", endTime: "08:40", subjectId: 'p6-pratica-adulto-1', slot: "1" },
-  { dayOfWeek: 5, startTime: "08:50", endTime: "10:30", subjectId: 'p6-cardiopulmonar', slot: "2" },
-  { dayOfWeek: 5, startTime: "10:50", endTime: "12:30", subjectId: 'p6-linhas-cuidado', slot: "3" },
-];
 
 interface ScheduleViewProps {
   onNavigateToClass: (subjectId: string, category?: string) => void;
@@ -351,11 +296,18 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                                   </div>
                               ) : events.map((event, eventIdx) => {
                                   const subject = getSubject(event.subjectId);
-                                  const foundLesson = dbLessons.find(l => 
-                                      l.subjectId === event.subjectId && 
-                                      l.date === isoDate && 
-                                      l.targetSlots?.includes(event.slot)
-                                  );
+                                  const foundLesson = dbLessons.find(l => {
+                                      if (l.subjectId !== event.subjectId || l.date !== isoDate) return false;
+                                      if (l.targetSlots && l.targetSlots.length > 0) {
+                                          return l.targetSlots.includes(event.slot);
+                                      }
+                                      // Fallback for lessons without explicit targetSlots
+                                      const autoSlots = getSlotsForSubjectAndDate(l.subjectId, l.date, l.period);
+                                      if (autoSlots.length > 0) {
+                                          return autoSlots.includes(event.slot);
+                                      }
+                                      return true;
+                                  });
 
                                   if (foundLesson && foundLesson.type === 'notice') {
                                       return (

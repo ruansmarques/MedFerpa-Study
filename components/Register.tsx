@@ -4,9 +4,10 @@ import { User } from '../types';
 
 interface RegisterProps {
   onAutoLogin?: (user: User) => void;
+  onSwitchToLogin?: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onAutoLogin }) => {
+const Register: React.FC<RegisterProps> = ({ onAutoLogin, onSwitchToLogin }) => {
   const [name, setName] = useState('');
   const [ra, setRa] = useState('');
   const [loading, setLoading] = useState(false);
@@ -155,8 +156,12 @@ const Register: React.FC<RegisterProps> = ({ onAutoLogin }) => {
         </form>
 
         <div className="mt-8 text-center">
-           <button onClick={() => window.location.href = '/'} className="text-sm text-gray-500 underline hover:text-gray-900 transition-colors">
-              Fazer login
+           <button 
+             type="button"
+             onClick={onSwitchToLogin ? onSwitchToLogin : () => window.location.href = '/'} 
+             className="text-sm text-blue-600 font-bold hover:underline transition-colors"
+           >
+              Já tem uma conta? Fazer login com RA
            </button>
         </div>
       </div>

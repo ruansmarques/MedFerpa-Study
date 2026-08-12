@@ -101,6 +101,11 @@ const App: React.FC = () => {
     };
   }, [currentUser?.ra]);
 
+  const [authMode, setAuthMode] = useState<'login' | 'register'>(() => {
+    if (window.location.pathname === '/cadastrar') return 'register';
+    return 'login';
+  });
+
   const [currentView, setCurrentView] = useState<ViewState>(() => {
     if (window.location.pathname === '/admin' || new URLSearchParams(window.location.search).get('view') === 'admin') {
       return 'admin';
@@ -348,29 +353,33 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
-    if (window.location.pathname === '/cadastrar') {
-      return (
-        <LandingPage 
-          onLogin={handleLogin} 
-          initialAuthModal="register" 
-          onOpenAdmin={() => setCurrentView('admin')} 
-        />
-      );
-    }
-
     // Admin bypasses login check
     if (currentView === 'admin' || window.location.pathname === '/admin') {
       return <AdminDashboard onExit={() => {
         window.history.pushState({}, '', '/'); // Reset URL
-        setCurrentView(currentUser ? 'classes' : 'classes');
+        setCurrentView('classes');
       }} />;
     }
 
     if (!currentUser) {
+      if (authMode === 'register' || window.location.pathname === '/cadastrar') {
+        return (
+          <Register 
+            onAutoLogin={handleLogin} 
+            onSwitchToLogin={() => {
+              if (window.location.pathname === '/cadastrar') {
+                window.history.pushState({}, '', '/');
+              }
+              setAuthMode('login');
+            }}
+          />
+        );
+      }
+
       return (
-        <LandingPage 
+        <Login 
           onLogin={handleLogin} 
-          onOpenAdmin={() => setCurrentView('admin')} 
+          onSwitchToRegister={() => setAuthMode('register')}
         />
       );
     }

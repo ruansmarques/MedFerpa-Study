@@ -4,9 +4,11 @@ import { User } from '../types';
 
 interface LoginProps {
   onLogin: (user: User) => void;
+  onSwitchToRegister?: () => void;
+  onOpenAdmin?: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, onOpenAdmin }) => {
   const [ra, setRa] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -106,6 +108,18 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </p>
           )}
         </div>
+
+        {onSwitchToRegister && (
+          <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col gap-3 text-center">
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-sm text-blue-600 hover:text-blue-800 font-bold transition"
+            >
+              Primeiro acesso? Cadastre-se aqui.
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

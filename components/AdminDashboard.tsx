@@ -17,7 +17,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [entryType, setEntryType] = useState<'class' | 'notice'>('class');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
-  const [period, setPeriod] = useState<number>(5);
+  const [period, setPeriod] = useState<number>(6);
   const [subjectId, setSubjectId] = useState('');
   const [category, setCategory] = useState('');
   const [youtubeLink, setYoutubeLink] = useState('');
@@ -25,7 +25,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isContinuation, setIsContinuation] = useState(false);
-  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Práticas'>('N2');
+  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Práticas'>('N1');
   
   const [slideUrlInput, setSlideUrlInput] = useState('');
   const [summaryUrlInput, setSummaryUrlInput] = useState('');
@@ -80,7 +80,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [q_ano, setQ_ano] = useState<string>('');
   const [q_subjectId, setQ_subjectId] = useState<string>('');
   const [q_lessonId, setQ_lessonId] = useState<string>('');
-  const [q_selectedPeriod, setQ_selectedPeriod] = useState<number>(5);
+  const [q_selectedPeriod, setQ_selectedPeriod] = useState<number>(6);
   const [q_selectedDisciplines, setQ_selectedDisciplines] = useState<string[]>([]);
   const [q_selectedLessons, setQ_selectedLessons] = useState<string[]>([]);
   const [customBancas, setCustomBancas] = useState<string[]>(() => {
@@ -505,8 +505,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSlideUrlInput('');
     setSummaryUrlInput('');
     setIsContinuation(false);
-    setExamPeriod('N2');
-    // Don't reset period to 5, keep user context or let it update via subject
+    setExamPeriod('N1');
+    // Don't reset period to 6, keep user context or let it update via subject
   };
 
   // Fix: Handle Edit
@@ -522,7 +522,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
     setPeriod(lesson.period);
     setIsContinuation(lesson.isContinuation || false);
-    setExamPeriod(lesson.examPeriod || 'N2');
+    setExamPeriod(lesson.examPeriod || 'N1');
     setSlideUrlInput(lesson.slideUrl || '');
     setSummaryUrlInput(lesson.summaryUrl || '');
   };
@@ -1011,23 +1011,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               </form>
             </section>
 
-            {lastSavedLesson && (
-              <div className="bg-purple-50 border border-purple-200 p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-fadeIn">
-                <div>
-                  <p className="text-sm font-black text-purple-900">Aula "{lastSavedLesson.title}" salva com sucesso!</p>
-                  <p className="text-xs text-purple-700">Deseja cadastrar questões para esta aula agora?</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleNavigateToCreateQuestionsForLesson(lastSavedLesson)}
-                  className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold rounded-xl text-xs transition shadow-md shrink-0 flex items-center gap-2"
-                >
-                  <IconPen className="w-4 h-4" />
-                  <span>Criar questões para esta aula</span>
-                </button>
-              </div>
-            )}
-
             {/* Tabela de aulas */}
             <section className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden h-fit">
                 {selectedLessonIds.length > 0 && (
@@ -1078,7 +1061,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                 </td>
                                 <td className="p-4">
                                     <div className="text-[10px] font-bold text-blue-500 mb-1">
-                                        {l.date?.split('-').reverse().join('/')} | Slots: {(l.targetSlots && l.targetSlots.length > 0) ? l.targetSlots.join(', ') : (getSlotsForSubjectAndDate(l.subjectId, l.date, l.period).join(', ') || 'N/A')} | {l.examPeriod || 'N2'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
+                                        {l.date?.split('-').reverse().join('/')} | Slots: {(l.targetSlots && l.targetSlots.length > 0) ? l.targetSlots.join(', ') : (getSlotsForSubjectAndDate(l.subjectId, l.date, l.period).join(', ') || 'N/A')} | {l.examPeriod || 'N1'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
                                     </div>
                                     <div className="text-sm font-bold text-slate-800 line-clamp-1">
                                         {l.title}

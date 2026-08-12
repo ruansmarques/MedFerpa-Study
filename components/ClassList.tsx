@@ -80,6 +80,8 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
       setSelectedCategory('Patologia Geral');
     } else if (selectedSubject?.id === 'anat-patol') {
       setSelectedCategory('Geral');
+    } else if (selectedSubject?.id === 'p6-neuroendo') {
+      setSelectedCategory('Neurologia');
     }
   }, [selectedSubject, initialCategory, initialSubjectId]);
 
@@ -120,18 +122,22 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     return String(a.title || '').localeCompare(String(b.title || ''));
   });
 
-  // Logic for Processos Patológicos categories
-  const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol';
+  // Logic for categorized subjects (Processos Patológicos, Anatomia Patológica, Clínica Neuroendócrina)
+  const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol' || selectedSubject?.id === 'p6-neuroendo';
   
   let categories: string[] = [];
   if (selectedSubject?.id === 'proc-patol') {
     categories = ['Patologia Geral', 'Imunologia', 'Parasitologia', 'Microbiologia'];
   } else if (selectedSubject?.id === 'anat-patol') {
     categories = ['Geral', 'Parasitologia', 'Microbiologia'];
+  } else if (selectedSubject?.id === 'p6-neuroendo') {
+    categories = ['Neurologia', 'Endocrinologia', 'Imagem'];
   }
 
+  const defaultCategoryForSubject = selectedSubject?.id === 'proc-patol' ? 'Patologia Geral' : selectedSubject?.id === 'p6-neuroendo' ? 'Neurologia' : 'Geral';
+
   const displayLessons = isCategorized
-    ? filteredLessons.filter(l => (l.category || (selectedSubject?.id === 'proc-patol' ? 'Patologia Geral' : 'Geral')) === selectedCategory)
+    ? filteredLessons.filter(l => (l.category || defaultCategoryForSubject) === selectedCategory)
     : filteredLessons;
 
   if (!selectedSubject) {

@@ -50,6 +50,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       if (lesson.category === 'Microbiologia') return 'anat-patol:cat-micro';
       return 'anat-patol:cat-geral';
     }
+    if (lesson.subjectId === 'p6-neuroendo') {
+      if (lesson.category === 'Endocrinologia') return 'p6-neuroendo:cat-endocrino';
+      if (lesson.category === 'Imagem') return 'p6-neuroendo:cat-imagem';
+      return 'p6-neuroendo:cat-neuro';
+    }
     return lesson.subjectId;
   };
 
@@ -606,6 +611,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               if (action === 'cat-parasi') updatePayload.category = 'Parasitologia';
               if (action === 'cat-imuno') updatePayload.category = 'Imunologia';
               if (action === 'cat-patogeral') updatePayload.category = 'Patologia Geral';
+              if (action === 'cat-neuro') updatePayload.category = 'Neurologia';
+              if (action === 'cat-endocrino') updatePayload.category = 'Endocrinologia';
+              if (action === 'cat-imagem') updatePayload.category = 'Imagem';
               if (action === 'auto-slots') {
                 const targetL = dbLessons.find(l => l.id === id);
                 if (targetL) {
@@ -740,6 +748,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
         list.push({ value: 'anat-patol:cat-geral', label: 'Anatomia Patológica: Geral', subjectId: 'anat-patol', category: 'cat-geral' });
         list.push({ value: 'anat-patol:cat-parasi', label: 'Anatomia Patológica: Parasitologia', subjectId: 'anat-patol', category: 'cat-parasi' });
         list.push({ value: 'anat-patol:cat-micro', label: 'Anatomia Patológica: Microbiologia', subjectId: 'anat-patol', category: 'cat-micro' });
+      } else if (s.id === 'p6-neuroendo') {
+        list.push({ value: 'p6-neuroendo:cat-neuro', label: 'Clínica Neuroendócrina: Neurologia', subjectId: 'p6-neuroendo', category: 'cat-neuro' });
+        list.push({ value: 'p6-neuroendo:cat-endocrino', label: 'Clínica Neuroendócrina: Endocrinologia', subjectId: 'p6-neuroendo', category: 'cat-endocrino' });
+        list.push({ value: 'p6-neuroendo:cat-imagem', label: 'Clínica Neuroendócrina: Imagem', subjectId: 'p6-neuroendo', category: 'cat-imagem' });
       } else {
         list.push({ value: s.id, label: s.title, subjectId: s.id, category: null });
       }
@@ -756,7 +768,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
       'cat-parasi': 'Parasitologia',
       'cat-micro': 'Microbiologia',
       'cat-imuno': 'Imunologia',
-      'cat-geral': 'Geral'
+      'cat-geral': 'Geral',
+      'cat-neuro': 'Neurologia',
+      'cat-endocrino': 'Endocrinologia',
+      'cat-imagem': 'Imagem'
     };
 
     // Parse selected discipline values
@@ -891,7 +906,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                       </div>
                   </div>
 
-                  {(subjectId === 'proc-patol' || subjectId === 'anat-patol') && (
+                  {(subjectId === 'proc-patol' || subjectId === 'anat-patol' || subjectId === 'p6-neuroendo') && (
                       <div className="flex flex-col gap-1">
                           <label className="text-xs font-bold text-gray-400 uppercase">Categoria</label>
                           <select value={category} onChange={e => setCategory(e.target.value)} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500">
@@ -909,6 +924,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                       <option value="Geral">Geral</option>
                                       <option value="Parasitologia">Parasitologia</option>
                                       <option value="Microbiologia">Microbiologia</option>
+                                  </>
+                              )}
+                              {subjectId === 'p6-neuroendo' && (
+                                  <>
+                                      <option value="Neurologia">Neurologia</option>
+                                      <option value="Endocrinologia">Endocrinologia</option>
+                                      <option value="Imagem">Imagem</option>
                                   </>
                               )}
                           </select>
@@ -1026,13 +1048,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                            <button type="button" onClick={() => handleMassEdit('exam-praticas')} className="px-3 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 w-full sm:w-auto leading-tight">Aulas Práticas</button>
                            <button type="button" onClick={() => handleMassEdit('auto-slots')} className="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 w-full sm:w-auto leading-tight">Preencher Slots da Grade</button>
                            
-                           {(subjectId === 'anat-patol' || subjectId === 'proc-patol') && (
+                           {(subjectId === 'anat-patol' || subjectId === 'proc-patol' || subjectId === 'p6-neuroendo') && (
                               <>
                                  <div className="col-span-2 w-full h-px bg-blue-100 my-1 lg:hidden"></div>
                                  <span className="hidden lg:flex items-center text-blue-200 mx-1">|</span>
-                                 <button type="button" onClick={() => handleMassEdit(subjectId === 'proc-patol' ? 'cat-patogeral' : 'cat-geral')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: {subjectId === 'proc-patol' ? 'Patologia Geral' : 'Geral'}</button>
-                                 <button type="button" onClick={() => handleMassEdit('cat-parasi')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Parasitologia</button>
-                                 <button type="button" onClick={() => handleMassEdit('cat-micro')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Microbiologia</button>
+                                 <button type="button" onClick={() => handleMassEdit(subjectId === 'p6-neuroendo' ? 'cat-neuro' : subjectId === 'proc-patol' ? 'cat-patogeral' : 'cat-geral')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: {subjectId === 'p6-neuroendo' ? 'Neurologia' : subjectId === 'proc-patol' ? 'Patologia Geral' : 'Geral'}</button>
+                                  {subjectId === 'p6-neuroendo' && (
+                                    <>
+                                      <button type="button" onClick={() => handleMassEdit('cat-endocrino')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Endocrinologia</button>
+                                      <button type="button" onClick={() => handleMassEdit('cat-imagem')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Imagem</button>
+                                    </>
+                                  )}
+                                 {subjectId !== 'p6-neuroendo' && <button type="button" onClick={() => handleMassEdit('cat-parasi')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Parasitologia</button>}
+                                 {subjectId !== 'p6-neuroendo' && <button type="button" onClick={() => handleMassEdit('cat-micro')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Microbiologia</button>}
                                  {subjectId === 'proc-patol' && <button type="button" onClick={() => handleMassEdit('cat-imuno')} className="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 w-full sm:w-auto leading-tight">Cat: Imunologia</button>}
                               </>
                            )}

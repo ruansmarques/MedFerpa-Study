@@ -243,6 +243,12 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
   const autoStartedLessonRef = useRef<string | null>(null);
 
   useEffect(() => {
+    return () => {
+      autoStartedLessonRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     if (initialLessonId && allQuestionsLoaded.length > 0 && autoStartedLessonRef.current !== initialLessonId) {
       autoStartedLessonRef.current = initialLessonId;
 
@@ -786,10 +792,21 @@ const ExerciseView: React.FC<ExerciseViewProps> = ({ currentUser, onUpdateUser, 
                     {/* Linha 2: Contexto Acadêmico (Laranjas + Amarelos) */}
                     <div className="flex flex-wrap gap-2 items-center">
                       <span className="text-[10px] md:text-[11px] font-extrabold uppercase px-2.5 py-1 rounded-lg border border-orange-200 bg-orange-50 text-orange-700 shadow-xs">
-                        {SUBJECTS.find(s => s.id === currentQuestion.subjectId)?.title || currentQuestion.subjectId || 'Disciplina'}
+                        {(() => {
+                          const baseSubjId = currentQuestion.subjectId ? currentQuestion.subjectId.split(':')[0]?.split(',')[0]?.trim() : '';
+                          return SUBJECTS.find(s => s.id === baseSubjId)?.title || currentQuestion.subjectId || 'Disciplina';
+                        })()}
                       </span>
                       <span className="text-[10px] md:text-[11px] font-extrabold uppercase px-2.5 py-1 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-700 shadow-xs">
-                        {allLessons.find(l => l.id === currentQuestion.lessonId)?.title || 'Aula Geral'}
+                        {(() => {
+                          if (!currentQuestion.lessonId) return 'Aula Geral';
+                          const ids = currentQuestion.lessonId.split(',').map(s => s.trim());
+                          const found = allLessons.filter(l => ids.includes(l.id));
+                          if (found.length > 0) {
+                            return found.map(l => l.title).join(', ');
+                          }
+                          return 'Aula Geral';
+                        })()}
                       </span>
                     </div>
                   </div>

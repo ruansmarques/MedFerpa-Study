@@ -46,31 +46,47 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     localStorage.setItem('medferpa_selected_period', selectedPeriod.toString());
   }, [selectedPeriod]);
   const [dbLessons, setDbLessons] = useState<Lesson[]>([]);
+  const [lessonQuestionCounts, setLessonQuestionCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('Patologia Geral');
 
   useEffect(() => {
-    const fetchLessons = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('lessons').select('*');
-        if (error) {
-            throw error;
+        const [lessonsRes, questionsRes] = await Promise.all([
+          supabase.from('lessons').select('*'),
+          supabase.from('questions').select('id, lessonId')
+        ]);
+
+        if (lessonsRes.error) {
+          throw lessonsRes.error;
         }
         
-        const lessons = (data || []).map((d: any) => ({ ...d } as Lesson));
-        
-        console.log("Fetched lessons:", lessons.length);
-        if (lessons.length > 0) { console.log(lessons[0]); }
+        const lessons = (lessonsRes.data || []).map((d: any) => ({ ...d } as Lesson));
         setDbLessons(lessons);
+
+        if (questionsRes.data) {
+          const counts: Record<string, number> = {};
+          questionsRes.data.forEach((q: any) => {
+            if (q.lessonId && typeof q.lessonId === 'string' && q.lessonId.trim() !== '') {
+              const ids = q.lessonId.split(',').map((s: string) => s.trim());
+              ids.forEach((id: string) => {
+                if (id) {
+                  counts[id] = (counts[id] || 0) + 1;
+                }
+              });
+            }
+          });
+          setLessonQuestionCounts(counts);
+        }
       } catch (err: any) {
-        console.error("Error fetching lessons: ", err);
-        alert("Error fetching database: " + err.message);
+        console.error("Error fetching data: ", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchLessons();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -245,7 +261,15 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'N1' || !l.examPeriod).map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
+                  <LessonRow 
+                    key={l.id} 
+                    lesson={l} 
+                    isCompleted={currentUser.completedLessons.includes(l.id)} 
+                    onToggleComplete={() => onUpdateProgress(l.id)} 
+                    onNavigateToSchedule={onNavigateToSchedule} 
+                    onNavigateToExercises={onNavigateToExercises}
+                    questionCount={lessonQuestionCounts[l.id] || 0}
+                  />
                 ))}
               </div>
             )}
@@ -258,7 +282,15 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'N2').map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
+                  <LessonRow 
+                    key={l.id} 
+                    lesson={l} 
+                    isCompleted={currentUser.completedLessons.includes(l.id)} 
+                    onToggleComplete={() => onUpdateProgress(l.id)} 
+                    onNavigateToSchedule={onNavigateToSchedule} 
+                    onNavigateToExercises={onNavigateToExercises}
+                    questionCount={lessonQuestionCounts[l.id] || 0}
+                  />
                 ))}
               </div>
             )}
@@ -271,7 +303,15 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
                   <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
                 {displayLessons.filter(l => l.examPeriod === 'Práticas').map(l => (
-                  <LessonRow key={l.id} lesson={l} isCompleted={currentUser.completedLessons.includes(l.id)} onToggleComplete={() => onUpdateProgress(l.id)} onNavigateToSchedule={onNavigateToSchedule} onNavigateToExercises={onNavigateToExercises} />
+                  <LessonRow 
+                    key={l.id} 
+                    lesson={l} 
+                    isCompleted={currentUser.completedLessons.includes(l.id)} 
+                    onToggleComplete={() => onUpdateProgress(l.id)} 
+                    onNavigateToSchedule={onNavigateToSchedule} 
+                    onNavigateToExercises={onNavigateToExercises}
+                    questionCount={lessonQuestionCounts[l.id] || 0}
+                  />
                 ))}
               </div>
             )}
@@ -311,8 +351,9 @@ const LessonRow: React.FC<{
   isCompleted: boolean; 
   onToggleComplete: () => void; 
   onNavigateToSchedule?: (date?: Date) => void; 
-  onNavigateToExercises?: (subjectId?: string) => void;
-}> = ({ lesson, isCompleted, onToggleComplete, onNavigateToSchedule, onNavigateToExercises }) => {
+  onNavigateToExercises?: (subjectId?: string, lessonId?: string) => void;
+  questionCount?: number;
+}> = ({ lesson, isCompleted, onToggleComplete, onNavigateToSchedule, onNavigateToExercises, questionCount = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const openMaterial = (url: string | undefined) => {
@@ -320,6 +361,7 @@ const LessonRow: React.FC<{
     window.open(url, '_blank');
   };
 
+  const hasQuestions = questionCount > 0;
   const subjectColor = getSubjectColor(lesson.subjectId);
 
   return (
@@ -423,16 +465,17 @@ const LessonRow: React.FC<{
               {/* Botão 3: Resolver Questões */}
               <button 
                 onClick={() => {
-                  if (onNavigateToExercises) {
+                  if (hasQuestions && onNavigateToExercises) {
                     onNavigateToExercises(lesson.subjectId, lesson.id);
                   }
                 }}
+                disabled={!hasQuestions}
                 className="blob-btn" 
                 style={{ '--blob-color': '#7c3aed' } as React.CSSProperties}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 py-[15px] px-4 text-xs font-bold uppercase tracking-wider transition-colors duration-300">
                   <IconPen className="w-4 h-4" />
-                  Resolver Questões
+                  {hasQuestions ? (questionCount > 0 ? `Resolver Questões (${questionCount})` : 'Resolver Questões') : 'Questões Indisponíveis'}
                 </span>
                 <span className="blob-btn__inner">
                   <span className="blob-btn__blobs">

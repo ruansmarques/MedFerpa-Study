@@ -98,6 +98,8 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
       setSelectedCategory('Geral');
     } else if (selectedSubject?.id === 'p6-neuroendo') {
       setSelectedCategory('Neurologia');
+    } else if (selectedSubject?.id === 'p6-cardiopulmonar') {
+      setSelectedCategory('Cardiologia');
     }
   }, [selectedSubject, initialCategory, initialSubjectId]);
 
@@ -138,8 +140,8 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     return String(a.title || '').localeCompare(String(b.title || ''));
   });
 
-  // Logic for categorized subjects (Processos Patológicos, Anatomia Patológica, Clínica Neuroendócrina)
-  const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol' || selectedSubject?.id === 'p6-neuroendo';
+  // Logic for categorized subjects (Processos Patológicos, Anatomia Patológica, Clínica Neuroendócrina, Clínica Cardiopulmonar)
+  const isCategorized = selectedSubject?.id === 'proc-patol' || selectedSubject?.id === 'anat-patol' || selectedSubject?.id === 'p6-neuroendo' || selectedSubject?.id === 'p6-cardiopulmonar';
   
   let categories: string[] = [];
   if (selectedSubject?.id === 'proc-patol') {
@@ -148,9 +150,17 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
     categories = ['Geral', 'Parasitologia', 'Microbiologia'];
   } else if (selectedSubject?.id === 'p6-neuroendo') {
     categories = ['Neurologia', 'Endocrinologia', 'Imagem'];
+  } else if (selectedSubject?.id === 'p6-cardiopulmonar') {
+    categories = ['Cardiologia', 'Pneumologia'];
   }
 
-  const defaultCategoryForSubject = selectedSubject?.id === 'proc-patol' ? 'Patologia Geral' : selectedSubject?.id === 'p6-neuroendo' ? 'Neurologia' : 'Geral';
+  const defaultCategoryForSubject = selectedSubject?.id === 'proc-patol' 
+    ? 'Patologia Geral' 
+    : selectedSubject?.id === 'p6-neuroendo' 
+    ? 'Neurologia' 
+    : selectedSubject?.id === 'p6-cardiopulmonar'
+    ? 'Cardiologia'
+    : 'Geral';
 
   const displayLessons = isCategorized
     ? filteredLessons.filter(l => (l.category || defaultCategoryForSubject) === selectedCategory)

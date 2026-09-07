@@ -153,6 +153,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
 
     // 6º Período
     '2026-09-07': { title: 'Dia não letivo', description: 'Independência do Brasil' },
+    '2026-10-01': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-02': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-03': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-04': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-05': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-06': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-07': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
+    '2026-10-08': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-11-30': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
     '2026-12-01': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
     '2026-12-02': { title: 'Aplicação de Provas', description: 'Semana de Provas' },

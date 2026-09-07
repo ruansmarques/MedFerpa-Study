@@ -152,6 +152,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-06-05': { title: 'Dia não letivo', description: 'Prolongamento de Feriado' },
 
     // 6º Período
+    '2026-09-07': { title: 'Dia não letivo', description: 'Independência do Brasil' },
     '2026-11-30': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
     '2026-12-01': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
     '2026-12-02': { title: 'Aplicação de Provas', description: 'Semana de Provas' },

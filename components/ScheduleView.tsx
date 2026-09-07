@@ -161,11 +161,11 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-10-06': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-10-07': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-10-08': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
-    '2026-11-30': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
-    '2026-12-01': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
-    '2026-12-02': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
-    '2026-12-03': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
-    '2026-12-04': { title: 'Aplicação de Provas', description: 'Semana de Provas' },
+    '2026-11-30': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-12-01': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-12-02': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-12-03': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
+    '2026-12-04': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
   };
 
   const N2_EXAM_SCHEDULE: Record<string, ScheduleEvent[]> = {

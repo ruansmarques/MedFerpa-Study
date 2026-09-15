@@ -379,7 +379,7 @@ export const SUBJECTS: Subject[] = [
   { id: 'p6-cardiopulmonar', period: 6, title: 'Clínica Cardiopulmonar', icon: '🫀', description: 'Cardiologia e Pneumologia clínica.', folderName: 'cardiopulmonar' },
   { id: 'p6-neuroendo', period: 6, title: 'Clínica Neuroendócrina e Imagem', icon: '🧠', description: 'Neuro, Endócrino e Imagem.', folderName: 'neuro-endo' },
   { id: 'p6-linhas-cuidado', period: 6, title: 'Linhas de Cuidado do SUS', icon: '🏥', description: 'Fluxos de atendimento no SUS.', folderName: 'linhas-cuidado' },
-  { id: 'p6-pratica-adulto-1', period: 6, title: 'Clínica do Adulto I', icon: '👨', description: 'Atendimento clínico ao adulto.', folderName: 'saude-adulto-1' },
+  { id: 'p6-pratica-adulto-1', period: 6, title: 'Prática clínica da Saúde do Adulto I', icon: '👨', description: 'Atendimento clínico ao adulto.', folderName: 'saude-adulto-1' },
   { id: 'p6-psiquiatria-1', period: 6, title: 'Psiquiatria I', icon: '🧩', description: 'Introdução à psiquiatria clínica.', folderName: 'psiquiatria-1' },
   { id: 'p6-tecnica-cirurgica', period: 6, title: 'Técnica Cirúrgica', icon: '✂️', description: 'Fundamentos e paramentação cirúrgica.', folderName: 'tecnica-cirurgica' },
   { id: 'p6-gestao-saude', period: 6, title: 'Gestão em Saúde', icon: '📊', description: 'Fundamentos e práticas de gestão em saúde.', folderName: 'gestao-saude' },

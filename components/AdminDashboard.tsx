@@ -25,7 +25,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isContinuation, setIsContinuation] = useState(false);
-  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Práticas'>('N1');
+  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Casos Clínicos' | 'Práticas'>('N1');
   
   const [slideUrlInput, setSlideUrlInput] = useState('');
   const [summaryUrlInput, setSummaryUrlInput] = useState('');
@@ -609,6 +609,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
               if (action === 'continuation-false') updatePayload.isContinuation = false;
               if (action === 'exam-n1') updatePayload.examPeriod = 'N1';
               if (action === 'exam-n2') updatePayload.examPeriod = 'N2';
+              if (action === 'exam-casos') updatePayload.examPeriod = 'Casos Clínicos';
               if (action === 'exam-praticas') updatePayload.examPeriod = 'Práticas';
               if (action === 'cat-geral') updatePayload.category = 'Geral';
               if (action === 'cat-micro') updatePayload.category = 'Microbiologia';
@@ -961,9 +962,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
 
                   <div className="flex flex-col gap-1">
                       <label className="text-xs font-bold text-gray-400 uppercase">Período de Prova *</label>
-                      <select value={examPeriod} onChange={e => setExamPeriod(e.target.value as 'N1' | 'N2' | 'Práticas')} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
+                      <select value={examPeriod} onChange={e => setExamPeriod(e.target.value as 'N1' | 'N2' | 'Casos Clínicos' | 'Práticas')} className="p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 ring-blue-500" required>
                           <option value="N1">N1 (1º Bimestre)</option>
                           <option value="N2">N2 (2º Bimestre)</option>
+                          <option value="Casos Clínicos">Casos Clínicos</option>
                           <option value="Práticas">Aulas Práticas</option>
                       </select>
                   </div>
@@ -1062,6 +1064,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                            <button type="button" onClick={() => handleMassEdit('continuation-false')} className="px-3 py-2 bg-gray-600 text-white text-xs font-bold rounded-lg hover:bg-gray-700 w-full sm:w-auto leading-tight">Desmarcar Continuação</button>
                            <button type="button" onClick={() => handleMassEdit('exam-n1')} className="px-3 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 w-full sm:w-auto leading-tight">Mudar para N1</button>
                            <button type="button" onClick={() => handleMassEdit('exam-n2')} className="px-3 py-2 bg-pink-600 text-white text-xs font-bold rounded-lg hover:bg-pink-700 w-full sm:w-auto leading-tight">Mudar para N2</button>
+                           <button type="button" onClick={() => handleMassEdit('exam-casos')} className="px-3 py-2 bg-amber-600 text-white text-xs font-bold rounded-lg hover:bg-amber-700 w-full sm:w-auto leading-tight">Casos Clínicos</button>
                            <button type="button" onClick={() => handleMassEdit('exam-praticas')} className="px-3 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg hover:bg-teal-700 w-full sm:w-auto leading-tight">Aulas Práticas</button>
                            <button type="button" onClick={() => handleMassEdit('auto-slots')} className="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 w-full sm:w-auto leading-tight">Preencher Slots da Grade</button>
                            
@@ -1124,7 +1127,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                                 </td>
                                 <td className="p-4">
                                     <div className="text-[10px] font-bold text-blue-500 mb-1">
-                                        {l.date?.split('-').reverse().join('/')} | Slots: {(l.targetSlots && l.targetSlots.length > 0) ? l.targetSlots.join(', ') : (getSlotsForSubjectAndDate(l.subjectId, l.date, l.period).join(', ') || 'N/A')} | {l.examPeriod || 'N1'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
+                                        {l.date?.split('-').reverse().join('/')} | Slots: {(l.targetSlots && l.targetSlots.length > 0) ? l.targetSlots.join(', ') : (getSlotsForSubjectAndDate(l.subjectId, l.date, l.period).join(', ') || 'N/A')} | {l.examPeriod ? (l.examPeriod === 'Práticas' ? 'AULAS PRÁTICAS' : l.examPeriod.toUpperCase()) : 'N1'} {l.isContinuation ? '| CONTINUAÇÃO' : ''} {l.category ? `| CAT: ${l.category.toUpperCase()}` : ''}
                                     </div>
                                     <div className="text-sm font-bold text-slate-800 line-clamp-1">
                                         {l.title}

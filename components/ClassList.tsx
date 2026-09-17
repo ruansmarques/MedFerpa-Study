@@ -305,6 +305,27 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
               </div>
             )}
 
+            {displayLessons.filter(l => l.examPeriod === 'Casos Clínicos' || l.examPeriod === 'Casos clínicos').length > 0 && (
+              <div className="space-y-4 mt-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-4 py-1 rounded-full border border-gray-100">Casos Clínicos</h3>
+                  <div className="h-px bg-gray-200 flex-1"></div>
+                </div>
+                {displayLessons.filter(l => l.examPeriod === 'Casos Clínicos' || l.examPeriod === 'Casos clínicos').map(l => (
+                  <LessonRow 
+                    key={l.id} 
+                    lesson={l} 
+                    isCompleted={currentUser.completedLessons.includes(l.id)} 
+                    onToggleComplete={() => onUpdateProgress(l.id)} 
+                    onNavigateToSchedule={onNavigateToSchedule} 
+                    onNavigateToExercises={onNavigateToExercises}
+                    questionCount={lessonQuestionCounts[l.id] || 0}
+                  />
+                ))}
+              </div>
+            )}
+
             {displayLessons.filter(l => l.examPeriod === 'Práticas').length > 0 && (
               <div className="space-y-4 mt-8">
                 <div className="flex items-center gap-4 mb-6">

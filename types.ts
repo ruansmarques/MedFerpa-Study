@@ -87,8 +87,8 @@ export interface Lesson {
   // Flag to mark if the lesson is a continuation of a previous one (hidden from class list)
   isContinuation?: boolean;
   
-  // Identifies if the lesson is for N1 or N2 exams
-  examPeriod?: 'N1' | 'N2' | 'Práticas';
+  // Identifies if the lesson is for N1, N2, Casos Clínicos or Aulas Práticas
+  examPeriod?: 'N1' | 'N2' | 'Casos Clínicos' | 'Práticas';
 }
 
 export interface Exercise {

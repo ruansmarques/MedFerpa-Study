@@ -95,12 +95,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin, initialAuthMo
             >
               Rank
             </button>
-            <button 
-              onClick={() => scrollToSection('biblioteca')} 
-              className="px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition"
-            >
-              Biblioteca
-            </button>
           </nav>
 
           {/* Auth Actions */}

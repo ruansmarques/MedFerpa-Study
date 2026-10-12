@@ -1,0 +1,6 @@
+{
+  "summary":  "Plano de implementação detalhado para otimização do sistema de upload de arquivos (slides e resumos de aulas) no AdminDashboard, com indicador inline de anel circular de progresso, validação prévia de tamanho, suporte a retentativa de upload e bloqueio preventivo de salvamento do formulário no mobile e desktop.",
+  "updatedAt":  "2026-10-12T02:21:08.978482844Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}

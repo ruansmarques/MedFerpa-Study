@@ -1,6 +1,8 @@
 import React from 'react';
 import { IconHome, IconExercise, IconRank, IconUser, IconLogout, IconX, IconCalendar } from './Icons';
 import { ViewState } from '../types';
+import { SyncStatus } from '../services/syncService';
+import { SyncIndicator } from './SyncIndicator';
 
 interface SidebarProps {
   currentView: ViewState;
@@ -8,9 +10,19 @@ interface SidebarProps {
   onLogout: () => void;
   isOpen: boolean;
   onClose: () => void;
+  syncStatus?: SyncStatus;
+  onManualSync?: () => Promise<void>;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  currentView, 
+  onChangeView, 
+  onLogout, 
+  isOpen, 
+  onClose,
+  syncStatus,
+  onManualSync
+}) => {
   const NavItem = ({ view, icon: Icon, label }: { view: ViewState; icon: any; label: string }) => {
     const isActive = currentView === view;
     return (
@@ -63,7 +75,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           <NavItem view="profile" icon={IconUser} label="Perfil" />
         </nav>
 
-        <div className="p-6 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 flex flex-col gap-3">
+          {syncStatus && onManualSync && (
+            <SyncIndicator status={syncStatus} onManualSync={onManualSync} variant="bar" />
+          )}
           <button
             onClick={onLogout}
             className="flex items-center gap-3 text-red-500 hover:text-red-700 transition-colors px-2 py-2 w-full rounded-lg hover:bg-red-50"

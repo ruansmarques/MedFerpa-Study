@@ -36,9 +36,9 @@ const ClassList: React.FC<ClassListProps> = ({ currentUser, onUpdateProgress, in
   const [selectedPeriod, setSelectedPeriod] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('medferpa_selected_period');
-      return saved ? parseInt(saved, 10) : 5;
+      return saved ? parseInt(saved, 10) : 6;
     } catch {
-      return 5;
+      return 6;
     }
   });
 

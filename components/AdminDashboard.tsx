@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { SUBJECTS, DEFAULT_SUBJECT_SLOTS, getSlotsForSubjectAndDate } from '../constants';
 import { supabase } from '../supabase';
 import { IconCheck, IconX, IconEdit, IconPresentation, IconBook, IconPen } from './Icons';
+import { InlineUploadProgress } from './InlineUploadProgress';
 import { Lesson } from '../types';
 
 interface AdminDashboardProps {
@@ -25,7 +26,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   const [noticeMessage, setNoticeMessage] = useState('');
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [isContinuation, setIsContinuation] = useState(false);
-  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Casos Clínicos' | 'Práticas'>('N1');
+  const [examPeriod, setExamPeriod] = useState<'N1' | 'N2' | 'Casos Clínicos' | 'Práticas'>('N2');
   
   const [slideUrlInput, setSlideUrlInput] = useState('');
   const [summaryUrlInput, setSummaryUrlInput] = useState('');
@@ -309,7 +310,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setQ_area('Clínica Médica');
     setQ_banca('ENAMED');
     setQ_ano('');
-    setQ_selectedPeriod(5);
+    setQ_selectedPeriod(6);
     setQ_selectedDisciplines([]);
     setQ_selectedLessons([]);
     setIsBancaDropdownOpen(false);
@@ -514,7 +515,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setSlideUrlInput('');
     setSummaryUrlInput('');
     setIsContinuation(false);
-    setExamPeriod('N1');
+    setExamPeriod('N2');
     // Don't reset period to 6, keep user context or let it update via subject
   };
 
@@ -531,7 +532,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     setYoutubeLink(lesson.youtubeIds?.[0] ? `https://www.youtube.com/watch?v=${lesson.youtubeIds[0]}` : '');
     setPeriod(lesson.period);
     setIsContinuation(lesson.isContinuation || false);
-    setExamPeriod(lesson.examPeriod || 'N1');
+    setExamPeriod(lesson.examPeriod || 'N2');
     setSlideUrlInput(lesson.slideUrl || '');
     setSummaryUrlInput(lesson.summaryUrl || '');
   };
@@ -1011,43 +1012,62 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
                               <label className="text-xs font-bold text-gray-400 uppercase">Link do YouTube</label>
                               <input type="text" value={youtubeLink} onChange={e => setYoutubeLink(e.target.value)} placeholder="URL do YouTube" className="w-full p-3 border rounded-xl" />
                           </div>
-                          <div className="grid grid-cols-2 gap-4">
-                              <div className="flex flex-col gap-1">
-                                  <label className="text-xs font-bold text-gray-400 uppercase">Link do Slide</label>
-                                  <div className="flex bg-white border rounded-xl overflow-hidden focus-within:ring-2 ring-blue-500 relative">
-                                    <input type="url" value={slideUrlInput} onChange={e => setSlideUrlInput(e.target.value)} placeholder="URL do Google Drive (Slide)" className="w-full p-3 outline-none" />
-                                    <label className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 flex items-center justify-center font-bold text-sm cursor-pointer border-l transition">
-                                      {uploadingSlide ? '...' : 'Upload'}
-                                      <input type="file" className="hidden" accept=".pdf,.ppt,.pptx" onChange={e => handleFileUpload(e, 'slide')} disabled={uploadingSlide} />
-                                    </label>
-                                  </div>
-                                  {editingLesson?.slideUrl && !slideUrlInput && (
-                                      <span className="text-xs text-blue-500 truncate mt-1">Atual: {editingLesson.slideUrl}</span>
-                                  )}
-                              </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <InlineUploadProgress
+                                  label="Material / Slide da Aula"
+                                  type="slide"
+                                  value={slideUrlInput}
+                                  onChange={setSlideUrlInput}
+                                  placeholder="URL do Slide ou escolha um arquivo (.pdf, .ppt, .pptx)"
+                                  accept=".pdf,.ppt,.pptx"
+                                  currentLessonUrl={editingLesson?.slideUrl}
+                                  onUploadingStatusChange={setUploadingSlide}
+                              />
 
-                              <div className="flex flex-col gap-1">
-                                  <label className="text-xs font-bold text-gray-400 uppercase">Link do Resumo</label>
-                                  <div className="flex bg-white border rounded-xl overflow-hidden focus-within:ring-2 ring-blue-500 relative">
-                                    <input type="url" value={summaryUrlInput} onChange={e => setSummaryUrlInput(e.target.value)} placeholder="URL do Google Drive (Resumo)" className="w-full p-3 outline-none" />
-                                    <label className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 flex items-center justify-center font-bold text-sm cursor-pointer border-l transition">
-                                      {uploadingSummary ? '...' : 'Upload'}
-                                      <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={e => handleFileUpload(e, 'summary')} disabled={uploadingSummary} />
-                                    </label>
-                                  </div>
-                                  {editingLesson?.summaryUrl && !summaryUrlInput && (
-                                      <span className="text-xs text-blue-500 truncate mt-1">Atual: {editingLesson.summaryUrl}</span>
-                                  )}
-                              </div>
+                              <InlineUploadProgress
+                                  label="Resumo / Material de Apoio"
+                                  type="summary"
+                                  value={summaryUrlInput}
+                                  onChange={setSummaryUrlInput}
+                                  placeholder="URL do Resumo ou escolha um arquivo (.pdf, .doc, .docx)"
+                                  accept=".pdf,.doc,.docx"
+                                  currentLessonUrl={editingLesson?.summaryUrl}
+                                  onUploadingStatusChange={setUploadingSummary}
+                              />
                           </div>
                       </div>
                   )}
 
                   <div className="flex gap-4">
                       {editingId && (
-                          <button type="button" onClick={clearForm} className="flex-1 py-4 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 transition">Cancelar</button>
+                          <button 
+                            type="button" 
+                            onClick={clearForm} 
+                            disabled={uploadingSlide || uploadingSummary}
+                            className="flex-1 py-4 bg-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-300 transition disabled:opacity-50"
+                          >
+                            Cancelar
+                          </button>
                       )}
-                      <button type="submit" disabled={loading} className="flex-[2] py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition shadow-lg">{loading ? 'Salvando...' : editingId ? 'Atualizar Registro' : 'Publicar Registro'}</button>
+                      <button 
+                        type="submit" 
+                        disabled={loading || uploadingSlide || uploadingSummary} 
+                        className={`flex-[2] py-4 text-white font-bold rounded-2xl transition shadow-lg ${
+                          (uploadingSlide || uploadingSummary)
+                            ? 'bg-amber-600 cursor-not-allowed opacity-90'
+                            : loading
+                            ? 'bg-gray-400 cursor-wait'
+                            : 'bg-slate-900 hover:bg-blue-600'
+                        }`}
+                      >
+                        {uploadingSlide || uploadingSummary 
+                          ? 'Aguarde o envio dos arquivos...' 
+                          : loading 
+                          ? 'Salvando...' 
+                          : editingId 
+                          ? 'Atualizar Registro' 
+                          : 'Publicar Registro'}
+                      </button>
                   </div>
               </form>
             </section>

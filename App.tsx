@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Login from './components/Login';
 import Register from './components/Register';
 import LandingPage from './components/LandingPage';
@@ -13,6 +13,15 @@ import AdminDashboard from './components/AdminDashboard';
 import { User, ViewState, LevelProgress } from './types';
 import { IconMenu } from './components/Icons';
 import { supabase } from './supabase';
+import {
+  SyncStatus,
+  fetchServerUser,
+  normalizeUserData,
+  mergeSessionHistories,
+  toggleLessonProgressSafely,
+  saveUserToLocalAndBroadcast,
+  calculateTotalXP
+} from './services/syncService';
 
 const App: React.FC = () => {
   // Inicializa o estado buscando do LocalStorage para persistir sessão no F5
@@ -37,12 +46,168 @@ const App: React.FC = () => {
     }
   });
 
-  // --- REAL-TIME SYNC: Listen for user changes in Supabase ---
+  // --- MULTI-DEVICE SYNC ENGINE ---
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({
+    state: 'idle',
+    lastSyncedAt: null
+  });
+
+  // Ref to prevent duplicate concurrent syncs
+  const isSyncingRef = useRef(false);
+
+  // Centralized sync function that fetches authoritative data from Supabase and reconciles
+  const syncWithCloud = useCallback(async (isBackground = false) => {
+    if (!currentUser?.ra) return;
+    if (isSyncingRef.current) return;
+
+    if (!navigator.onLine) {
+      setSyncStatus(prev => ({ ...prev, state: 'offline' }));
+      return;
+    }
+
+    isSyncingRef.current = true;
+    if (!isBackground) {
+      setSyncStatus(prev => ({ ...prev, state: 'syncing' }));
+    }
+
+    try {
+      const serverUser = await fetchServerUser(currentUser.ra);
+      if (!serverUser) {
+        setSyncStatus(prev => ({ ...prev, state: 'idle' }));
+        isSyncingRef.current = false;
+        return;
+      }
+
+      setCurrentUser(prevUser => {
+        if (!prevUser) return serverUser;
+
+        const serverLessons = serverUser.completedLessons || [];
+        const prevLessons = prevUser.completedLessons || [];
+
+        // Union of completed lessons ensures progress made on any device is preserved
+        const mergedLessons = Array.from(new Set([...serverLessons, ...prevLessons]));
+
+        // Deep merge of exercise session history
+        const mergedExerciseProgress = mergeSessionHistories(
+          prevUser.exerciseProgress,
+          serverUser.exerciseProgress
+        );
+
+        // Merge list progress
+        const mergedListProgress = {
+          ...(serverUser.listProgress || {}),
+          ...(prevUser.listProgress || {})
+        };
+
+        const resolvedXP = Math.max(
+          serverUser.totalXP || 0,
+          prevUser.totalXP || 0,
+          mergedLessons.length * 10
+        );
+
+        const reconciled: User = {
+          ...serverUser,
+          completedLessons: mergedLessons,
+          exerciseProgress: mergedExerciseProgress,
+          listProgress: mergedListProgress,
+          totalXP: resolvedXP,
+          isRankVisible: serverUser.isRankVisible !== undefined ? serverUser.isRankVisible : prevUser.isRankVisible
+        };
+
+        // If local had unsaved lessons or progress, update server asynchronously
+        const hasUnsyncedLocalLessons = mergedLessons.length > serverLessons.length;
+        const hasUnsyncedXP = resolvedXP > (serverUser.totalXP || 0);
+
+        if (hasUnsyncedLocalLessons || hasUnsyncedXP) {
+          supabase
+            .from('users')
+            .update({
+              completedLessons: mergedLessons,
+              totalXP: resolvedXP,
+              exerciseProgress: mergedExerciseProgress,
+              listProgress: mergedListProgress
+            })
+            .eq('ra', reconciled.ra)
+            .then(({ error }) => {
+              if (error) console.error('[Sync] Erro ao sincronizar com servidor:', error);
+            });
+        }
+
+        saveUserToLocalAndBroadcast(reconciled);
+        return reconciled;
+      });
+
+      setSyncStatus({
+        state: 'synced',
+        lastSyncedAt: new Date()
+      });
+    } catch (err) {
+      console.error('[Sync] Falha durante sincronização:', err);
+      setSyncStatus(prev => ({ ...prev, state: 'error' }));
+    } finally {
+      isSyncingRef.current = false;
+    }
+  }, [currentUser?.ra]);
+
+  // Initial fetch on mount to sync immediately if user was already in localStorage
+  useEffect(() => {
+    if (currentUser?.ra) {
+      syncWithCloud(false);
+    }
+  }, []);
+
+  // Multi-event lifecycle sync (focus, visibilitychange, online, periodic heartbeat, cross-tab BroadcastChannel)
   useEffect(() => {
     if (!currentUser?.ra) return;
 
-    // Set up a real-time listener for the current user's document
-    const userChannel = supabase.channel('schema-db-changes')
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncWithCloud(true);
+      }
+    };
+
+    const handleFocus = () => {
+      syncWithCloud(true);
+    };
+
+    const handleOnline = () => {
+      syncWithCloud(false);
+    };
+
+    const handleOffline = () => {
+      setSyncStatus(prev => ({ ...prev, state: 'offline' }));
+    };
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Heartbeat: sync every 12 seconds when active
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible' && navigator.onLine) {
+        syncWithCloud(true);
+      }
+    }, 12000);
+
+    // Cross-tab broadcast listener (within the same machine/browser)
+    let bc: BroadcastChannel | null = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel('medferpa_sync_channel');
+        bc.onmessage = (event) => {
+          if (event.data?.type === 'USER_UPDATED' && event.data.user?.ra === currentUser.ra) {
+            setCurrentUser(event.data.user);
+            setSyncStatus({ state: 'synced', lastSyncedAt: new Date() });
+          }
+        };
+      } catch (e) {
+        console.warn('BroadcastChannel not supported', e);
+      }
+    }
+
+    // Supabase Realtime channel as backup push
+    const userChannel = supabase.channel(`user-sync-${currentUser.ra}`)
       .on(
         'postgres_changes',
         {
@@ -51,55 +216,22 @@ const App: React.FC = () => {
           table: 'users',
           filter: `ra=eq.${currentUser.ra}`
         },
-        (payload) => {
-          const userData = payload.new as User;
-          
-          setCurrentUser(prevUser => {
-            const safeUserData: User = {
-              ...userData,
-              completedLessons: Array.isArray(userData.completedLessons) ? userData.completedLessons : [],
-              totalXP: typeof userData.totalXP === 'number' ? userData.totalXP : parseInt(userData.totalXP as any) || 0,
-              exerciseProgress: userData.exerciseProgress || {}
-            };
-            
-            if (!prevUser) return safeUserData;
-            
-            // Check if completedLessons changed (most common sync issue)
-            const prevLessonsArr = Array.isArray(prevUser.completedLessons) ? [...prevUser.completedLessons].sort() : [];
-            const newLessonsArr = [...safeUserData.completedLessons].sort();
-            const prevLessons = prevLessonsArr.join(',');
-            const newLessons = newLessonsArr.join(',');
-            
-            // Check if totalXP changed
-            const prevXP = prevUser.totalXP || 0;
-            const newXP = safeUserData.totalXP;
-
-            // Check if exerciseProgress changed
-            const prevExKeys = Object.keys(prevUser.exerciseProgress || {}).join(',');
-            const newExKeys = Object.keys(safeUserData.exerciseProgress || {}).join(',');
-            
-            let prevExXP = 0;
-            Object.values(prevUser.exerciseProgress || {}).forEach(p => prevExXP += (p.xp || 0));
-            
-            let newExXP = 0;
-            Object.values(safeUserData.exerciseProgress || {}).forEach(p => newExXP += (p.xp || 0));
-
-            if (prevLessons !== newLessons || prevXP !== newXP || prevExKeys !== newExKeys || prevExXP !== newExXP) {
-              console.log("Syncing user data from Supabase...");
-              return safeUserData;
-            }
-            
-            return prevUser;
-          });
+        () => {
+          syncWithCloud(true);
         }
       )
       .subscribe();
 
-    // Cleanup subscription on unmount or user change
     return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(interval);
+      if (bc) bc.close();
       supabase.removeChannel(userChannel);
     };
-  }, [currentUser?.ra]);
+  }, [currentUser?.ra, syncWithCloud]);
 
   const [authMode, setAuthMode] = useState<'login' | 'register'>(() => {
     if (window.location.pathname === '/cadastrar') return 'register';
@@ -167,39 +299,22 @@ const App: React.FC = () => {
 
 
 
-  // --- LOGICA DE AUTO-CORREÇÃO DE XP ---
-  // Recalcula o XP total baseado nas aulas e exercícios reais para garantir consistência
+  // --- LOGICA DE AUTO-CORREÇÃO DE XP COM PROTEÇÃO MULTI-DISPOSITIVOS ---
   useEffect(() => {
     const syncXP = async () => {
       if (!currentUser) return;
 
-      let calculatedXP = 0;
+      const safeCalculatedXP = calculateTotalXP(currentUser);
 
-      // 1. XP de Aulas (10 XP por aula)
-      if (currentUser.completedLessons && Array.isArray(currentUser.completedLessons)) {
-        calculatedXP += currentUser.completedLessons.length * 10;
-      }
-
-      // 2. XP de Exercícios (Score / 10)
-      if (currentUser.exerciseProgress) {
-        Object.values(currentUser.exerciseProgress).forEach((item) => {
-          const progress = item as LevelProgress;
-          // Considera apenas scores positivos
-          if (progress.score > 0) {
-            calculatedXP += Math.round(progress.score / 10);
-          }
-        });
-      }
-
-      // Se houver discrepância entre o cálculo real e o valor salvo, atualiza
-      if (currentUser.totalXP !== calculatedXP) {
-        console.log(`Corrigindo XP: Anterior ${currentUser.totalXP} -> Novo ${calculatedXP}`);
-        
-        const updatedUser = { ...currentUser, totalXP: calculatedXP };
+      // Apenas atualiza se o cálculo for superior ou diferente de forma segura (evita zerar por estado local obsoleto)
+      if (safeCalculatedXP > (currentUser.totalXP || 0)) {
+        console.log(`[XP Sync] Sincronizando XP: ${currentUser.totalXP} -> ${safeCalculatedXP}`);
+        const updatedUser = { ...currentUser, totalXP: safeCalculatedXP };
         setCurrentUser(updatedUser);
+        saveUserToLocalAndBroadcast(updatedUser);
 
         try {
-          await supabase.from("users").update({ totalXP: calculatedXP }).eq('ra', currentUser.ra);
+          await supabase.from("users").update({ totalXP: safeCalculatedXP }).eq('ra', currentUser.ra);
         } catch (error) {
           console.error("Erro ao sincronizar XP:", error);
         }
@@ -208,7 +323,6 @@ const App: React.FC = () => {
 
     syncXP();
   }, [currentUser?.completedLessons?.length, currentUser?.exerciseProgress, currentUser?.ra]);
-
 
   useEffect(() => {
     if (currentUser) {
@@ -221,8 +335,12 @@ const App: React.FC = () => {
   }, [currentUser]);
 
   const handleLogin = (user: User) => {
-    setCurrentUser(user);
+    const normalized = normalizeUserData(user);
+    setCurrentUser(normalized);
+    saveUserToLocalAndBroadcast(normalized);
     setCurrentView('classes');
+    // Trigger immediate cloud sync
+    setTimeout(() => syncWithCloud(false), 100);
   };
 
   const handleLogout = () => {
@@ -236,58 +354,56 @@ const App: React.FC = () => {
   const handleAddXP = async (amount: number) => {
     if (!currentUser) return;
 
-    // Atualiza estado local
-    const newTotalXP = (currentUser.totalXP || 0) + amount;
-    // Evita XP negativo
-    const finalXP = newTotalXP < 0 ? 0 : newTotalXP;
-    
-    const updatedUser = { ...currentUser, totalXP: finalXP };
+    const newTotalXP = Math.max(0, (currentUser.totalXP || 0) + amount);
+    const updatedUser = { ...currentUser, totalXP: newTotalXP };
     setCurrentUser(updatedUser);
+    saveUserToLocalAndBroadcast(updatedUser);
 
-    // Atualiza Supabase
     try {
-      await supabase.from("users").update({ totalXP: finalXP }).eq('ra', currentUser.ra);
+      await supabase.from("users").update({ totalXP: newTotalXP }).eq('ra', currentUser.ra);
+      setSyncStatus({ state: 'synced', lastSyncedAt: new Date() });
     } catch (error) {
       console.error("Erro ao atualizar XP no banco:", error);
+      setSyncStatus(prev => ({ ...prev, state: 'error' }));
     }
   };
 
+  // Atualização segura de progresso de aulas: atualização otimista local imediata + merge atômico na nuvem
   const handleUpdateProgress = async (lessonId: string) => {
     if (!currentUser) return;
+
+    // 1. Atualização otimista imediata para feedback visual instantâneo (0ms)
     const isCompleted = currentUser.completedLessons.includes(lessonId);
-    let newCompletedList: string[];
-    // A lógica de XP aqui é apenas visual imediata, o useEffect de syncXP garantirá a consistência matemática depois
+    let optimisticLessons: string[];
     let xpChange = 0;
 
     if (isCompleted) {
-      // Removendo aula
-      newCompletedList = currentUser.completedLessons.filter(id => id !== lessonId);
-      xpChange = -10; 
+      optimisticLessons = currentUser.completedLessons.filter(id => id !== lessonId);
+      xpChange = -10;
     } else {
-      // Concluindo aula
-      newCompletedList = [...currentUser.completedLessons, lessonId];
-      xpChange = 10; 
+      optimisticLessons = Array.from(new Set([...currentUser.completedLessons, lessonId]));
+      xpChange = 10;
     }
 
-    // Atualiza Lista Local e XP Local
-    const currentXP = currentUser.totalXP || 0;
-    const newTotalXP = Math.max(0, currentXP + xpChange);
-
-    const updatedUser = { 
-        ...currentUser, 
-        completedLessons: newCompletedList,
-        totalXP: newTotalXP
+    const optimisticXP = Math.max(0, (currentUser.totalXP || 0) + xpChange);
+    const optimisticUser: User = {
+      ...currentUser,
+      completedLessons: optimisticLessons,
+      totalXP: optimisticXP
     };
-    
-    setCurrentUser(updatedUser);
 
+    setCurrentUser(optimisticUser);
+    saveUserToLocalAndBroadcast(optimisticUser);
+    setSyncStatus({ state: 'syncing', lastSyncedAt: new Date() });
+
+    // 2. Executa merge seguro buscando o estado mais recente do banco para não sobrescrever aulas de outros dispositivos
     try {
-      await supabase.from("users").update({ 
-        completedLessons: newCompletedList,
-        totalXP: newTotalXP
-      }).eq('ra', currentUser.ra);
+      const finalUser = await toggleLessonProgressSafely(currentUser, lessonId);
+      setCurrentUser(finalUser);
+      setSyncStatus({ state: 'synced', lastSyncedAt: new Date() });
     } catch (error) {
-      console.error("Erro ao salvar progresso:", error);
+      console.error("Erro ao salvar progresso da aula:", error);
+      setSyncStatus(prev => ({ ...prev, state: 'error' }));
     }
   };
 
@@ -295,27 +411,47 @@ const App: React.FC = () => {
     if (!currentUser) return;
     const updatedUser = { ...currentUser, name: newName };
     setCurrentUser(updatedUser);
+    saveUserToLocalAndBroadcast(updatedUser);
     try {
       await supabase.from("users").update({ name: newName }).eq('ra', currentUser.ra);
+      setSyncStatus({ state: 'synced', lastSyncedAt: new Date() });
     } catch (error) {
        console.error("Erro ao salvar nome:", error);
+       setSyncStatus(prev => ({ ...prev, state: 'error' }));
     }
   };
 
-  // Nova função para atualizar usuário completo (usado no ExerciseView)
+  // Atualização segura de sessões e exercícios mantendo histórico mesclado de múltiplos dispositivos
   const handleUpdateUser = async (updatedUser: User) => {
-      setCurrentUser(updatedUser);
-      if (updatedUser && updatedUser.ra) {
-        try {
-          await supabase.from("users").update({ 
-            listProgress: updatedUser.listProgress || {},
-            exerciseProgress: updatedUser.exerciseProgress || {},
-            totalXP: updatedUser.totalXP || 0
-          }).eq('ra', updatedUser.ra);
-        } catch (error) {
-          console.error("Erro ao atualizar o usuário no banco:", error);
-        }
+    setCurrentUser(updatedUser);
+    saveUserToLocalAndBroadcast(updatedUser);
+
+    if (updatedUser && updatedUser.ra) {
+      try {
+        setSyncStatus({ state: 'syncing', lastSyncedAt: new Date() });
+        // Busca estado do servidor para combinar históricos sem perda
+        const serverUser = await fetchServerUser(updatedUser.ra);
+        const mergedExercise = mergeSessionHistories(
+          updatedUser.exerciseProgress,
+          serverUser?.exerciseProgress
+        );
+        const mergedList = {
+          ...(serverUser?.listProgress || {}),
+          ...(updatedUser.listProgress || {})
+        };
+
+        await supabase.from("users").update({ 
+          listProgress: mergedList,
+          exerciseProgress: mergedExercise,
+          totalXP: updatedUser.totalXP || 0
+        }).eq('ra', updatedUser.ra);
+
+        setSyncStatus({ state: 'synced', lastSyncedAt: new Date() });
+      } catch (error) {
+        console.error("Erro ao atualizar o usuário no banco:", error);
+        setSyncStatus(prev => ({ ...prev, state: 'error' }));
       }
+    }
   };
 
   const navigateToClasses = (subjectId?: string, category?: string) => {
@@ -425,7 +561,14 @@ const App: React.FC = () => {
           />
         );
       case 'profile':
-        return <ProfileView user={currentUser} onUpdateName={handleUpdateName} />;
+        return (
+          <ProfileView 
+            user={currentUser} 
+            onUpdateName={handleUpdateName} 
+            syncStatus={syncStatus}
+            onManualSync={() => syncWithCloud(false)}
+          />
+        );
       default:
         return <div>Página não encontrada</div>;
     }
@@ -459,6 +602,8 @@ const App: React.FC = () => {
             onLogout={handleLogout}
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
+            syncStatus={syncStatus}
+            onManualSync={() => syncWithCloud(false)}
           />
         </>
       )}

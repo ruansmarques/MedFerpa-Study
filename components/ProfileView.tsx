@@ -2,10 +2,14 @@
 import React, { useState } from 'react';
 import { User } from '../types';
 import { IconEdit, IconSave } from './Icons';
+import { SyncStatus } from '../services/syncService';
+import { SyncIndicator } from './SyncIndicator';
 
 interface ProfileProps {
   user: User;
   onUpdateName: (newName: string) => void;
+  syncStatus?: SyncStatus;
+  onManualSync?: () => Promise<void>;
 }
 
 const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
@@ -101,6 +105,13 @@ const ProfileView: React.FC<ProfileProps> = ({ user, onUpdateName }) => {
              </span>
           </div>
         </div>
+
+        {/* SINCRONIZAÇÃO MULTI-DISPOSITIVOS */}
+        {syncStatus && onManualSync && (
+          <div className="mt-6 text-left">
+            <SyncIndicator status={syncStatus} onManualSync={onManualSync} variant="card" />
+          </div>
+        )}
       </div>
     </div>
   );

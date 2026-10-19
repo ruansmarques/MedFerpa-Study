@@ -162,6 +162,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
     '2026-10-07': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-10-08': { title: 'Período de aplicação de provas', description: 'Provas da N1' },
     '2026-10-12': { title: 'Dia não letivo', description: 'Nossa Senhora Aparecida' },
+
+    // Semana 16 (16/11 a 20/11 de 2026) - Planejamento Acadêmico
+    '2026-11-16': { title: 'Planejamento Acadêmico', description: '*Semana do saco cheio*' },
+    '2026-11-17': { title: 'Planejamento Acadêmico', description: '*Semana do saco cheio*' },
+    '2026-11-18': { title: 'Planejamento Acadêmico', description: '*Semana do saco cheio*' },
+    '2026-11-19': { title: 'Planejamento Acadêmico', description: '*Semana do saco cheio*' },
+    '2026-11-20': { title: 'Planejamento Acadêmico', description: '*Semana do saco cheio*' },
+
     '2026-11-30': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
     '2026-12-01': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
     '2026-12-02': { title: 'Período de aplicação de provas', description: 'Provas da N2' },
@@ -271,7 +279,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ onNavigateToClass, i
                                       <IconVideoOff className="w-5 h-5 sm:w-6 sm:h-6 text-blue-300" />
                                   </div>
                                   <h3 className="text-base sm:text-lg font-bold text-slate-700 mb-1 sm:mb-2">{segment.event.title}</h3>
-                                  <p className="text-xs sm:text-sm text-gray-500">{segment.event.description}</p>
+                                  <p className={`text-xs sm:text-sm text-gray-500 ${segment.event.description.startsWith('*') && segment.event.description.endsWith('*') ? 'italic' : ''}`}>{segment.event.description}</p>
                               </div>
                           </div>
                       );
